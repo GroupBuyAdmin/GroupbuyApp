@@ -99,21 +99,7 @@ public class Buttons extends JPanel{
         setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);
     }
         
-
-    private void setToNormalState(RoundedButton rButton, ImageIcon imageIcon){
-        rButton.setButtonColor(Color.white);
-        rButton.setForeground(GbuyColor.MAIN_TEXT_COLOR);
-        rButton.setDrawBorder(false);
-        rButton.setHorizontalAlignment(SwingConstants.LEADING);
-        rButton.setIconTextGap(20);
-        rButton.setPreferredSize(buttonSize);
-        rButton.setButtonFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(16f));
-        rButton.setIcon(imageIcon);
-        rButton.revalidate();
-        rButton.setCornerRadius(8);
-        rButton.repaint();
-    }
-
+    
     public void setSelected(int index){
         switch (index) {
             case 1:
@@ -150,14 +136,26 @@ public class Buttons extends JPanel{
         
     }
 
+    private void setToNormalState(RoundedButton rButton, ImageIcon imageIcon){
+        rButton.setButtonColor(Color.white);
+        rButton.setForeground(GbuyColor.MAIN_TEXT_COLOR);
+        rButton.setDrawBorder(false);
+        rButton.setHorizontalAlignment(SwingConstants.LEADING);
+        rButton.setIconTextGap(20);
+        rButton.setPreferredSize(buttonSize);
+        rButton.setButtonFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(16f));
+        rButton.setIcon(imageIcon);
+        rButton.revalidate();
+        rButton.setCornerRadius(8);
+        rButton.repaint();
+    }
+
     private void setToSelectedState(RoundedButton rButton, ImageIcon imageIcon){
         rButton.setButtonColor(GbuyColor.MAIN_COLOR);
         rButton.setForeground(Color.white);
         rButton.setIcon(imageIcon);
         rButton.revalidate();
         rButton.repaint();
-
     }
     
-
 }
