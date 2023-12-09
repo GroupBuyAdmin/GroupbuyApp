@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 
 import groupbuyapp.Client.Center.Center;
+import groupbuyapp.Client.Center.Content.MyListings.MyListings;
 import groupbuyapp.Client.SideBar.SideBar;
 
 public class MainFrame extends JFrame{
@@ -51,6 +52,9 @@ public class MainFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 center.getContent().showMyListings();
+                var myListingContainer = center.getContent().getMyListings().getCardContainer();
+                var myListingCardLayout = center.getContent().getMyListings().getcLayout();
+                myListingCardLayout.show(myListingContainer, MyListings.MY_LISTING);
                 sideBar.getButtons().setSelected(2);
             }
         });
