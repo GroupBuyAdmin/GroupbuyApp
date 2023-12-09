@@ -42,7 +42,7 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * The `ListingCreator` class is responsible for creating and editing product listings. 
+ * The {@code ListingCreator} class is responsible for creating and editing product listings. 
  * It provides a graphical user interface for users to input details about a product, 
  * such as its name, description, price, and category. Users can also upload an image for the product. 
  * The class handles validation of the input fields and interacts with a database to store the product information. 
@@ -103,8 +103,7 @@ public class ListingCreator {
         JLabel headerLabel = new JLabel();
         if(!editProduct){
             headerLabel.setText("Create Listing");
-        }
-        else{
+        } else {
             headerLabel.setText("Edit Listing");
         }
         headerLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(20f));
@@ -132,7 +131,6 @@ public class ListingCreator {
         mainFrame = new JFrame();
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.setSize(1500,1000);
-        // mainFrame.setResizable(false);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setContentPane(masterPanel);
         mainFrame.setVisible(true);
@@ -324,10 +322,26 @@ public class ListingCreator {
             return image;
         }
 
-        private void initializeWithData() {             
+        /**
+         * Populates the fields of the CenterPanel with data from a SingleProductContainer object.
+         * 
+         * <p>Flow:
+         * <p>1. Retrieve the productId from the product object
+         * <p>2. Use the productId to fetch the corresponding SingleProductContainer object from the database.
+         * <p>3. Set the text of the name, description, and location fields in the detailsPanel to the values from the SingleProductContainer object.
+         * <p>4. Set the selected item of the category combo box in the detailsPanel to the value from the SingleProductContainer object.
+         * <p>5. Set the text of the price field in the detailsPanel to the value from the SingleProductContainer object.
+         * <p>6. Set the original image of the imageContainer in the imagePanel to the byte image from the SingleProductContainer object.
+         * <p>7. Resize the original image and set it as the icon of the image label in the imageContainer in the imagePanel.
+         * <p>8. Clear the text of the image label in the imageContainer in the imagePanel.
+         * <p>9. Refresh the imageContainer in the imagePanel.
+         * <p>10. Set the text of the button in the iconButton in the imagePanel to "Change Photo".
+         * <p>11. Refresh the iconButton in the imagePanel.
+         * 
+         */
+        private void initializeWithData() {
             int productId = product.getId();
             SingleProductContainer spc = GbuyProductDatabase.getInstance().getSingleProduct(productId);
-
             detailsPanel.getFields().getTextFields().getNameTextField().setText(spc.productName);
             detailsPanel.getFields().getTextFields().getDescTextArea().setText(spc.productDescription);
             detailsPanel.getFields().getTextFields().getLocationTextField().setText(spc.productLocation);
@@ -655,7 +669,6 @@ public class ListingCreator {
             RoundedButton cancelButton;
             RoundedButton deleteButton;
 
-
             public RoundedButton getDeleteButton() {return deleteButton;}
             public JButton getUploadButton() {return uploadButton;}
             public JButton getCancelButton() {return cancelButton;}
@@ -683,11 +696,9 @@ public class ListingCreator {
 
                 if(!editProduct){                    
                     setLayout(new FlowLayout(FlowLayout.RIGHT, 15, 15));
-    
-                    add(uploadButton);
+                    add(uploadButton);                               
                     add(cancelButton);
-                }
-                else{
+                } else {
                     setLayout(new MigLayout("fillx"));
                     add(deleteButton, "gapleft 0");
                     JPanel rightButtons = new JPanel();
@@ -696,6 +707,7 @@ public class ListingCreator {
                     rightButtons.add(cancelButton);
                     add(rightButtons, "gapright 0, align right");
                 }
+
             }
 
         }
