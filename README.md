@@ -42,5 +42,5 @@ See also the list of [contributors](https://github.com/GroupBuyAdmin/GroupbuyApp
 
 <h2 align = "center">📷 Concept (in development) </h2>
 <div align = "center">
-  <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FGrTNN6dU3SKvMVEqbnkmuA%2Fgbuy-user-feed%3Ftype%3Ddesign%26node-id%3D0%253A1%26mode%3Ddesign%26t%3DOQyIq3XIiyr5OpOI-1" allowfullscreen> </iframe>
+  <img src = https://i.imgur.com/yjZz95m.png alt="Project logo"></a>
 </div>
