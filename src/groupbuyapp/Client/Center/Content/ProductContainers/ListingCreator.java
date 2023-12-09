@@ -53,19 +53,23 @@ public class ListingCreator {
 
     private MyListings myListings;
 
-    public MyListings getMyListings() {
-        return myListings;
-    }
+    public static final boolean EDIT = true;
+    public static final boolean CREATE = false;
 
     private boolean editProduct;
     private Product product;
+
+    public MyListings getMyListings() {
+        return myListings;
+    }
 
     /**
      * Constructor for creating a new product listing. Initializes the GUI components and sets up the main frame.
      * @param myListings
      */
+
     public ListingCreator(MyListings myListings){
-        this(myListings, false, null);
+        this(myListings, CREATE, null);
     }
 
     /**
@@ -73,10 +77,19 @@ public class ListingCreator {
      * @param myListings
      * @param product
      */
+
     public ListingCreator(MyListings myListings, Product product){
-        this(myListings, true, product);
+        this(myListings, EDIT, product);
     }
 
+    /**
+     * Constructor for the ListingCreator class.
+     * 
+     * @param myListings An instance of the MyListings class.
+     * @param editProduct A boolean value indicating whether the product is being edited or not.
+     * @param product An instance of the Product class.
+     */
+    
     public ListingCreator(MyListings myListings, boolean editProduct, Product product){
         this.myListings = myListings;
         this.editProduct = editProduct;
@@ -86,7 +99,7 @@ public class ListingCreator {
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         headerPanel.setBackground(Color.white);
-        
+    
         JLabel headerLabel = new JLabel();
         if(!editProduct){
             headerLabel.setText("Create Listing");
@@ -126,62 +139,53 @@ public class ListingCreator {
     }
 
 
-    public boolean completedFields(CenterPanel c){
-        var imagePanel = c.getImagePanel();
-        var detailsPanel = c.getDetailsPanel();
-        var imageContainerIcon = imagePanel.getImageContainer().getImageLabel().getIcon();
-        var nameField = detailsPanel.getFields().getTextFields().getNameTextField().getText();
-        var descField = detailsPanel.getFields().getTextFields().getDescTextArea().getText();
-        var locField = detailsPanel.getFields().getTextFields().getLocationTextField().getText();
-        var priceField = detailsPanel.getFields().getSubDescription().getPriceTextField().getText();
+    /**
+     * Checks if all the required fields in the CenterPanel are completed by the user.
+     *
+     * @param c The CenterPanel object that contains the required fields.
+     * @return True if all the required fields are completed, false otherwise.
+     */
+    public boolean completedFields(CenterPanel c) {
+        ImagePanel imagePanel = c.getImagePanel();
+        DetailsPanel detailsPanel = c.getDetailsPanel();
+        ImageIcon imageContainerIcon = (ImageIcon) imagePanel.getImageContainer().getImageLabel().getIcon();
+        String nameField = detailsPanel.getFields().getTextFields().getNameTextField().getText();
+        String descField = detailsPanel.getFields().getTextFields().getDescTextArea().getText();
+        String locField = detailsPanel.getFields().getTextFields().getLocationTextField().getText();
+        String priceField = detailsPanel.getFields().getSubDescription().getPriceTextField().getText();
 
-        if(imageContainerIcon == null){ 
+        if (imageContainerIcon == null || nameField.isEmpty() || descField.isEmpty() || locField.isEmpty() || priceField.isEmpty()) {
             return false;
         }
-
-        if(nameField.equals("")){ 
-            return false;
-        }
-
-        if(descField.equals("")){ 
-            return false;
-        }
-
-        if(locField.equals("")){
-            return false;
-        }
-
-        if(priceField.equals("")){ 
-            return false;
-        }
-
-
 
         return true;
     }
 
-    public boolean validFields(CenterPanel c){
+    /**
+     * Checks if the price field in the CenterPanel is a valid number.
+     * If it is not a valid number, displays an error message.
+     *
+     * @param c The CenterPanel object that contains the details panel.
+     * @return Returns true if all fields are valid, otherwise returns false.
+     */
+    public boolean validFields(CenterPanel c) {
         DetailsPanel detailsPanel = c.getDetailsPanel();
         String message = "Invalid fields: ";
         boolean flag = true;
 
         try {
             Double.parseDouble(detailsPanel.getFields().getSubDescription().getPriceTextField().getText());
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             message += " {Price}";
             flag = false;
         }
 
-        if(!flag){
+        if (!flag) {
             JOptionPane.showMessageDialog(c, message);
         }
 
         return flag;
     }
-
-    // public static void main(String[] args) {
-    //     ProductCreator p = new ProductCreator(new MyListings());
-    // }
 
     class CenterPanel extends JPanel{
         ImagePanel imagePanel;
@@ -322,9 +326,7 @@ public class ListingCreator {
 
         private void initializeWithData() {             
             int productId = product.getId();
-            SingleProductContainer spc = new SingleProductContainer();
-
-            GbuyProductDatabase.getInstance().getSingleProduct(productId, spc);
+            SingleProductContainer spc = GbuyProductDatabase.getInstance().getSingleProduct(productId);
 
             detailsPanel.getFields().getTextFields().getNameTextField().setText(spc.productName);
             detailsPanel.getFields().getTextFields().getDescTextArea().setText(spc.productDescription);

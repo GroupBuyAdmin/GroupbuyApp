@@ -1,7 +1,11 @@
 package groupbuyapp.Misc.Database;
 
 import java.io.FileInputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +13,12 @@ import javax.swing.ImageIcon;
 
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 
-
-
+/**
+ * The {@code GbuyProductDatabase} class is responsible for managing the database operations related to products in the Gbuy application.
+ * It provides methods for inserting, retrieving, updating, and deleting products from the database.
+ *   
+ * @author BSCS 2A group 5
+ */
 public class GbuyProductDatabase {
 
     private static volatile GbuyProductDatabase instance;
@@ -29,6 +37,14 @@ public class GbuyProductDatabase {
 
     private GbuyProductDatabase(){} //for singleton pattern
 
+    /**
+     * Returns an instance of the GbuyProductDatabase class.
+     * This method follows the Singleton design pattern, ensuring that only one instance of the class is created
+     * and providing a global point of access to it.
+     *
+     * @return An instance of the GbuyProductDatabase class.
+     */
+
     public static GbuyProductDatabase getInstance(){
         GbuyProductDatabase thisInstance = instance;
         if(thisInstance == null){
@@ -42,7 +58,13 @@ public class GbuyProductDatabase {
         return thisInstance;
     }
 
-    //insert to database the product
+
+    /**
+     * Inserts a new product into the database.
+     *
+     * @param spc The SingleProductContainer object that contains the details of the product to be inserted.
+     */
+
     public void insertProduct(SingleProductContainer spc){
         try {
             Class.forName(driver);
@@ -81,7 +103,12 @@ public class GbuyProductDatabase {
         }
     }
 
-    //get all products from database
+    /**
+     * Retrieves all products from the database and returns a list of Product objects.
+     *
+     * @return A list of Product objects containing the data retrieved from the database.
+     */
+    
     public List<Product> getProducts(){
         List<Product> allproducts = new ArrayList<>();
         try {
@@ -99,7 +126,7 @@ public class GbuyProductDatabase {
                 String productDescription = resultSet.getString("productDescription");
                 String productLocation = resultSet.getString("productLocation");
                 byte[] byteImage = resultSet.getBytes("productImage");
-                
+            
                 //convert image data to image object
                 ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
 
@@ -129,6 +156,12 @@ public class GbuyProductDatabase {
         return allproducts;
     }
 
+    /**
+     * Deletes a product from the database based on the provided product ID.
+     *
+     * @param productIdToDelete The ID of the product to be deleted from the database.
+     */
+    
     public void deleteProduct(int productIdToDelete){
         try {
             Class.forName(driver);
@@ -147,11 +180,18 @@ public class GbuyProductDatabase {
 
             preparedStatement.close();
             connection.close();
-            
+        
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Updates a product in the database with new information provided by the user.
+     *
+     * @param spc The SingleProductContainer object that contains the new information for the product.
+     * @param productIdtoEdit An integer representing the ID of the product to be edited.
+     */
 
     public void editProduct(SingleProductContainer spc, int productIdtoEdit){
         try {
@@ -196,7 +236,15 @@ public class GbuyProductDatabase {
         }
     }
 
-    public void getSingleProduct(int productID, SingleProductContainer spc){
+    /**
+     * Retrieves a single product from the database based on the provided product ID.
+     *
+     * @param productID The ID of the product to be retrieved from the database.
+     * @return SingleProductContainer object containing the details of the retrieved product from the database.
+     */
+    
+    public SingleProductContainer getSingleProduct(int productID){
+        SingleProductContainer spc = new SingleProductContainer();
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
@@ -228,47 +276,6 @@ public class GbuyProductDatabase {
                 e.printStackTrace();
             }
         }
-    }
-
-    public Product getSingleProduct(int productID){
-        Product product = null;
-        try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, username, password);
-            query = "SELECT * FROM products WHERE productId = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, productID);
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                String productName = resultSet.getString("productName");
-                String productCategory = resultSet.getString("productCategory");
-                double productPrice = resultSet.getDouble("productPrice");
-                String productDescription = resultSet.getString("productDescription");
-                String productLocation = resultSet.getString("productLocation");
-                byte[] byteImage = resultSet.getBytes("productImage");
-                
-                //convert image data to image object
-                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
-
-                product = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return product;
+        return spc;
     }
 }

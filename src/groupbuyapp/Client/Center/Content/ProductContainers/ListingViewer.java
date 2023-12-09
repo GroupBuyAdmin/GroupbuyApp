@@ -27,8 +27,7 @@ import net.miginfocom.swing.MigLayout;
  * The {@code ListingViewer} class is a Java class that extends the {@code RoundedPanel} class.
  * It is used to display the details of a product listing, including an image, product information, and buttons for navigation and interaction.
  * 
- * @since 2023
- * @author Leander Lubguban
+ * @author BSCS 2A Group 5
  */
 public class ListingViewer extends RoundedPanel{
     private Product product;

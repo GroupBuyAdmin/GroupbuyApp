@@ -21,6 +21,8 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
  * The {@code ProductPanelSmall} class is a custom Swing component that represents a small panel displaying information about a product.
  * It includes an image container, details container, and a status indicator.
  * The class provides methods to set the status of the panel and retrieve the image and details containers.
+ * 
+ * @author BSCS 2A Group 5
  */
 public class ProductPanelSmall extends RoundedPanel{
 

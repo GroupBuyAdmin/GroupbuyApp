@@ -34,7 +34,7 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * The <code>MyListings</code> class is a JPanel that displays a list of products. 
- * It uses a CardLayout to switch between the list view and the product view.
+ * It uses a {@code CardLayout} to switch between the list view and the product view.
  * The class also provides methods to update the list of products and handle user interactions.
  */
 public class MyListings extends JPanel {
