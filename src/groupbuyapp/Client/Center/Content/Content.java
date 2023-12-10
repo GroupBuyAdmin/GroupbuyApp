@@ -72,7 +72,7 @@ public class Content extends JPanel{
 
 
     public void showMyListings(){
-        myListings.updateListings();
+        // myListings.updateListings();
         layout.show(contentContainer, MY_LISTINGS);
     }
 
