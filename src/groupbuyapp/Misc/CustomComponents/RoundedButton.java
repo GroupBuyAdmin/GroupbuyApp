@@ -9,6 +9,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+/**
+ * The {@code RoundedButton} class is a custom implementation of the {@code JButton} class in Java Swing.
+ * It creates a button with rounded corners and allows customization of its appearance, including the button color, hover color, pressed color, corner radius, border color, and whether to draw a border.
+ * The class overrides the `paintComponent` and `paintBorder` methods to customize the button's rendering.
+ *
+ * @author BSCS 2A group 5
+ */
 public class RoundedButton extends JButton {
 
     protected Color buttonColor;
@@ -17,8 +24,13 @@ public class RoundedButton extends JButton {
     private Color borderColor;
     private boolean drawBorder;
     protected int cornerRadius;
-
-    public RoundedButton(String text) { //make button with text only
+    
+    /**
+     * Constructs a new RoundedButton object with the given text.
+     * 
+     * @param text The text to be displayed on the button.
+     */
+    public RoundedButton(String text) { 
         super(text);
         this.buttonColor = getBackground();
         this.cornerRadius = 10;
@@ -29,7 +41,14 @@ public class RoundedButton extends JButton {
         updateHoverColor();
         updatePressedColor();
     }
-    public RoundedButton(String text, ImageIcon imageIcon) {    //make button with icon and text
+
+    /**
+     * Constructs a new RoundedButton object with the given text and image icon.
+     * 
+     * @param text The text to be displayed on the button.
+     * @param imageIcon An optional image icon to be displayed on the button.
+     */
+    public RoundedButton(String text, ImageIcon imageIcon) {   
         super(text, imageIcon);
         this.buttonColor = getBackground();
         this.cornerRadius = 10;
@@ -40,6 +59,7 @@ public class RoundedButton extends JButton {
         updateHoverColor();
         updatePressedColor();
     }
+
 
     private void updateHoverColor() {
         float[] hsb = Color.RGBtoHSB(buttonColor.getRed(), buttonColor.getGreen(), buttonColor.getBlue(), null);

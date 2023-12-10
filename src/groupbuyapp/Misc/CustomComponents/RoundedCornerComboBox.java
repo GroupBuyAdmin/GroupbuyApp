@@ -6,10 +6,20 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
+/**
+ * The class {@code RoundedCornerComboBox} defines a custom {@code JComboBox} with rounded corners and a custom dropdown button icon.
+ * It overrides the default border and UI of the JComboBox to achieve the desired appearance.
+ * 
+ * @author BSCS 2A group 5
+ */
 public class RoundedCornerComboBox extends JComboBox<String> {
     private int cornerRadius = 10; // Adjust the corner radius as needed
     private Icon customDropdownIcon; // Custom icon for the dropdown button
 
+    /**
+     * Constructor that creates a new RoundedCornerComboBox with the given array of items.
+     * @param items The array of items to be displayed in the combo box.
+     */
     public RoundedCornerComboBox(String[] items) {
         super(items);
         setOpaque(false); // Make the combo box transparent
@@ -18,6 +28,10 @@ public class RoundedCornerComboBox extends JComboBox<String> {
         setFocusable(false);
     }
 
+    /**
+     * Sets a custom icon for the dropdown button.
+     * @param icon The custom icon to be set for the dropdown button.
+     */
     public void setCustomDropdownIcon(Icon icon) {
         this.customDropdownIcon = icon;
         // Trigger a repaint of the combo box to update the icon
@@ -72,29 +86,5 @@ public class RoundedCornerComboBox extends JComboBox<String> {
                 arrowButton.setIcon(UIManager.getIcon("ComboBox.arrowIcon"));
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("RoundedCornerComboBox Example");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            String[] items = {"Option 1", "Option 2", "Option 3", "Option 4"};
-
-            RoundedCornerComboBox comboBox = new RoundedCornerComboBox(items);
-            
-            // Create a custom icon for the dropdown button (you can replace it with your own icon)
-            ImageIcon img = new ImageIcon("src/gbuysytem/GUI/Body/DashboardPanels/ProductsPanel/img/down.png");
-            Icon customDropdownIcon = new ImageIcon(img.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH));
-            comboBox.setCustomDropdownIcon(customDropdownIcon);
-
-            JPanel panel = new JPanel();
-            panel.add(comboBox);
-
-            frame.add(panel);
-            frame.setSize(300, 200);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
     }
 }
