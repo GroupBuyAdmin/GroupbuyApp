@@ -101,6 +101,8 @@ public class Buttons extends JPanel{
 
     private void initCustomButtons(){
         setToNormalState(homeButton, homeIcon);
+        setToSelectedState(homeButton, homeIconAlt);
+        
         setToNormalState(myListingsButton, myListingsIcon);
         setToNormalState(myGroupbuysButton, myGroupbuysIcon);
         setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);

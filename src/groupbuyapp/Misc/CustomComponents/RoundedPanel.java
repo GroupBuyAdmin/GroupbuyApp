@@ -1,21 +1,4 @@
 package groupbuyapp.Misc.CustomComponents;
-/*
- *  Copyright 2010 De Gregorio Daniele.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *  under the License.
- */
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,6 +28,18 @@ public class RoundedPanel extends JPanel {
     protected int shadowOffset = 4;
     /** The transparency value of shadow. ( 0 - 255) */
     protected int shadowAlpha = 150;
+
+    protected boolean drawBorder = false;
+
+    protected Color borderColor = null;
+
+    public void setDrawBorder(boolean drawBorder) {
+        this.drawBorder = drawBorder;
+    }
+
+    public void setBorderColor(Color color){
+        this.borderColor = color;
+    }
 
     public RoundedPanel() {
         super();
@@ -81,9 +76,16 @@ public class RoundedPanel extends JPanel {
         //Draws the rounded opaque panel with borders.
         graphics.setColor(getBackground());
         graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
-        // graphics.setColor(getForeground());
-        // graphics.setStroke(new BasicStroke(strokeSize));
-        // graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
+        //
+        if(drawBorder){
+            if(borderColor == null){
+                graphics.setColor(shadowColorA);
+            } else {
+                graphics.setColor(borderColor);
+            }
+            graphics.setStroke(new BasicStroke(strokeSize));
+            graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
+        }
 
         //Sets strokes to default, is better.
         graphics.setStroke(new BasicStroke());
