@@ -11,7 +11,10 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
+
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
+import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.UserLoginData;
 
 /**
  * The {@code GbuyProductDatabase} class is responsible for managing the database operations related to products in the Gbuy application.
@@ -19,9 +22,9 @@ import groupbuyapp.Client.Center.Content.ProductContainers.Product;
  *   
  * @author BSCS 2A group 5
  */
-public class GbuyProductDatabase {
+public class GbuyDatabase {
 
-    private static volatile GbuyProductDatabase instance;
+    private static volatile GbuyDatabase instance;
 
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String databaseName = "Gbuy";                                      //modify this
@@ -35,7 +38,7 @@ public class GbuyProductDatabase {
     private ResultSet resultSet = null;
 
 
-    private GbuyProductDatabase(){} //for singleton pattern
+    private GbuyDatabase(){} //for singleton pattern
 
     /**
      * Returns an instance of the GbuyProductDatabase class.
@@ -45,13 +48,13 @@ public class GbuyProductDatabase {
      * @return An instance of the GbuyProductDatabase class.
      */
 
-    public static GbuyProductDatabase getInstance(){
-        GbuyProductDatabase thisInstance = instance;
+    public static GbuyDatabase getInstance(){
+        GbuyDatabase thisInstance = instance;
         if(thisInstance == null){
-            synchronized (GbuyProductDatabase.class){
+            synchronized (GbuyDatabase.class){
                 thisInstance = instance;
                 if(instance == null){
-                    instance = thisInstance = new GbuyProductDatabase();
+                    instance = thisInstance = new GbuyDatabase();
                 }
             }
         }
@@ -133,6 +136,7 @@ public class GbuyProductDatabase {
                 Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription);
                 p.setId(productID);
                 allproducts.add(p);
+
             }
 
         } catch (Exception e) {
@@ -278,4 +282,59 @@ public class GbuyProductDatabase {
         }
         return spc;
     }
+
+
+    public void uploadUser(User user){
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "INSERT INTO users (userName, userPassword, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, user.getUserName());
+            preparedStatement.setString(2, user.getUserPassword());
+            preparedStatement.setString(3, user.getFirstName());
+            preparedStatement.setString(4, user.getLastName());
+            preparedStatement.setString(5, user.getLastName());
+            
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("uploaded user");
+            } else {
+                System.out.println("No rows updated.");
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public User getUser(UserLoginData uld){
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM users WHERE userName = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, uld.username);
+            resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                if(resultSet.getString("userPassword").equals(uld.password)){
+                    System.out.println("password match");
+                    String userName = resultSet.getString("userName");
+                    String userPassword = resultSet.getString("userPassword");
+                    String firstName = resultSet.getString("firstName");
+                    String lastName = resultSet.getString("lastName");
+                    String email = resultSet.getString("email");
+                    return new User(userName, userPassword, firstName, lastName, email);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
 }

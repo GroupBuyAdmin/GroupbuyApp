@@ -36,7 +36,7 @@ import groupbuyapp.Misc.CustomComponents.RoundedCornerComboBox;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextField;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
-import groupbuyapp.Misc.Database.GbuyProductDatabase;
+import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
@@ -254,11 +254,11 @@ public class ListingCreator {
                     }
 
                     if (!editProduct) {
-                        GbuyProductDatabase.getInstance().insertProduct(spc);
+                        GbuyDatabase.getInstance().insertProduct(spc);
                         myListings.updateListings();
                         JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
                     } else {
-                        GbuyProductDatabase.getInstance().editProduct(spc, product.getId());
+                        GbuyDatabase.getInstance().editProduct(spc, product.getId());
                         myListings.updateListings();
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
                     }
@@ -288,7 +288,7 @@ public class ListingCreator {
             delButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    GbuyProductDatabase.getInstance().deleteProduct(product.getId());
+                    GbuyDatabase.getInstance().deleteProduct(product.getId());
                     JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
                     myListings.updateListings();
                     mainFrame.dispose();
@@ -341,7 +341,7 @@ public class ListingCreator {
          */
         private void initializeWithData() {
             int productId = product.getId();
-            SingleProductContainer spc = GbuyProductDatabase.getInstance().getSingleProduct(productId);
+            SingleProductContainer spc = GbuyDatabase.getInstance().getSingleProduct(productId);
             detailsPanel.getFields().getTextFields().getNameTextField().setText(spc.productName);
             detailsPanel.getFields().getTextFields().getDescTextArea().setText(spc.productDescription);
             detailsPanel.getFields().getTextFields().getLocationTextField().setText(spc.productLocation);

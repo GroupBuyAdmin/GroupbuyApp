@@ -6,7 +6,7 @@ package groupbuyapp;
 
 import javax.swing.SwingUtilities;
 
-import groupbuyapp.Client.MainFrame;
+import groupbuyapp.Client.LogIn.AccountSetup;
 
 /**
  *
@@ -22,7 +22,7 @@ public class ClientApp {
 
             @Override
             public void run() {
-                new MainFrame();
+                new AccountSetup();
             }
             
         });

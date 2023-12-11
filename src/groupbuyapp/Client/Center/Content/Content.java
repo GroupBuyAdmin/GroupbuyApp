@@ -20,6 +20,13 @@ public class Content extends JPanel{
     private MyGroupbuys myGroupbuys;
     private BrowseGroupbuys browseGroupbuys;
     private CardLayout layout;
+    
+    private int currentPanel;
+
+    private static final int IN_HOME = 1;
+    private static final int IN_MY_LISTINGS = 2;
+    private static final int IN_MY_GROUPBUYS = 3;
+    private static final int IN_BROWSE_GROUPBUYS = 4;
 
     public Home getHome() {
         return home;
@@ -64,25 +71,40 @@ public class Content extends JPanel{
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
         add(contentContainer, BorderLayout.CENTER);
+
+        this.currentPanel = IN_HOME;
     }
 
     public void showHome(){
+        check_If_Current_Panel_Is(IN_HOME);
+
         layout.show(contentContainer, HOME);
     }
 
-
     public void showMyListings(){
-        // myListings.updateListings();
+        check_If_Current_Panel_Is(IN_MY_LISTINGS);
+
         layout.show(contentContainer, MY_LISTINGS);
     }
 
     public void showMyGroupBuys(){
+        check_If_Current_Panel_Is(IN_MY_GROUPBUYS);
+
         layout.show(contentContainer, MY_GROUPBUYS);
     }
 
     public void showBrowseGroupbuys(){
+        check_If_Current_Panel_Is(IN_BROWSE_GROUPBUYS);
+
         layout.show(contentContainer, BROWSE_GROUPBUYS);
     }
 
-
+    private void check_If_Current_Panel_Is(int desiredPanel){        
+        if(currentPanel == desiredPanel){
+            myListings.updateListings();
+        } else {
+            currentPanel = desiredPanel;
+        }
+    }
+    
 }

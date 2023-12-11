@@ -28,7 +28,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
-import groupbuyapp.Misc.Database.GbuyProductDatabase;
+import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
@@ -85,7 +85,7 @@ public class MyListings extends JPanel {
     }
     
     public void updateListings() {
-        List<Product> dbProducts = GbuyProductDatabase.getInstance().getProducts();
+        List<Product> dbProducts = GbuyDatabase.getInstance().getProducts();
         var scrollablePaneRef = myListingPanel.getMyListingScrollable().getScrollablePanel();
         scrollablePaneRef.removeAll();
         allContainers.clear();
@@ -238,7 +238,6 @@ public class MyListings extends JPanel {
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    myListings.updateListings();
                     myListings.getcLayout().show(myListings.getCardContainer(), MyListings.MY_LISTING);
                 }
             });
@@ -251,7 +250,7 @@ public class MyListings extends JPanel {
                     myListings.getcLayout().show(myListings.getCardContainer(), MyListings.MY_LISTING);
                 }
             });
-
+            // myListings.updateListings();
             myListings.getCardContainer().add(pView, MyListings.PRODUCT_VIEW);
             myListings.revalidate();
             myListings.repaint();

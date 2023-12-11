@@ -7,45 +7,46 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * The {@code RoundedCornerTextField} class is a custom implementation of the {@code JTextField} class in Java Swing that creates a text field with rounded corners.
- * It overrides the paintComponent method to draw a rounded rectangle as the background of the text field, and uses a custom RoundBorder class to draw the border of the text field as a rounded rectangle.
+ * The {@code RoundedCornerPasswordField} class is a custom implementation of the {@code JPasswordField} class in Java Swing that creates a password field with rounded corners.
+ * It overrides the paintComponent method to draw a rounded rectangle as the background of the password field, and uses a custom RoundBorder class to draw the border of the password field as a rounded rectangle.
  * @author BSCS 2A group 5
  */
-public class RoundedCornerTextField extends JTextField {
+public class RoundedCornerPasswordField extends JPasswordField {
     private int cornerRadius = 10; // Adjust the corner radius as needed
     private Color borderColor;
 
     /**
-     * Constructs a new RoundedCornerTextField with default number of columns.
-     * It sets the text field to be transparent and applies a RoundBorder as the border.
+     * Constructs a new RoundedCornerPasswordField with default number of columns.
+     * It sets the password field to be transparent and applies a RoundBorder as the border.
      */
-    public RoundedCornerTextField() {
+    public RoundedCornerPasswordField() {
         super();
         borderColor = null;
-        setOpaque(false); // Make the text field transparent
+        setOpaque(false); // Make the password field transparent
         setBorder(new RoundBorder());
     }
 
     /**
-     * Constructs a new RoundedCornerTextField with the specified number of columns.
-     * It sets the text field to be transparent and applies a RoundBorder as the border.
-     * @param columns the number of columns for the text field
+     * Constructs a new RoundedCornerPasswordField with the specified number of columns.
+     * It sets the password field to be transparent and applies a RoundBorder as the border.
+     * @param columns the number of columns for the password field
      */
-    public RoundedCornerTextField(int columns) {
+    public RoundedCornerPasswordField(int columns) {
         super(columns);
         borderColor = null;
         setOpaque(false);
         setBorder(new RoundBorder());
     }
 
-    public RoundedCornerTextField(Color borderColor) {
-        this.borderColor = borderColor;
-        setOpaque(false);
+    public RoundedCornerPasswordField(Color bordeColor) {
+        super();
+        this.borderColor = bordeColor;
+        setOpaque(false); // Make the password field transparent
         setBorder(new RoundBorder());
     }
 
     /**
-     * Overrides the paintComponent method of JTextField to draw a rounded rectangle as the background of the text field.
+     * Overrides the paintComponent method of JPasswordField to draw a rounded rectangle as the background of the password field.
      * @param g the Graphics object to paint on
      */
     @Override
@@ -68,7 +69,7 @@ public class RoundedCornerTextField extends JTextField {
     }
 
     /**
-     * The RoundBorder class implements the Border interface to draw a rounded rectangle as the border of the text field.
+     * The RoundBorder class implements the Border interface to draw a rounded rectangle as the border of the password field.
      */
     private class RoundBorder implements Border {
         /**
@@ -86,14 +87,12 @@ public class RoundedCornerTextField extends JTextField {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(x, y, width - 1, height - 1, cornerRadius, cornerRadius);
-            
+
             if(borderColor == null){
-                g2d.setColor(getBackground());
+                g2d.setColor(getForeground());
             } else {
-                g2d.setColor(borderColor);                
+                g2d.setColor(borderColor);
             }
-            
-            
             g2d.draw(roundedRectangle);
 
             g2d.dispose();
@@ -120,19 +119,19 @@ public class RoundedCornerTextField extends JTextField {
     }
 
     /**
-     * The main method creates a JFrame and adds a RoundedCornerTextField to it for demonstration purposes.
+     * The main method creates a JFrame and adds a RoundedCornerPasswordField to it for demonstration purposes.
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("RoundedCornerTextField Example");
+            JFrame frame = new JFrame("RoundedCornerPasswordField Example");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            RoundedCornerTextField textField = new RoundedCornerTextField();
-            textField.setColumns(20);
+            RoundedCornerPasswordField passwordField = new RoundedCornerPasswordField();
+            passwordField.setColumns(20);
 
             JPanel panel = new JPanel();
-            panel.add(textField);
+            panel.add(passwordField);
 
             frame.add(panel);
             frame.setSize(300, 200);

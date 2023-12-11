@@ -211,10 +211,12 @@ public class ListingViewer extends RoundedPanel{
             gbc.anchor = GridBagConstraints.LINE_START;
             scrollablePanel.add(productNameLabel, gbc);
 
-            gbc.gridx++;
-            gbc.weightx = 1.0;    
-            gbc.anchor = GridBagConstraints.LAST_LINE_START;
-            scrollablePanel.add(editButton, gbc);
+            if(fromWhere == FROM_MY_LISTING){
+                gbc.gridx++;
+                gbc.weightx = 1.0;    
+                gbc.anchor = GridBagConstraints.LAST_LINE_START;
+                scrollablePanel.add(editButton, gbc);
+            }
 
             gbc.gridx = 0;
             gbc.weightx = 1.0;  

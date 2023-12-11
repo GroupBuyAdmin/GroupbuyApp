@@ -11,13 +11,25 @@ import javax.swing.JFrame;
 
 import groupbuyapp.Client.Center.Center;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
+import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 
 public class MainFrame extends JFrame{
+    private User currentUser;
+    
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
     private Center center;
     private SideBar sideBar;
 
     public MainFrame(){
+        this(null);
+    }
+
+    public MainFrame(User user){
+        this.currentUser = user;
         setFrame();
         this.sideBar = new SideBar();
         this.center = new Center();
