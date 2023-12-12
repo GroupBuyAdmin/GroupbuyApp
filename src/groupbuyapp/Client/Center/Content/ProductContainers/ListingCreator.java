@@ -29,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
+import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -194,14 +195,15 @@ public class ListingCreator {
 
         public ImagePanel getImagePanel() {return imagePanel;}
         public DetailsPanel getDetailsPanel() {return detailsPanel;}
-
+         BrowseGroupbuys b;
+        
         public CenterPanel(){
             this.imagePanel = new ImagePanel();
             imagePanel.setBackground(Color.white);
             this.imagePanel.setPreferredSize(new Dimension(150, 350));
             this.detailsPanel = new DetailsPanel();
             imagePanel.setBackground(Color.white);
-
+            
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
 
@@ -299,6 +301,7 @@ public class ListingCreator {
                     JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
                     myListings.updateListings();
                     mainFrame.dispose();
+               
                 }
                 
             });

@@ -2,6 +2,7 @@ package groupbuyapp.Client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -46,6 +47,7 @@ public class MainFrame extends JFrame{
 
     private void setFrame(){
         setSize(1660, 880);
+        setMinimumSize(new Dimension(1700, 800));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
