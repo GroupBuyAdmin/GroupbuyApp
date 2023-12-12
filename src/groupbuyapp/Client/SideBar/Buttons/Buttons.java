@@ -1,6 +1,7 @@
 package groupbuyapp.Client.SideBar.Buttons;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -61,6 +62,12 @@ public class Buttons extends JPanel{
         this.myListingsButton = new RoundedButton("My Listings", myListingsIcon);
         this.myGroupbuysButton = new RoundedButton("My Groupbuys", myGroupbuysIcon);
         this.browseGroupbuysButton = new RoundedButton("Browse", browseGroupbuysIcon);
+
+        homeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        myListingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        myGroupbuysButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        browseGroupbuysButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
         allButtons = new ArrayList<>();
         allButtons.addAll(List.of(homeButton, myListingsButton, myGroupbuysButton, browseGroupbuysButton));
 
