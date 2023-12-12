@@ -64,8 +64,7 @@ public class AccountSetup extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 UserLoginData uld = signInPage.collectSignInData();
-                User user = null;
-                user = GbuyDatabase.getInstance().getUser(uld);
+                User user = GbuyDatabase.getInstance().getUser(uld);
                 if(user != null){
                     dispose();
                     runClient(user);
@@ -122,10 +121,15 @@ public class AccountSetup extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
                 User collectedUser = signUpPage.collectSignUpData();
-                GbuyDatabase.getInstance().uploadUser(collectedUser);
-                runClient(collectedUser);
+                if(GbuyDatabase.getInstance().userExists(collectedUser)){
+                    JOptionPane.showMessageDialog(AccountSetup.this, "UserName already exists");
+                } else {
+                    dispose();
+                    GbuyDatabase.getInstance().uploadUser(collectedUser);
+                    collectedUser.setUserID(GbuyDatabase.getInstance().getUserID(collectedUser));
+                    runClient(collectedUser);
+                }
             }
             
         });

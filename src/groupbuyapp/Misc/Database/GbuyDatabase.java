@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.LogIn.UserLoginData;
@@ -72,7 +71,7 @@ public class GbuyDatabase {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage) VALUES (?, ?, ?, ?, ?, ?)";
+            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, spc.productName);
@@ -85,6 +84,8 @@ public class GbuyDatabase {
                 inputStream.read(imageData);
                 preparedStatement.setBytes(6, imageData);
             }
+            preparedStatement.setInt(7, spc.productStatus);
+            preparedStatement.setInt(8, spc.creatorID);
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println(rowsAffected + " row(s) affected");
@@ -117,7 +118,7 @@ public class GbuyDatabase {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "SELECT `productID`,`productName`, `productCategory`, `productPrice`, `productDescription`, `productLocation`, `productImage` FROM `products`";
+            query = "SELECT * FROM `products`";
             preparedStatement = connection.prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
 
@@ -132,8 +133,11 @@ public class GbuyDatabase {
             
                 //convert image data to image object
                 ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                
+                int productStatus = resultSet.getInt("productStatus");
+                int creatorId = resultSet.getInt("productCreatorID");
 
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription);
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
                 p.setId(productID);
                 allproducts.add(p);
 
@@ -160,6 +164,56 @@ public class GbuyDatabase {
         return allproducts;
     }
 
+    public List<Product> getMyListings(User user){
+        List<Product> allListings = new ArrayList<>();
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM `products` WHERE 'productCreatorID' = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, user.getUserID());
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                int productID = resultSet.getInt("productID");
+                String productName = resultSet.getString("productName");
+                String productCategory = resultSet.getString("productCategory");
+                double productPrice = resultSet.getDouble("productPrice");
+                String productDescription = resultSet.getString("productDescription");
+                String productLocation = resultSet.getString("productLocation");
+                byte[] byteImage = resultSet.getBytes("productImage");
+            
+                //convert image data to image object
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                
+                int productStatus = resultSet.getInt("productStatus");
+                int creatorId = resultSet.getInt("productCreatorID");
+
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
+                p.setId(productID);
+                allListings.add(p);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();   
+            }
+        }
+        return allListings;
+    }
+
     /**
      * Deletes a product from the database based on the provided product ID.
      *
@@ -183,7 +237,6 @@ public class GbuyDatabase {
             }
 
             preparedStatement.close();
-            connection.close();
         
         } catch (Exception e) {
             e.printStackTrace();
@@ -319,15 +372,18 @@ public class GbuyDatabase {
             preparedStatement.setString(1, uld.username);
             resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next()){
-                if(resultSet.getString("userPassword").equals(uld.password)){
+            if(resultSet.next()){       //if username is found
+                if(resultSet.getString("userPassword").equals(uld.password)){   //if password matches
                     System.out.println("password match");
+                    int userID = resultSet.getInt("userID");
                     String userName = resultSet.getString("userName");
                     String userPassword = resultSet.getString("userPassword");
                     String firstName = resultSet.getString("firstName");
                     String lastName = resultSet.getString("lastName");
                     String email = resultSet.getString("email");
-                    return new User(userName, userPassword, firstName, lastName, email);
+                    User user = new User(userName, userPassword, firstName, lastName, email);
+                    user.setUserID(userID);
+                    return user;
                 }
             }
         } catch (Exception e){
@@ -336,5 +392,69 @@ public class GbuyDatabase {
         
         return null;
     }
+
+    public boolean userExists(User user){
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM users WHERE userName = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, user.getUserName());
+            resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public String getUserName(int userId){
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT userName FROM users WHERE userId = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return resultSet.getString("userName");
+            } else {
+                return null;
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     
+    public int getUserID(User user){
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM users WHERE userName = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, user.getUserName());
+            
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){       //if username is found
+                System.out.println("user id found");
+                int userID = resultSet.getInt("userID");
+                return userID;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 }

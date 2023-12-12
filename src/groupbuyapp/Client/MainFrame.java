@@ -32,7 +32,7 @@ public class MainFrame extends JFrame{
         this.currentUser = user;
         setFrame();
         this.sideBar = new SideBar();
-        this.center = new Center();
+        this.center = new Center(currentUser);
 
         Container pane = getContentPane();
 

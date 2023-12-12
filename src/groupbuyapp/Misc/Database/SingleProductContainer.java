@@ -11,4 +11,6 @@ public class SingleProductContainer{
     public String productLocation;
     public byte[] byteImage;
     public File selectedFile;
+    public int creatorID;
+    public int productStatus;
 }

@@ -25,6 +25,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ListingCreator;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
+import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
@@ -43,6 +44,7 @@ public class MyListings extends JPanel {
     private MyListingPanel myListingPanel;
     private List<ProductPanelSmall> allContainers;
     private ListingViewer productView;
+    private User currentUser;
 
     private CardLayout cLayout;
     private JPanel cardContainer;
@@ -63,7 +65,8 @@ public class MyListings extends JPanel {
         return allContainers;
     }
 
-    public MyListings() {
+    public MyListings(User currentUser) {
+        this.currentUser = currentUser;
         this.allContainers = new ArrayList<>();
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
@@ -81,11 +84,11 @@ public class MyListings extends JPanel {
         updateListings();
 
         var createButtonRef = myListingPanel.getMyListingHeader().getCreateListingButton();
-        createButtonRef.addActionListener(e -> new ListingCreator(MyListings.this));
+        createButtonRef.addActionListener(e -> new ListingCreator(MyListings.this, currentUser));
     }
     
     public void updateListings() {
-        List<Product> dbProducts = GbuyDatabase.getInstance().getProducts();
+        List<Product> dbProducts = GbuyDatabase.getInstance().getMyListings(currentUser);
         var scrollablePaneRef = myListingPanel.getMyListingScrollable().getScrollablePanel();
         scrollablePaneRef.removeAll();
         allContainers.clear();
@@ -132,8 +135,6 @@ public class MyListings extends JPanel {
             setShady(false);
             setArcs(new Dimension(20, 20));
         }
-
-
     }
 
     class MyListingHeader extends JPanel{
@@ -234,7 +235,7 @@ public class MyListings extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e){ 
-            ListingViewer pView = new ListingViewer(pSmall.getProduct());
+            ListingViewer pView = new ListingViewer(pSmall.getProduct(), myListings.currentUser);
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -245,7 +246,7 @@ public class MyListings extends JPanel {
             pView.getEditButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    new ListingCreator(myListings, pSmall.getProduct());
+                    new ListingCreator(myListings, pSmall.getProduct(), myListings.currentUser);
                     myListings.updateListings();
                     myListings.getcLayout().show(myListings.getCardContainer(), MyListings.MY_LISTING);
                 }

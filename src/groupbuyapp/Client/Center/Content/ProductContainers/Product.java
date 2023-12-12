@@ -11,6 +11,17 @@ public class Product {
     private String category;
     private String price;
     private String description;
+    private int productStatus;
+    private int creatorID;
+    
+    
+    public int getProductStatus() {
+        return productStatus;
+    }
+
+    public int getCreatorID() {
+        return creatorID;
+    }
 
     public String getCategory() {
         return category;
@@ -68,7 +79,7 @@ public class Product {
         this.description = description;
     }
 
-    public Product(ImageIcon imageIcon, String name, String price, String location, String category, String description) {
+    public Product(ImageIcon imageIcon, String name, String price, String location, String category, String description, int creatorID, int productStatus) {
         this.id = 0;
         this.imageIcon = imageIcon;
         this.name = name;
@@ -76,6 +87,8 @@ public class Product {
         this.price = price;
         this.description = description;
         this.category = category;
+        this.productStatus = productStatus;
+        this.creatorID = creatorID;
     }
 
 }

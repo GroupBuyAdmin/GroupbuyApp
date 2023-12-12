@@ -9,9 +9,13 @@ import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.MyGroupbuys.MyGroupbuys;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
+import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 
 public class Content extends JPanel{
+    private User currentUser;
+
+
     private JPanel contentContainer;
 
     
@@ -48,14 +52,18 @@ public class Content extends JPanel{
         return browseGroupbuys;
     }
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
     private static final String HOME = "home";
     private static final String MY_LISTINGS = "my listings";
     private static final String MY_GROUPBUYS = "my groupbuys";
     private static final String BROWSE_GROUPBUYS = "browse groupbuys";
 
-    public Content(){
+    public Content(User currentUser){
         home = new Home();
-        myListings = new MyListings();
+        myListings = new MyListings(currentUser);
         myGroupbuys = new MyGroupbuys();
         browseGroupbuys = new BrowseGroupbuys();
 

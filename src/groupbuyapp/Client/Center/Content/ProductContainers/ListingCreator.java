@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
+import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerComboBox;
@@ -58,6 +59,7 @@ public class ListingCreator {
 
     private boolean editProduct;
     private Product product;
+    private User currentUser;
 
     public MyListings getMyListings() {
         return myListings;
@@ -68,8 +70,8 @@ public class ListingCreator {
      * @param myListings
      */
 
-    public ListingCreator(MyListings myListings){
-        this(myListings, CREATE, null);
+    public ListingCreator(MyListings myListings, User currentUser){
+        this(myListings, CREATE, null, currentUser);
     }
 
     /**
@@ -78,8 +80,8 @@ public class ListingCreator {
      * @param product
      */
 
-    public ListingCreator(MyListings myListings, Product product){
-        this(myListings, EDIT, product);
+    public ListingCreator(MyListings myListings, Product product, User currentUser){
+        this(myListings, EDIT, product, currentUser);
     }
 
     /**
@@ -90,10 +92,11 @@ public class ListingCreator {
      * @param product An instance of the Product class.
      */
     
-    public ListingCreator(MyListings myListings, boolean editProduct, Product product){
+    public ListingCreator(MyListings myListings, boolean editProduct, Product product, User currentUser){
         this.myListings = myListings;
         this.editProduct = editProduct;
         this.product = product;
+        this.currentUser = currentUser;
 
         masterPanel = new JPanel();
 
@@ -246,6 +249,7 @@ public class ListingCreator {
                     JComboBox<String> comboBox = detailsPanel.getFields().getSubDescription().getComboBox();
                     spc.productCategory = (String) comboBox.getSelectedItem();
                     spc.productPrice = Double.parseDouble(detailsPanel.getFields().getSubDescription().getPriceTextField().getText());
+                    
 
                     if (imagePanel.getIconButton().HasSelected()) {
                         spc.selectedFile = imagePanel.getIconButton().getFileChooser().getSelectedFile();
@@ -254,10 +258,13 @@ public class ListingCreator {
                     }
 
                     if (!editProduct) {
+                        spc.creatorID = currentUser.getUserID();
+                        spc.productStatus = 1;  //default ongoing status
                         GbuyDatabase.getInstance().insertProduct(spc);
                         myListings.updateListings();
                         JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
                     } else {
+                        spc.productStatus = product.getProductStatus();
                         GbuyDatabase.getInstance().editProduct(spc, product.getId());
                         myListings.updateListings();
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");

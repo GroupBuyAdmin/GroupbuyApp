@@ -64,7 +64,7 @@ public class SignUp extends JPanel{
             this.center = new Center();
             this.footer = new Footer();
 
-            setLayout(new BorderLayout());
+            setLayout(new BorderLayout(20, 20));
             add(header, BorderLayout.NORTH);
             add(center, BorderLayout.CENTER);
             add(footer, BorderLayout.SOUTH);
@@ -136,7 +136,7 @@ public class SignUp extends JPanel{
             GridBagConstraints gbc = new GridBagConstraints();
             
             int leftP = 15;
-            int rightp = 15;
+            int rightp = 25;
             int vPad = 25;
 
             gbc.gridx = 0;

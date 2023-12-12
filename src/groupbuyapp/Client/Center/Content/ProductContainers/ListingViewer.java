@@ -16,10 +16,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
+import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
@@ -31,6 +33,7 @@ import net.miginfocom.swing.MigLayout;
  */
 public class ListingViewer extends RoundedPanel{
     private Product product;
+    private User currentUser;
     
     private ImagePanel imagePanel;
     private DetailsPanel detailsPanel;
@@ -53,21 +56,26 @@ public class ListingViewer extends RoundedPanel{
     public void setProduct(Product product) {this.product = product;}
 
     public ListingViewer(){
-        this(null, true);
+        this(null, true, null);
     }
 
-    public ListingViewer(Product product){
-        this(product, true);
+    public ListingViewer(Product product, User currentUser){
+        this(product, true, currentUser);
     }
 
-    public ListingViewer(Product product, boolean isUser){
-        this(product, isUser, FROM_MY_LISTING);
+    public ListingViewer(Product product, boolean isUser, User currentUser){
+        this(product, isUser, FROM_MY_LISTING, currentUser);
     }
 
-    public ListingViewer(Product product, boolean isUser, int fromWhere){
+    public ListingViewer(Product product, int fromWhere, User currentUser){
+        this(product, false, fromWhere, currentUser);
+    }
+
+    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser){
         this.product = product;
         this.isUser = isUser;
         this.fromWhere = fromWhere;
+        this.currentUser = currentUser;
 
         this.imagePanel = new ImagePanel(product.getImageIcon());
         imagePanel.setPreferredSize(new Dimension(700, 645));
@@ -170,7 +178,12 @@ public class ListingViewer extends RoundedPanel{
             productPriceLabel.setForeground(GbuyColor.MAIN_COLOR);
             productPriceLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(36f));
 
-            this.creatorLabel = new JLabel("By: admin");
+            if(isUser == true){
+                this.creatorLabel = new JLabel("Creator: " + currentUser.getUserName());
+            } else {
+                this.creatorLabel = new JLabel("Creator: " + GbuyDatabase.getInstance().getUserName(product.getCreatorID()));
+            }
+
             creatorLabel.setForeground(Color.lightGray);
             creatorLabel.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
             
