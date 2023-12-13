@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingCreator;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
+import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
@@ -42,7 +42,7 @@ public class MyListings extends JPanel {
     public static final String MY_LISTING = "my listing";
     public static final String PRODUCT_VIEW = "product view";
     private MyListingPanel myListingPanel;
-    private List<ProductPanelSmall> allContainers;
+    private List<ProductPanel> allContainers;
     private ListingViewer productView;
     private User currentUser;
 
@@ -61,7 +61,7 @@ public class MyListings extends JPanel {
         return productView;
     }
 
-    public List<ProductPanelSmall> getAllContainers() {
+    public List<ProductPanel> getAllContainers() {
         return allContainers;
     }
 
@@ -102,7 +102,7 @@ public class MyListings extends JPanel {
     }
 
     private void addToListing(Product product, JPanel scrollablePaneRef) {
-        ProductPanelSmall pSmall = new ProductPanelSmall(product);
+        ProductPanel pSmall = new ProductPanel(product);
         pSmall.addMouseListener(new ContainerListener(pSmall, MyListings.this));
         allContainers.add(pSmall);
     
@@ -217,17 +217,17 @@ public class MyListings extends JPanel {
         
         public void addDummyContainers(){
             for(int i = 0; i < 13; i++){
-                scrollablePanel.add(new ProductPanelSmall());
+                scrollablePanel.add(new ProductPanel());
             }
         }
     }
 
     private static class ContainerListener extends MouseAdapter {
-        private final ProductPanelSmall pSmall;
+        private final ProductPanel pSmall;
         private final Color oldColor;
         private MyListings myListings;
 
-        public ContainerListener(ProductPanelSmall pSmall, MyListings myListings) {
+        public ContainerListener(ProductPanel pSmall, MyListings myListings) {
             this.pSmall = pSmall;
             this.oldColor = pSmall.getDetailsContainer().getNameLabel().getForeground();
             this.myListings = myListings;

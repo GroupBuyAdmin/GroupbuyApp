@@ -169,7 +169,7 @@ public class GbuyDatabase {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "SELECT * FROM `products` WHERE 'productCreatorID' = ?";
+            query = "SELECT * FROM `products` WHERE `productCreatorID` = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, user.getUserID());
             resultSet = preparedStatement.executeQuery();
@@ -456,5 +456,56 @@ public class GbuyDatabase {
         }
         
         return -1;
+    }
+
+    public List<Product> getCategorizedProducts(String category){
+        List<Product> allProducts = new ArrayList<>();
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM `products` WHERE `productCategory` == ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, category);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                int productID = resultSet.getInt("productID");
+                String productName = resultSet.getString("productName");
+                String productCategory = resultSet.getString("productCategory");
+                double productPrice = resultSet.getDouble("productPrice");
+                String productDescription = resultSet.getString("productDescription");
+                String productLocation = resultSet.getString("productLocation");
+                byte[] byteImage = resultSet.getBytes("productImage");
+            
+                //convert image data to image object
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                
+                int productStatus = resultSet.getInt("productStatus");
+                int creatorId = resultSet.getInt("productCreatorID");
+
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
+                p.setId(productID);
+                allProducts.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();   
+            }
+        }
+
+        return allProducts;
+        
     }
 }

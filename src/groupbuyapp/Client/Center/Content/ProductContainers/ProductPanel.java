@@ -24,12 +24,17 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
  * 
  * @author BSCS 2A Group 5
  */
-public class ProductPanelSmall extends RoundedPanel{
+public class ProductPanel extends RoundedPanel{
 
     private Product product;
     private ImageContainer imageContainer;
     private DetailsContainer detailsContainer;
     private int containerStatus;
+    private boolean isBrowserPanel;
+
+    public static final boolean BROWSER_PANEL = true;
+    private final Dimension browserPanelDimension = new Dimension(330, 340);
+    private final Dimension normalPanelDimension = new Dimension(285, 265);
 
     public ImageContainer getImageContainer() {
         return imageContainer;
@@ -48,12 +53,21 @@ public class ProductPanelSmall extends RoundedPanel{
     }
 
     //initialze with empty product
-    public ProductPanelSmall(){
-        this(null);
+    public ProductPanel(){
+        this(null, false);
     }
 
-    public ProductPanelSmall(Product product){
+    public ProductPanel(boolean isBrowserPanel){
+        this(null, isBrowserPanel);
+    }
+
+    public ProductPanel(Product product){
+        this(product, false);
+    }
+
+    public ProductPanel(Product product, boolean isBrowserPanel){
         this.product = product;
+        this.isBrowserPanel = isBrowserPanel;
         if(product != null){
             initContainer(product.getImageIcon(), product.getLocation(), product.getName(), product.getPrice());
         } else {
@@ -62,7 +76,11 @@ public class ProductPanelSmall extends RoundedPanel{
     }
 
     private void initContainer(ImageIcon image, String location, String name, String price){
-        setPreferredSize(new Dimension(285, 265));
+        if(isBrowserPanel){
+            setPreferredSize(browserPanelDimension);
+        } else {
+            setPreferredSize(normalPanelDimension);
+        }
         setLayout(new BorderLayout(0, 0));
         setBackground(GbuyColor.PANEL_COLOR);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));

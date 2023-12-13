@@ -6,6 +6,7 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
+import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.MyGroupbuys.MyGroupbuys;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
@@ -24,6 +25,8 @@ public class Content extends JPanel{
     private MyGroupbuys myGroupbuys;
     private BrowseGroupbuys browseGroupbuys;
     private CardLayout layout;
+
+    private NewBrowser n;
     
     private int currentPanel;
 
@@ -66,6 +69,7 @@ public class Content extends JPanel{
         myListings = new MyListings(currentUser);
         myGroupbuys = new MyGroupbuys();
         browseGroupbuys = new BrowseGroupbuys();
+        n = new NewBrowser();
 
         contentContainer = new JPanel();
         layout = new CardLayout();
@@ -74,7 +78,7 @@ public class Content extends JPanel{
         contentContainer.add(home, HOME);
         contentContainer.add(myListings, MY_LISTINGS);
         contentContainer.add(myGroupbuys, MY_GROUPBUYS);
-        contentContainer.add(browseGroupbuys, BROWSE_GROUPBUYS);
+        contentContainer.add(n, BROWSE_GROUPBUYS);
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         setLayout(new BorderLayout());

@@ -23,27 +23,25 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
-import groupbuyapp.Misc.Database.GbuyProductDatabase;
+import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
+import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
 
  public class Groupbuys extends JPanel{
    
   private BrowseGroupbuys browseGroupbuys;
-   private GbuyProductDatabase gbuyProductDatabase;
-   private ProductPanelSmall productPanelSmall;
+   private ProductPanel productPanelSmall;
 
    List<Product> products;
    
   
    
-    public  Groupbuys(BrowseGroupbuys browseGroupbuys, GbuyProductDatabase gbuyProductDatabase,  ProductPanelSmall productPanelSmall){
+    public  Groupbuys(BrowseGroupbuys browseGroupbuys, ProductPanel productPanelSmall){
         this.browseGroupbuys = browseGroupbuys;
-        this.gbuyProductDatabase = gbuyProductDatabase;
         this.productPanelSmall = productPanelSmall;
         
         products = new ArrayList<>();
-        products = gbuyProductDatabase.getInstance().getProducts();
+        products = GbuyDatabase.getInstance().getProducts();
 
       
 
@@ -52,7 +50,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
        
       
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
-         setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
    
        
       setYeah();
@@ -108,7 +106,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
           categories[4]= "Sports";
           
 
-           products = gbuyProductDatabase.getInstance().getProducts();
+           products = GbuyDatabase.getInstance().getProducts();
            
            for(int i=0;i<categories.length;i++){
               panel.add(CategoryContainer(categories[i]),gbc);
@@ -279,7 +277,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanelSmall;
      }
 
      public void refreshGroupbuys() {
-      products = gbuyProductDatabase.getInstance().getProducts();
+      products = GbuyDatabase.getInstance().getProducts();
       Container().removeAll();
       GridBagConstraints gbc = new GridBagConstraints();
       gbc.gridx = 0;
