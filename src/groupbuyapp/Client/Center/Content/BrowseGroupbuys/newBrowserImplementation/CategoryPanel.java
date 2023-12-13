@@ -10,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,8 +20,9 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.Database.GbuyDatabase;
+import groupbuyapp.Misc.Interface.Refreshable;
 
-public class CategoryPanel extends JPanel{
+public class CategoryPanel extends JPanel implements Refreshable{
     String category;
     Header header;
     SideScrollPanel sideScrollPanel;
@@ -39,8 +39,28 @@ public class CategoryPanel extends JPanel{
         setLayout(new BorderLayout());
         add(header, BorderLayout.NORTH);
         add(sideScrollPanel, BorderLayout.CENTER);
+
+        refresh();
     }
 
+    private void addToList(Product product, JPanel scrollablePanelRef){
+        ProductPanel pPanel = new ProductPanel(product, ProductPanel.BROWSER_PANEL);
+        pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser));
+        scrollablePanelRef.add(pPanel);
+    }
+
+    public void refresh(){
+        List<Product> dbProducts = GbuyDatabase.getInstance().getCategorizedProducts(category, currentUser.getUserID());
+        sideScrollPanel.scrollablePanel.removeAll();
+        
+        for(Product p : dbProducts){
+            addToList(p, sideScrollPanel.scrollablePanel);
+        }
+        
+        sideScrollPanel.scrollablePanel.revalidate();
+        sideScrollPanel.scrollablePanel.repaint();
+    }
+    
     class Header extends JPanel{
         JLabel categoryName;
         JLabel seeAll;
@@ -68,33 +88,14 @@ public class CategoryPanel extends JPanel{
             setOpaque(false);
 
             this.scrollablePanel = new JPanel();
-            scrollablePanel.setLayout(new FlowLayout());
-            
-            for(int i = 0; i < 10; i++){
-                ProductPanel p = new ProductPanel(ProductPanel.BROWSER_PANEL);
-                p.addMouseListener(new ContainerListener(p, newBrowser));
-                scrollablePanel.add(p);
-            }
-
+            scrollablePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
             this.scrollpane = new JScrollPane(scrollablePanel);
             scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-            scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollpane.getHorizontalScrollBar().setUnitIncrement(16);
             setLayout(new BorderLayout());
             add(scrollpane);
         }
-    }
-
-    private List<Product> getProductCategory(String category){
-        return GbuyDatabase.getInstance().getCategorizedProducts(category);
-    }
-
-    private void addToList(Product product, JPanel scrollablePanelRef){
-        ProductPanel pPanel = new ProductPanel(product, ProductPanel.BROWSER_PANEL);
-        pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser));
-        scrollablePanelRef.add(pPanel);
-        scrollablePanelRef.revalidate();
-        scrollablePanelRef.repaint();
     }
     
     private static class ContainerListener extends MouseAdapter {
@@ -110,7 +111,7 @@ public class CategoryPanel extends JPanel{
 
         @Override
         public void mouseClicked(MouseEvent e){ 
-            ListingViewer pView = new ListingViewer(pPanel.getProduct(), ListingViewer.FROM_BROWSE , newBrowser.currentUser);
+            ListingViewer pView = new ListingViewer(pPanel.getProduct(), ListingViewer.FROM_BROWSE, newBrowser.currentUser);
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

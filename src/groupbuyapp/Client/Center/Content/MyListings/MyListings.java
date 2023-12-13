@@ -31,6 +31,7 @@ import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Fonts.GbuyFont;
+import groupbuyapp.Misc.Interface.Refreshable;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -38,7 +39,7 @@ import net.miginfocom.swing.MigLayout;
  * It uses a {@code CardLayout} to switch between the list view and the product view.
  * The class also provides methods to update the list of products and handle user interactions.
  */
-public class MyListings extends JPanel {
+public class MyListings extends JPanel implements Refreshable{
     public static final String MY_LISTING = "my listing";
     public static final String PRODUCT_VIEW = "product view";
     private MyListingPanel myListingPanel;
@@ -81,13 +82,14 @@ public class MyListings extends JPanel {
 
         add(cardContainer, BorderLayout.CENTER);
         setBorder(BorderFactory.createEmptyBorder(30, 40, 0, 40));
-        updateListings();
+        refresh();
 
         var createButtonRef = myListingPanel.getMyListingHeader().getCreateListingButton();
         createButtonRef.addActionListener(e -> new ListingCreator(MyListings.this, currentUser));
     }
     
-    public void updateListings() {
+    @Override
+    public void refresh() {
         List<Product> dbProducts = GbuyDatabase.getInstance().getMyListings(currentUser);
         var scrollablePaneRef = myListingPanel.getMyListingScrollable().getScrollablePanel();
         scrollablePaneRef.removeAll();
@@ -247,11 +249,11 @@ public class MyListings extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     new ListingCreator(myListings, pSmall.getProduct(), myListings.currentUser);
-                    myListings.updateListings();
+                    myListings.refresh();
                     myListings.getcLayout().show(myListings.getCardContainer(), MyListings.MY_LISTING);
                 }
             });
-            // myListings.updateListings();
+            // myListings.refresh();
             myListings.getCardContainer().add(pView, MyListings.PRODUCT_VIEW);
             myListings.revalidate();
             myListings.repaint();

@@ -1,6 +1,8 @@
 package groupbuyapp.Client.Center.Content.ProductContainers;
 
 
+import java.sql.Timestamp;
+
 import javax.swing.ImageIcon;
 
 public class Product {
@@ -11,11 +13,22 @@ public class Product {
     private String category;
     private String price;
     private String description;
-    private int productStatus;
+    private String productStatus;
     private int creatorID;
     
+    private int userLimit;
     
-    public int getProductStatus() {
+    private Timestamp deadlineStamp;
+    
+    public Timestamp getDeadlineStamp() {
+        return deadlineStamp;
+    }
+
+    public int getUserLimit() {
+        return userLimit;
+    }
+
+    public String getProductStatus() {
         return productStatus;
     }
 
@@ -79,7 +92,7 @@ public class Product {
         this.description = description;
     }
 
-    public Product(ImageIcon imageIcon, String name, String price, String location, String category, String description, int creatorID, int productStatus) {
+    public Product(ImageIcon imageIcon, String name, String price, String location, String category, String description, int creatorID, String productStatus, int userLimit, Timestamp deadlinTimestamp) {
         this.id = 0;
         this.imageIcon = imageIcon;
         this.name = name;
@@ -89,6 +102,10 @@ public class Product {
         this.category = category;
         this.productStatus = productStatus;
         this.creatorID = creatorID;
+        this.userLimit = userLimit;
+        this.deadlineStamp = deadlinTimestamp;
     }
+
+    public Product(){}
 
 }

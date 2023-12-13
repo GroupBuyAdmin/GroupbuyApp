@@ -6,7 +6,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -71,7 +75,7 @@ public class GbuyDatabase {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId, productUserLimit, productDeadline) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, spc.productName);
@@ -84,8 +88,11 @@ public class GbuyDatabase {
                 inputStream.read(imageData);
                 preparedStatement.setBytes(6, imageData);
             }
-            preparedStatement.setInt(7, spc.productStatus);
+            preparedStatement.setString(7, spc.productStatus);
             preparedStatement.setInt(8, spc.creatorID);
+            preparedStatement.setInt(9, spc.userLimit);
+            Timestamp timeStamp = convertDateToTimestamp(spc.deadlineString);
+            preparedStatement.setTimestamp(10, timeStamp);
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println(rowsAffected + " row(s) affected");
@@ -105,6 +112,20 @@ public class GbuyDatabase {
                 e.printStackTrace();
             }
         }
+    }
+
+    private Timestamp convertDateToTimestamp(String dateTimeString){
+        Timestamp dateTimeStamp = null;
+        Date parsedDate = null;
+        // Parse the string into a Date object
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            parsedDate = dateFormat.parse(dateTimeString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        dateTimeStamp = new Timestamp(parsedDate.getTime());
+        return dateTimeStamp;
     }
 
     /**
@@ -134,10 +155,14 @@ public class GbuyDatabase {
                 //convert image data to image object
                 ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
                 
-                int productStatus = resultSet.getInt("productStatus");
+                String productStatus = resultSet.getString("productStatus");
                 int creatorId = resultSet.getInt("productCreatorID");
 
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
+                int userLimit = resultSet.getInt("productUserLimit");
+
+                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
                 p.setId(productID);
                 allproducts.add(p);
 
@@ -186,10 +211,14 @@ public class GbuyDatabase {
                 //convert image data to image object
                 ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
                 
-                int productStatus = resultSet.getInt("productStatus");
+                String productStatus = resultSet.getString("productStatus");
                 int creatorId = resultSet.getInt("productCreatorID");
-
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
+                
+                int userLimit = resultSet.getInt("productUserLimit");
+                
+                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
                 p.setId(productID);
                 allListings.add(p);
             }
@@ -254,7 +283,7 @@ public class GbuyDatabase {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "UPDATE products SET productName = ?, productCategory = ?, productPrice = ?, productDescription = ?, productLocation = ?, productImage = ? WHERE productId = ?";
+            query = "UPDATE products SET productName = ?, productCategory = ?, productPrice = ?, productDescription = ?, productLocation = ?, productImage = ?, productUserLimit = ?, productDeadline = ? WHERE productId = ?";
             preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, spc.productName);
@@ -268,8 +297,15 @@ public class GbuyDatabase {
                 preparedStatement.setBytes(6, imageData);
             }
 
-            preparedStatement.setInt(7, productIdtoEdit);  
+            preparedStatement.setInt(7, spc.userLimit);
+
+            Timestamp timestamp = convertDateToTimestamp(spc.deadlineString);
+
+            preparedStatement.setTimestamp(8, timestamp);
+
+            preparedStatement.setInt(9, productIdtoEdit);  
             int rowsAffected = preparedStatement.executeUpdate();
+
 
             if (rowsAffected > 0) {
                 System.out.println("Update successful");
@@ -317,6 +353,8 @@ public class GbuyDatabase {
                 spc.productDescription = resultSet.getString("productDescription");
                 spc.productLocation = resultSet.getString("productLocation");
                 spc.byteImage = resultSet.getBytes("productImage");
+                spc.userLimit = resultSet.getInt("productUserLimit");
+                spc.deadlineStamp = resultSet.getTimestamp("productDeadline");
             }
 
         } catch (Exception e) {
@@ -458,14 +496,15 @@ public class GbuyDatabase {
         return -1;
     }
 
-    public List<Product> getCategorizedProducts(String category){
+    public List<Product> getCategorizedProducts(String category, int creatorID){
         List<Product> allProducts = new ArrayList<>();
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
-            query = "SELECT * FROM `products` WHERE `productCategory` == ?";
+            query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, category);
+            preparedStatement.setInt(2, creatorID);
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()){
@@ -480,10 +519,13 @@ public class GbuyDatabase {
                 //convert image data to image object
                 ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
                 
-                int productStatus = resultSet.getInt("productStatus");
+                String productStatus = resultSet.getString("productStatus");
                 int creatorId = resultSet.getInt("productCreatorID");
 
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, productStatus, creatorId);
+                int userLimit = resultSet.getInt("productUserLimit");
+                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
                 p.setId(productID);
                 allProducts.add(p);
             }
@@ -506,6 +548,53 @@ public class GbuyDatabase {
         }
 
         return allProducts;
+    }
+
+    public boolean checkForCategory(String category, int creatorID){
+        List<Product> categorizedProduct = new ArrayList<>();
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT * FROM products WHERE productCategory = ? AND productCreatorID != ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, category);
+            preparedStatement.setInt(2, creatorID);
+            
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){       
+                System.out.println("category found");
+                categorizedProduct.add(new Product());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        if(categorizedProduct.isEmpty()){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public SingleProductContainer getProductUserCountAndLimit(int productID){
+        SingleProductContainer spc = new SingleProductContainer();
+        try{
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+            query = "SELECT productUserCount, productUserLimit FROM products WHERE productID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, productID);
+            
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){      
+                spc.userCount = resultSet.getInt("productUserCount");
+                spc.userLimit = resultSet.getInt("productUserLimit");
+                return spc;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         
+        return spc;
     }
 }

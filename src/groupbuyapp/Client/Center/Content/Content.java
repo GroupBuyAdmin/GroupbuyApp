@@ -69,7 +69,7 @@ public class Content extends JPanel{
         myListings = new MyListings(currentUser);
         myGroupbuys = new MyGroupbuys();
         browseGroupbuys = new BrowseGroupbuys();
-        n = new NewBrowser();
+        n = new NewBrowser(currentUser);
 
         contentContainer = new JPanel();
         layout = new CardLayout();
@@ -88,34 +88,39 @@ public class Content extends JPanel{
     }
 
     public void showHome(){
-        check_If_Current_Panel_Is(IN_HOME);
+        Current_Panel_Is(IN_HOME);
 
         layout.show(contentContainer, HOME);
     }
 
     public void showMyListings(){
-        check_If_Current_Panel_Is(IN_MY_LISTINGS);
+        if(Current_Panel_Is(IN_MY_LISTINGS)){
+            myListings.refresh();
+        }
 
         layout.show(contentContainer, MY_LISTINGS);
     }
 
     public void showMyGroupBuys(){
-        check_If_Current_Panel_Is(IN_MY_GROUPBUYS);
+        Current_Panel_Is(IN_MY_GROUPBUYS);
 
         layout.show(contentContainer, MY_GROUPBUYS);
     }
 
     public void showBrowseGroupbuys(){
-        check_If_Current_Panel_Is(IN_BROWSE_GROUPBUYS);
-
+        if(Current_Panel_Is(IN_BROWSE_GROUPBUYS)){
+            n.refresh();
+        }
+        n.showBrowserPage();
         layout.show(contentContainer, BROWSE_GROUPBUYS);
     }
 
-    private void check_If_Current_Panel_Is(int desiredPanel){        
+    private boolean Current_Panel_Is(int desiredPanel){         //when a sidebar button is clicked twice, the current panel will refresh   
         if(currentPanel == desiredPanel){
-            myListings.updateListings();
+            return true;
         } else {
             currentPanel = desiredPanel;
+            return false;
         }
     }
     

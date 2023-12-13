@@ -22,6 +22,7 @@ import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Database.GbuyDatabase;
+import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
@@ -178,10 +179,10 @@ public class ListingViewer extends RoundedPanel{
             productPriceLabel.setForeground(GbuyColor.MAIN_COLOR);
             productPriceLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(36f));
 
-            if(isUser == true){
-                this.creatorLabel = new JLabel("Creator: " + currentUser.getUserName());
-            } else {
+            if(fromWhere != ListingViewer.FROM_MY_LISTING){
                 this.creatorLabel = new JLabel("Creator: " + GbuyDatabase.getInstance().getUserName(product.getCreatorID()));
+            } else {
+                this.creatorLabel = new JLabel("Creator: " + currentUser.getUserName());
             }
 
             creatorLabel.setForeground(Color.lightGray);
@@ -206,8 +207,8 @@ public class ListingViewer extends RoundedPanel{
             joinButton.setButtonFont(GbuyFont.MULI_BOLD.deriveFont(16f));
             joinButton.setDrawBorder(false);
 
-            
-            this.countLabel = new JLabel("Groupbuy count: 0/20");
+            SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
+            this.countLabel = new JLabel("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
             countLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(16f));
 
 

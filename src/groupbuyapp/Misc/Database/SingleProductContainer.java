@@ -1,6 +1,7 @@
 package groupbuyapp.Misc.Database;
 
 import java.io.File;
+import java.sql.Timestamp;
 
 public class SingleProductContainer{
     public int productID;
@@ -12,5 +13,9 @@ public class SingleProductContainer{
     public byte[] byteImage;
     public File selectedFile;
     public int creatorID;
-    public int productStatus;
+    public String productStatus;
+    public int userCount;
+    public int userLimit;
+    public String deadlineString;
+    public Timestamp deadlineStamp;
 }

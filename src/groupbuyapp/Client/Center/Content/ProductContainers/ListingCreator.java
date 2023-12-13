@@ -13,6 +13,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -28,6 +34,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+
+import com.github.lgooddatepicker.components.DateTimePicker;
 
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
@@ -155,8 +163,11 @@ public class ListingCreator {
         String descField = detailsPanel.getFields().getTextFields().getDescTextArea().getText();
         String locField = detailsPanel.getFields().getTextFields().getLocationTextField().getText();
         String priceField = detailsPanel.getFields().getSubDescription().getPriceTextField().getText();
+        String userLimitField = detailsPanel.getFields().getSubDescription().userlimitField.getText();
+        String dateField = detailsPanel.getFields().getSubDescription().dateTimePicker.getDatePicker().getText();
+        String timeField = detailsPanel.getFields().getSubDescription().dateTimePicker.getTimePicker().getText();
 
-        if (imageContainerIcon == null || nameField.isEmpty() || descField.isEmpty() || locField.isEmpty() || priceField.isEmpty()) {
+        if (imageContainerIcon == null || nameField.isEmpty() || descField.isEmpty() || locField.isEmpty() || priceField.isEmpty() || userLimitField.isEmpty() || dateField.isEmpty() || timeField.isEmpty()) {
             return false;
         }
 
@@ -182,9 +193,17 @@ public class ListingCreator {
             flag = false;
         }
 
+        try{
+            Integer.parseInt(detailsPanel.getFields().getSubDescription().userlimitField.getText());
+        } catch (NumberFormatException e){
+            message += " {User Limit}";
+            flag = false;
+        }
+
         if (!flag) {
             JOptionPane.showMessageDialog(c, message);
         }
+
 
         return flag;
     }
@@ -251,7 +270,10 @@ public class ListingCreator {
                     JComboBox<String> comboBox = detailsPanel.getFields().getSubDescription().getComboBox();
                     spc.productCategory = (String) comboBox.getSelectedItem();
                     spc.productPrice = Double.parseDouble(detailsPanel.getFields().getSubDescription().getPriceTextField().getText());
-                    
+                    spc.userLimit = Integer.parseInt(detailsPanel.getFields().getSubDescription().userlimitField.getText());
+                    String date = detailsPanel.getFields().getSubDescription().dateTimePicker.getDatePicker().getText();
+                    String time = detailsPanel.getFields().getSubDescription().dateTimePicker.getTimePicker().getText();
+                    spc.deadlineString = formatDateString(date + " " + time);
 
                     if (imagePanel.getIconButton().HasSelected()) {
                         spc.selectedFile = imagePanel.getIconButton().getFileChooser().getSelectedFile();
@@ -261,14 +283,14 @@ public class ListingCreator {
 
                     if (!editProduct) {
                         spc.creatorID = currentUser.getUserID();
-                        spc.productStatus = 1;  //default ongoing status
+                        spc.productStatus = "ongoing";
                         GbuyDatabase.getInstance().insertProduct(spc);
-                        myListings.updateListings();
+                        myListings.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
                     } else {
                         spc.productStatus = product.getProductStatus();
                         GbuyDatabase.getInstance().editProduct(spc, product.getId());
-                        myListings.updateListings();
+                        myListings.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
                     }
                 }
@@ -299,7 +321,7 @@ public class ListingCreator {
                 public void actionPerformed(ActionEvent e) {
                     GbuyDatabase.getInstance().deleteProduct(product.getId());
                     JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
-                    myListings.updateListings();
+                    myListings.refresh();
                     mainFrame.dispose();
                
                 }
@@ -358,6 +380,14 @@ public class ListingCreator {
             JComboBox<String> comboBox = detailsPanel.getFields().getSubDescription().getComboBox();
             comboBox.setSelectedItem(spc.productCategory);
             detailsPanel.getFields().getSubDescription().getPriceTextField().setText(String.valueOf(spc.productPrice));
+            detailsPanel.getFields().getSubDescription().userlimitField.setText(String.valueOf(spc.userLimit));
+
+            LocalDateTime dateTime = spc.deadlineStamp.toLocalDateTime();
+            LocalDate localDate = dateTime.toLocalDate();
+            LocalTime localTime = dateTime.toLocalTime();
+            detailsPanel.getFields().getSubDescription().dateTimePicker.getDatePicker().setDate(localDate);
+            detailsPanel.getFields().getSubDescription().dateTimePicker.getTimePicker().setTime(localTime);
+
             imagePanel.getImageContainer().setOriginalImage(spc.byteImage);
             ImageIcon imageIcon = new ImageIcon(new ImageIcon(spc.byteImage).getImage());
             ImageIcon resizedImageIcon = new ImageIcon(resizeImage(imageIcon));
@@ -366,6 +396,8 @@ public class ListingCreator {
             imagePanel.imageContainer.refresh();
             imagePanel.iconButton.getButton().setText("Change Photo");
             imagePanel.getIconButton().refresh();
+
+
         }
 
     }
@@ -592,6 +624,8 @@ public class ListingCreator {
             class SubDescription extends JPanel{
                 RoundedCornerTextField priceTextField;
                 RoundedCornerComboBox comboBox;
+                RoundedCornerTextField userlimitField;
+                DateTimePicker dateTimePicker;
 
                 public JComboBox<String> getComboBox() {return comboBox;}
                 public JTextField getPriceTextField() {return priceTextField;}
@@ -630,6 +664,16 @@ public class ListingCreator {
                     priceTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     priceTextField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
 
+                    JLabel userLimitLabel = new JLabel("Join Limit ");
+                    this.userlimitField = new RoundedCornerTextField();
+                    userlimitField.setText("0");
+                    userlimitField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+                    userlimitField.setForeground(GbuyColor.MAIN_COLOR);
+                    userlimitField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+                    userlimitField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
+
+                    JLabel dateTimePickerLabel = new JLabel("Deadline");
+                    dateTimePicker = new DateTimePicker();
 
                     setLayout(new GridBagLayout());
                     GridBagConstraints gbc = new GridBagConstraints();
@@ -662,13 +706,40 @@ public class ListingCreator {
                     gbc.insets = new Insets(0, 0, 0, 15);
                     add(priceTextField, gbc);
                     
-                    //row 3
                     gbc.weightx = 0.5;
                     gbc.weighty = 0.5;
                     gbc.gridwidth = 1;
                     gbc.gridx++;
                     gbc.insets = new Insets(0, 0, 0, 0);
                     add(comboBoxPanel, gbc);
+
+                    //row 3
+                    gbc.weightx = 0.5;
+                    gbc.weighty = 0.5;
+                    gbc.gridwidth = 1;
+                    gbc.gridy++;
+                    gbc.gridx = 0;
+                    gbc.insets = new Insets(0, 0, 5, 0);
+                    add(userLimitLabel, gbc);
+
+                    gbc.gridx++;
+                    add(dateTimePickerLabel, gbc);
+
+                    //row 4
+                    gbc.weightx = 0.5;
+                    gbc.weighty = 0.5;
+                    gbc.gridwidth = 1;
+                    gbc.gridy++;
+                    gbc.gridx = 0;
+                    gbc.insets = new Insets(0, 0, 0, 15);
+                    add(userlimitField, gbc);
+
+                    gbc.weightx = 0.5;
+                    gbc.weighty = 0.5;
+                    gbc.gridwidth = 1;
+                    gbc.gridx++;
+                    gbc.insets = new Insets(0, 0, 0, 0);
+                    add(dateTimePicker, gbc);
    
                 }
             }
@@ -777,4 +848,24 @@ public class ListingCreator {
 
         return tempFile;
     }
+
+    public String formatDateString(String inputDateString) {
+        try {
+            // Parse the input date string
+            SimpleDateFormat inputFormat = new SimpleDateFormat("MMMM dd, yyyy h:mma");
+            Date date = inputFormat.parse(inputDateString);
+
+            // Format the date into the desired output format
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // public static void main(String[] args) {
+    //     new ListingCreator(null, null);
+    // }
+
 }
