@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
@@ -28,13 +29,15 @@ public class CategoryPanel extends JPanel implements Refreshable{
     SideScrollPanel sideScrollPanel;
     NewBrowser newBrowser;
     User currentUser;
+    Content content;
 
-    public CategoryPanel(String category, NewBrowser newBrowser, User currentUser){
+    public CategoryPanel(String category, NewBrowser newBrowser, User currentUser, Content content){
         this.category = category;
         this.newBrowser = newBrowser;
         this.header = new Header();
         this.sideScrollPanel = new SideScrollPanel();
         this.currentUser = currentUser;
+        this.content = content;
 
         setLayout(new BorderLayout());
         add(header, BorderLayout.NORTH);
@@ -45,7 +48,7 @@ public class CategoryPanel extends JPanel implements Refreshable{
 
     private void addToList(Product product, JPanel scrollablePanelRef){
         ProductPanel pPanel = new ProductPanel(product, ProductPanel.BROWSER_PANEL);
-        pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser));
+        pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser, content));
         scrollablePanelRef.add(pPanel);
     }
 
@@ -102,16 +105,18 @@ public class CategoryPanel extends JPanel implements Refreshable{
         private final ProductPanel pPanel;
         private final Color oldColor;
         private NewBrowser newBrowser;
+        private Content content;
 
-        public ContainerListener(ProductPanel pPanel, NewBrowser newBrowser) {
+        public ContainerListener(ProductPanel pPanel, NewBrowser newBrowser, Content content) {
             this.pPanel = pPanel;
             this.oldColor = pPanel.getDetailsContainer().getNameLabel().getForeground();
             this.newBrowser = newBrowser;
+            this.content = content;
         }
 
         @Override
         public void mouseClicked(MouseEvent e){ 
-            ListingViewer pView = new ListingViewer(pPanel.getProduct(), ListingViewer.FROM_BROWSE, newBrowser.currentUser);
+            ListingViewer pView = new ListingViewer(pPanel.getProduct(), ListingViewer.FROM_BROWSE, newBrowser.currentUser, newBrowser, content);
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

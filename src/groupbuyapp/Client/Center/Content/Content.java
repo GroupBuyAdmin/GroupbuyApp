@@ -69,7 +69,7 @@ public class Content extends JPanel{
         myListings = new MyListings(currentUser);
         myGroupbuys = new MyGroupbuys();
         browseGroupbuys = new BrowseGroupbuys();
-        n = new NewBrowser(currentUser);
+        n = new NewBrowser(currentUser, Content.this);
 
         contentContainer = new JPanel();
         layout = new CardLayout();

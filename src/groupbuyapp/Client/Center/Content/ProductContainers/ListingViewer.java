@@ -8,14 +8,25 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 
+import groupbuyapp.Client.Center.Content.Content;
+import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
@@ -24,7 +35,6 @@ import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
-import net.miginfocom.swing.MigLayout;
 
 /**
  * The {@code ListingViewer} class is a Java class that extends the {@code RoundedPanel} class.
@@ -42,6 +52,10 @@ public class ListingViewer extends RoundedPanel{
 
     private RoundedButton backButton;
     private int fromWhere;
+
+    private NewBrowser newBrowser;
+
+    private Content content;
     
     public static final int FROM_MY_LISTING = 1;
     public static final int FROM_MY_GROUPBUYS = 2;
@@ -65,18 +79,24 @@ public class ListingViewer extends RoundedPanel{
     }
 
     public ListingViewer(Product product, boolean isUser, User currentUser){
-        this(product, isUser, FROM_MY_LISTING, currentUser);
+        this(product, isUser, FROM_MY_LISTING, currentUser, null, null);
     }
 
     public ListingViewer(Product product, int fromWhere, User currentUser){
-        this(product, false, fromWhere, currentUser);
+        this(product, false, fromWhere, currentUser, null, null);
     }
 
-    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser){
+    public ListingViewer(Product product, int fromWhere, User currentUser, NewBrowser newBrowser, Content content){
+        this(product, false, fromWhere, currentUser, newBrowser, content);
+    }
+
+    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, NewBrowser newBrowser, Content content){
         this.product = product;
         this.isUser = isUser;
         this.fromWhere = fromWhere;
+        this.newBrowser = newBrowser;
         this.currentUser = currentUser;
+        this.content = content;
 
         this.imagePanel = new ImagePanel(product.getImageIcon());
         imagePanel.setPreferredSize(new Dimension(700, 645));
@@ -151,6 +171,8 @@ public class ListingViewer extends RoundedPanel{
         private JLabel locationLabel;
         private RoundedCornerTextArea descriptionArea;
         private RoundedButton joinButton;
+        private RoundedButton unjoinButton;
+        private JToggleButton toggleJoinButton;
         private JLabel countLabel;
 
         public RoundedButton getEditButton() {return editButton;}
@@ -200,17 +222,20 @@ public class ListingViewer extends RoundedPanel{
             descriptionArea.setEditable(false);
             descriptionArea.setCaretPosition(0);
 
-            this.joinButton = new RoundedButton("Join Groupbuy");
+            this.joinButton = new RoundedButton("");
             joinButton.setCornerRadius(30);
-            joinButton.setButtonColor(GbuyColor.MAIN_COLOR);
-            joinButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
-            joinButton.setButtonFont(GbuyFont.MULI_BOLD.deriveFont(16f));
-            joinButton.setDrawBorder(false);
+
+            this.unjoinButton = new RoundedButton("");
+            unjoinButton.setButtonColor(GbuyColor.PANEL_COLOR);
+            unjoinButton.setForeground(GbuyColor.ONGOING_COLOR);
+            unjoinButton.setBorderColor(GbuyColor.ONGOING_COLOR);
+
+            this.toggleJoinButton = new JToggleButton();
+            toggleJoinButton.addItemListener(new joinButtonListener(toggleJoinButton));
 
             SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
             this.countLabel = new JLabel("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
             countLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(16f));
-
 
             JPanel scrollablePanel = new JPanel();
             scrollablePanel.setBackground(GbuyColor.PANEL_COLOR);
@@ -260,17 +285,83 @@ public class ListingViewer extends RoundedPanel{
             descScrollPanel.setOpaque(false);
             descScrollPanel.getVerticalScrollBar().setUnitIncrement(16);
             
-            JPanel buttonPanels = new JPanel(new MigLayout("fillx"));
+            JPanel buttonPanels = new JPanel(new BorderLayout(10, 10));
+            buttonPanels.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+            
+            String formattedTime = formatTimestamp(product.getDeadlineStamp());
+            JLabel deadlineLabel = new JLabel(formattedTime);
+
             buttonPanels.setOpaque(false);
-            buttonPanels.add(countLabel, "gapleft 0, align left");
+
+            buttonPanels.add(deadlineLabel, BorderLayout.NORTH);
+            buttonPanels.add(countLabel, BorderLayout.WEST);
 
             if(fromWhere != FROM_MY_LISTING){
-                buttonPanels.add(joinButton, "gapright 10, align right");
+                buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
+                if(GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID())){
+                    toggleJoinButton.setSelected(true); //if joined
+                    toggleJoinButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
+                            JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
+                            newBrowser.getCardLayout().show(newBrowser.getCardContainer(), NewBrowser.BROWSE_LISTING);
+                        }
+                    });
+                } else {    
+                    toggleJoinButton.setSelected(false); //if not joined
+                    toggleJoinButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
+                            JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                            content.showMyGroupBuys();
+                        }          
+                    });
+                }
             }
             
             setLayout(new BorderLayout(0, 20));
             add(descScrollPanel, BorderLayout.CENTER);
             add(buttonPanels, BorderLayout.SOUTH);
+        }
+
+
+        public static String formatTimestamp(Timestamp timestamp) {
+            try {
+                // Format the timestamp to a custom format
+                SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy @h:mm a");
+                String formattedDateTime = formatter.format(new Date(timestamp.getTime()));
+    
+                return formattedDateTime;
+            } catch (IllegalArgumentException e) {
+                // Handle formatting errors
+                System.err.println("Error formatting timestamp: " + e.getMessage());
+                return null;
+            }
+        }
+
+        class joinButtonListener implements ItemListener{
+            private JToggleButton toggleButton;
+
+            public joinButtonListener(JToggleButton toggleButton){
+                this.toggleButton = toggleButton;
+                toggleButton.setText("Join Groupbuy");
+            }
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                //if selected true
+                if(toggleButton.isSelected()){  
+                    toggleJoinButton.setText("Leave Groupbuy");
+
+                //if selected false
+                } else {    
+                    toggleJoinButton.setText("Join Groupbuy");
+
+                }
+            }
+
         }
 
     }

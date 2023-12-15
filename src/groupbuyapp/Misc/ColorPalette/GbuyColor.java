@@ -17,4 +17,10 @@ public class GbuyColor {
     public static final Color MAIN_TEXT_COLOR = Color.decode("#000000");
 
     public static final Color MAIN_TEXT_COLOR_ALT = Color.decode("#FFFFFF");
+
+    public static final Color ONGOING_COLOR = Color.decode("#79AEF2");
+   
+    public static final Color COMPLETED_COLOR = Color.decode("#3EF050");
+   
+    public static final Color EXPIRED_COLOR = Color.decode("#F20530");
 }

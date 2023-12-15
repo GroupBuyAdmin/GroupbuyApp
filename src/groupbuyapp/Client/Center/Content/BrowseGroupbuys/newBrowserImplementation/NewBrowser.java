@@ -9,6 +9,8 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import groupbuyapp.Client.Center.Content.Content;
+import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel.ScrollableSizeHint;
@@ -23,6 +25,18 @@ public class NewBrowser extends JPanel implements Refreshable{
     JPanel cardContainer;
     CardLayout cardLayout;
     List<CategoryPanel> madeCategoryPanels;
+    Content content;
+    
+    public JPanel getCardContainer() {
+        return cardContainer;
+    }
+    public CardLayout getCardLayout() {
+        return cardLayout;
+    }
+
+
+
+    Product lastSelected;
 
     public static final String BROWSE_LISTING = "browse listing";
     public static final String VIEW_BROWSED = "view browsed";
@@ -30,10 +44,11 @@ public class NewBrowser extends JPanel implements Refreshable{
     static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 
     public NewBrowser(){
-        this(null);
+        this(null, null);
     }
 
-    public NewBrowser(User currentUser){
+    public NewBrowser(User currentUser, Content content){
+        this.content = content;
         this.madeCategoryPanels = new ArrayList<>();
         this.currentUser = currentUser;
         scrollablePanel = new ScrollablePanel(new GridLayout(0, 1));
@@ -54,7 +69,7 @@ public class NewBrowser extends JPanel implements Refreshable{
     public void populateBrowse(){
         for(String category : categories){
             if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){             //check if category has products
-                CategoryPanel categoryPanel = new CategoryPanel(category, NewBrowser.this, currentUser);
+                CategoryPanel categoryPanel = new CategoryPanel(category, NewBrowser.this, currentUser, content);
                 scrollablePanel.add(categoryPanel);
                 madeCategoryPanels.add(categoryPanel);
             }

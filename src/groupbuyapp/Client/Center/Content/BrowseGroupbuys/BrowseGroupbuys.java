@@ -4,6 +4,8 @@ package groupbuyapp.Client.Center.Content.BrowseGroupbuys;
 
 import java.awt.CardLayout;
 import javax.swing.JPanel;
+
+import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.Components.*;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
 
