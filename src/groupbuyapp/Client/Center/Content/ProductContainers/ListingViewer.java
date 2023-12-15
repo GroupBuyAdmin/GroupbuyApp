@@ -10,8 +10,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -26,11 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
 import groupbuyapp.Client.Center.Content.Content;
-import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
-import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
+import groupbuyapp.Client.Center.Content.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
-import groupbuyapp.Client.SideBar.Buttons.Buttons;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
@@ -55,9 +51,7 @@ public class ListingViewer extends RoundedPanel{
 
     private RoundedButton backButton;
     private int fromWhere;
-
     private NewBrowser newBrowser;
-
     private Content content;
     private SideBar sideBar;
     
@@ -226,7 +220,6 @@ public class ListingViewer extends RoundedPanel{
             unjoinButton.setBorderColor(GbuyColor.ONGOING_COLOR);
 
             this.toggleJoinButton = new JToggleButton();
-            toggleJoinButton.addItemListener(new joinButtonListener(toggleJoinButton));
 
             SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
             this.countLabel = new JLabel("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
@@ -293,33 +286,39 @@ public class ListingViewer extends RoundedPanel{
 
             if(fromWhere != FROM_MY_LISTING){
                 buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
-                if(GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID())){
-                    toggleJoinButton.setSelected(true); //if joined
-                    toggleJoinButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
-                            JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                            if(fromWhere == FROM_BROWSE){
-                                newBrowser.getCardLayout().show(newBrowser.getCardContainer(), NewBrowser.BROWSE_LISTING);
-                            } else if(fromWhere == FROM_MY_GROUPBUYS){
-                                content.getMyGroupbuys().getcLayout().show(content.getMyGroupbuys().getCardContainer(), ListingDisplayer.LIST_VIEW);
+                boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
+
+                if(joined){
+                    toggleJoinButton.setText("Leave Groupbuy");
+                } else {
+                    toggleJoinButton.setText("Join Groubuy");
+                }
+                toggleJoinButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if(joined){
+                            if(toggleJoinButton.isSelected()){
+                                GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
+                                JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
+                                toggleJoinButton.setText("Join Groubuy");
+                            } else {
+                                GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
+                                JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                                toggleJoinButton.setText("Leave Groupbuy");
+                            }
+                        } else {
+                            if(toggleJoinButton.isSelected()){
+                                GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
+                                JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                                toggleJoinButton.setText("Leave Groupbuy");
+                            } else {
+                                GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
+                                JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
+                                toggleJoinButton.setText("Join Groubuy");
                             }
                         }
-                    });
-                } else {    
-                    toggleJoinButton.setSelected(false); //if not joined
-                    toggleJoinButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
-                            JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
-                            sideBar.getButtons().setSelected(Buttons.MY_GROUPBUYS);
-                            content.getMyGroupbuys().refresh();
-                            content.showMyGroupBuys();
-                        }          
-                    });
-                }
+                    }
+                });
             }
             
             setLayout(new BorderLayout(0, 20));
@@ -341,29 +340,5 @@ public class ListingViewer extends RoundedPanel{
                 return null;
             }
         }
-
-        class joinButtonListener implements ItemListener{
-            private JToggleButton toggleButton;
-
-            public joinButtonListener(JToggleButton toggleButton){
-                this.toggleButton = toggleButton;
-                toggleButton.setText("Join Groupbuy");
-            }
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                //if selected true
-                if(toggleButton.isSelected()){  
-                    toggleJoinButton.setText("Leave Groupbuy");
-
-                //if selected false
-                } else {    
-                    toggleJoinButton.setText("Join Groupbuy");
-
-                }
-            }
-
-        }
-
     }
 }

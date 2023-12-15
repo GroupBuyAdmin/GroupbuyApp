@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation;
+package groupbuyapp.Client.Center.Content.newBrowserImplementation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -78,7 +78,7 @@ public class CategoryPanel extends JPanel implements Refreshable{
 
             categoryName = new JLabel(category);
             seeAll = new JLabel("See All");
-            seeAll.addMouseListener(new SeeAllListener(seeAll, category));
+            seeAll.addMouseListener(new SeeAllListener(seeAll, category, content, sideBar, newBrowser));
 
             categoryName.setHorizontalAlignment(JLabel.LEADING);
             seeAll.setHorizontalAlignment(JLabel.TRAILING);
@@ -158,18 +158,35 @@ public class CategoryPanel extends JPanel implements Refreshable{
         private final Color oldColor;
         private final JLabel label;
         private final String category;
+        private Content content;
+        private SideBar sideBar;
+        private NewBrowser newBrowser;
 
-        public SeeAllListener(JLabel label, String category){
+        public SeeAllListener(JLabel label, String category, Content content, SideBar sideBar, NewBrowser newBrowser){
             this.oldColor = label.getForeground();
             this.label = label;
             this.category = category;
+            this.content = content;
+            this.sideBar = sideBar;
+            this.newBrowser = newBrowser;
         }
 
         @Override
         public void mouseClicked(MouseEvent e){
-            ListingDisplayer lDisplayer = new ListingDisplayer(null, ABORT, null, null);
-            //to pass in 
-            //category
+            ListingDisplayer lDisplayer = new ListingDisplayer(newBrowser.currentUser, ListingDisplayer.SEE_ALL_PANEL, content, sideBar, category);
+            
+            lDisplayer.getHeaderButton().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.BROWSE_LISTING);
+                }
+                
+            });
+            
+            newBrowser.cardContainer.add(lDisplayer, NewBrowser.SEE_ALL_LISTING);
+            newBrowser.revalidate();
+            newBrowser.repaint();
+            newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.SEE_ALL_LISTING);
             
         }
 

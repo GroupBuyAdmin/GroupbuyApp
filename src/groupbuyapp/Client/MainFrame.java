@@ -1,7 +1,6 @@
 package groupbuyapp.Client;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -12,7 +11,6 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 
 import groupbuyapp.Client.Center.Center;
-import groupbuyapp.Client.Center.Content.MyListings.MyListings;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Client.SideBar.Buttons.Buttons;
@@ -44,7 +42,6 @@ public class MainFrame extends JFrame{
         pane.add(sideBar, BorderLayout.WEST);
         pane.add(center, BorderLayout.CENTER);
 
-
     }
 
     private void setFrame(){
@@ -69,9 +66,6 @@ public class MainFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 center.getContent().showMyListings();
-                var myListingContainer = center.getContent().getMyListings().getCardContainer();
-                var myListingCardLayout = center.getContent().getMyListings().getcLayout();
-                myListingCardLayout.show(myListingContainer, MyListings.MY_LISTING);
                 sideBar.getButtons().setSelected(Buttons.MY_LISTINGS);
             }
         });

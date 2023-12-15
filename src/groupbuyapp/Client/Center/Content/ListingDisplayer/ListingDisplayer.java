@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -84,6 +85,10 @@ public class ListingDisplayer extends JPanel implements Refreshable{
         return sidebar;
     }
 
+    public JButton getHeaderButton(){
+        return myListingPanel.getMyListingHeader().getHeaderButton();
+    }
+
     public ListingDisplayer(User currentUser, int typeOfPanel, Content content, SideBar sideBar){
         this(currentUser, typeOfPanel, content, sideBar, null);
     }
@@ -130,12 +135,15 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     @Override
     public void refresh() {
         List<Product> dbProducts = null;
+        
         if(typeOfPanel == MY_LISTING_PANEL){
             dbProducts = GbuyDatabase.getInstance().getMyListings(currentUser);
         } else if (typeOfPanel == MY_GROUPBUYS_PANEL){
             dbProducts = GbuyDatabase.getInstance().getMyGroupbuys(currentUser);
-            
+        } else if(typeOfPanel == SEE_ALL_PANEL){
+            dbProducts = GbuyDatabase.getInstance().getCategorizedProducts(category, currentUser.getUserID());
         }
+
         var scrollablePaneRef = myListingPanel.getMyListingScrollable().getScrollablePanel();
         scrollablePaneRef.removeAll();
         allContainers.clear();
@@ -185,7 +193,8 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     }
 
     class MyListingHeader extends JPanel{
-        private static String iconPath = "src/groupbuyapp/Client/Center/Content/MyListings/img/plus.app.fill.png";
+        private static String iconPath = "src/groupbuyapp/Client/Center/Content/ListingDisplayer/img/plus.app.fill.png";
+        
         private JLabel contentName;
 
         private RoundedButton headerButton;
@@ -204,14 +213,16 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             } else if(typeOfPanel == MY_GROUPBUYS_PANEL){
                 contentName = new JLabel("My Groupbuys");
             } else if(typeOfPanel == SEE_ALL_PANEL){
-                contentName = new JLabel("Browse ");
+                contentName = new JLabel("Browse all " + category);
             }
             contentName.setFont(GbuyFont.MULI_BOLD.deriveFont(32f));
             
             if(typeOfPanel == MY_LISTING_PANEL){
                 headerButton = new RoundedButton("Create Listing", new ImageIcon(iconPath));
-            } else {
+            } else if (typeOfPanel == MY_GROUPBUYS_PANEL){
                 headerButton = new RoundedButton("Browse Groupbuys", new ImageIcon(iconPath));            
+            } else if(typeOfPanel == SEE_ALL_PANEL){
+                headerButton = new RoundedButton("Browse all", new ImageIcon(iconPath));
             }
 
             headerButton.setPreferredSize(new Dimension(200, 45));
@@ -234,6 +245,7 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             gbc.gridx++;
             gbc.anchor = GridBagConstraints.LINE_END;
             add(headerButton, gbc);
+
 
             setBackground(GbuyColor.PANEL_COLOR);
 

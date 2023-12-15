@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation;
+package groupbuyapp.Client.Center.Content.newBrowserImplementation;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import groupbuyapp.Client.Center.Content.Content;
-import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
@@ -35,12 +34,9 @@ public class NewBrowser extends JPanel implements Refreshable{
         return cardLayout;
     }
 
-
-
-    Product lastSelected;
-
     public static final String BROWSE_LISTING = "browse listing";
     public static final String VIEW_BROWSED = "view browsed";
+    public static final String SEE_ALL_LISTING = "see all listing";
 
     static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 

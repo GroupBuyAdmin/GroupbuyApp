@@ -6,9 +6,9 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
-import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
+import groupbuyapp.Client.Center.Content.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -109,7 +109,7 @@ public class Content extends JPanel{
         if(Current_Panel_Is(IN_MY_GROUPBUYS)){
             myGroupbuys.refresh();
         }
-
+        myGroupbuys.refresh();
         layout.show(contentContainer, MY_GROUPBUYS);
     }
 
