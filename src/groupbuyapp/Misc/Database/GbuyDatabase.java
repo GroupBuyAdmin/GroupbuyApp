@@ -82,8 +82,6 @@ public class GbuyDatabase {
 
     public void insertProduct(SingleProductContainer spc){
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId, productUserLimit, productDeadline) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
 
@@ -135,8 +133,7 @@ public class GbuyDatabase {
     public List<Product> getProducts(){
         List<Product> allproducts = new ArrayList<>();
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
+
             query = "SELECT * FROM `products`";
             preparedStatement = connection.prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
@@ -169,22 +166,6 @@ public class GbuyDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // finally {
-        //     try {
-        //         if (resultSet != null) {
-        //             resultSet.close();
-        //         }
-        //         if (preparedStatement != null) {
-        //             preparedStatement.close();
-        //         }
-        //         if (connection != null) {
-        //             connection.close();
-        //         }
-        //     } catch (Exception e) {
-        //         e.printStackTrace();   
-        //     }
-        // }
-
         return allproducts;
     }
 
@@ -234,8 +215,6 @@ public class GbuyDatabase {
     
     public void deleteProduct(int productIdToDelete){
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "DELETE FROM `products` WHERE `productId` = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, productIdToDelete);
@@ -264,8 +243,6 @@ public class GbuyDatabase {
 
     public void editProduct(SingleProductContainer spc, int productIdtoEdit){
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "UPDATE products SET productName = ?, productCategory = ?, productPrice = ?, productDescription = ?, productLocation = ?, productImage = ?, productUserLimit = ?, productDeadline = ? WHERE productId = ?";
             preparedStatement = connection.prepareStatement(query);
 
@@ -312,8 +289,6 @@ public class GbuyDatabase {
     public SingleProductContainer getSingleProduct(int productID){
         SingleProductContainer spc = new SingleProductContainer();
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM products WHERE productId = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, productID);
@@ -340,8 +315,6 @@ public class GbuyDatabase {
 
     public void uploadUser(User user){
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "INSERT INTO users (userName, userPassword, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
 
@@ -394,8 +367,6 @@ public class GbuyDatabase {
 
     public boolean userExists(User user){
         try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM users WHERE userName = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, user.getUserName());
@@ -416,8 +387,6 @@ public class GbuyDatabase {
 
     public String getUserName(int userId){
         try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT userName FROM users WHERE userId = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, userId);
@@ -438,8 +407,6 @@ public class GbuyDatabase {
     
     public int getUserID(User user){
         try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM users WHERE userName = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, user.getUserName());
@@ -460,9 +427,7 @@ public class GbuyDatabase {
     public List<Product> getCategorizedProducts(String category, int creatorID){
         List<Product> allProducts = new ArrayList<>();
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
-            query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ?";
+            query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ? AND `productUserCount` < `productUserLimit`";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, category);
             preparedStatement.setInt(2, creatorID);
@@ -633,7 +598,6 @@ public class GbuyDatabase {
 
             int rowsAffected = preparedStatement.executeUpdate();
 
-
             if (rowsAffected > 0) {
                 System.out.println("decremented");
             } else {
@@ -718,5 +682,44 @@ public class GbuyDatabase {
         }
 
         return allProductIDs;
+    }
+
+    public List<Product> getSearchedItem(String searchItem, int useriD){
+        List<Product> allProducts = new ArrayList<>();
+
+        try {
+            query = "SELECT * FROM products WHERE (productName LIKE \"%" + searchItem + "%\" OR productDescription LIKE \"%" + searchItem + "%\") AND productCreatorID != ? AND productStatus != \"completed\"";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, useriD);
+
+            System.out.println(preparedStatement.toString());
+
+            resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                int productID = resultSet.getInt("productID");
+                String productName = resultSet.getString("productName");
+                String productCategory = resultSet.getString("productCategory");
+                double productPrice = resultSet.getDouble("productPrice");
+                String productDescription = resultSet.getString("productDescription");
+                String productLocation = resultSet.getString("productLocation");
+                byte[] byteImage = resultSet.getBytes("productImage");
+                //convert image data to image object
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                String productStatus = resultSet.getString("productStatus");
+                int creatorId = resultSet.getInt("productCreatorID");
+                int userLimit = resultSet.getInt("productUserLimit");                
+                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                
+                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                p.setId(productID);
+                allProducts.add(p);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return allProducts;
     }
 }

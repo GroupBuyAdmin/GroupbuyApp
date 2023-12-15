@@ -1,6 +1,9 @@
 package groupbuyapp.Misc.CustomComponents;
 
 import javax.swing.JButton;
+
+import groupbuyapp.Misc.ColorPalette.GbuyColor;
+
 import javax.swing.ImageIcon;
 
 import java.awt.Color;
@@ -48,7 +51,7 @@ public class RoundedButton extends JButton {
      * @param text The text to be displayed on the button.
      * @param imageIcon An optional image icon to be displayed on the button.
      */
-    public RoundedButton(String text, ImageIcon imageIcon) {   
+    public RoundedButton(String text, ImageIcon imageIcon){
         super(text, imageIcon);
         this.buttonColor = getBackground();
         this.cornerRadius = 10;
@@ -58,6 +61,7 @@ public class RoundedButton extends JButton {
         setContentAreaFilled(false); 
         updateHoverColor();
         updatePressedColor();
+
     }
 
 
@@ -77,6 +81,7 @@ public class RoundedButton extends JButton {
         this.buttonColor = buttonColor;
         updateHoverColor();
         updatePressedColor();
+
     }
 
     public void setHoverColor(Color hoverColor) {

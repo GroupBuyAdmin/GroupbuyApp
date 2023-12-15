@@ -22,8 +22,8 @@ public class Center extends JPanel{
     }
 
     public Center(User currentUser, SideBar sideBar){
-        this.content = new Content(currentUser, sideBar);
         this.topNavBar = new TopNavBar();
+        this.content = new Content(currentUser, sideBar, topNavBar);
 
         setLayout(new BorderLayout());
         add(topNavBar, BorderLayout.NORTH);

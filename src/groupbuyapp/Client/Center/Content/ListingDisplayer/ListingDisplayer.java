@@ -47,6 +47,7 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     public static final int MY_LISTING_PANEL = 1;
     public static final int MY_GROUPBUYS_PANEL = 2;
     public static final int SEE_ALL_PANEL = 3;
+    public static final int SEARCH_PANEL = 4;
 
     public static final String LIST_VIEW = "my listing";
     public static final String PRODUCT_VIEW = "product view";
@@ -60,6 +61,7 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     private CardLayout cLayout;
     private JPanel cardContainer;
     private String category;
+    private String searchItem;
     
     public JPanel getCardContainer() {
         return cardContainer;
@@ -93,13 +95,18 @@ public class ListingDisplayer extends JPanel implements Refreshable{
         this(currentUser, typeOfPanel, content, sideBar, null);
     }
 
-    public ListingDisplayer(User currentUser, int typeOfPanel, Content content, SideBar sideBar, String category) {
+    public ListingDisplayer(User currentUser, int typeOfPanel, Content content, SideBar sideBar, String category){
+        this(currentUser, typeOfPanel, content, sideBar, category, null);
+    }
+
+    public ListingDisplayer(User currentUser, int typeOfPanel, Content content, SideBar sideBar, String category, String searchItem) {
         this.currentUser = currentUser;
         this.allContainers = new ArrayList<>();
         this.typeOfPanel = typeOfPanel;
         this.content = content;
         this.sidebar = sideBar;
         this.category = category;
+        this.searchItem = searchItem;
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -142,6 +149,8 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             dbProducts = GbuyDatabase.getInstance().getMyGroupbuys(currentUser);
         } else if(typeOfPanel == SEE_ALL_PANEL){
             dbProducts = GbuyDatabase.getInstance().getCategorizedProducts(category, currentUser.getUserID());
+        } else if(typeOfPanel == SEARCH_PANEL){
+            dbProducts = GbuyDatabase.getInstance().getSearchedItem(searchItem, currentUser.getUserID());
         }
 
         var scrollablePaneRef = myListingPanel.getMyListingScrollable().getScrollablePanel();
@@ -214,6 +223,8 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                 contentName = new JLabel("My Groupbuys");
             } else if(typeOfPanel == SEE_ALL_PANEL){
                 contentName = new JLabel("Browse all " + category);
+            } else if(typeOfPanel == SEARCH_PANEL){
+                contentName = new JLabel("Search \"" + searchItem + "\"");
             }
             contentName.setFont(GbuyFont.MULI_BOLD.deriveFont(32f));
             
@@ -225,13 +236,15 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                 headerButton = new RoundedButton("Browse all", new ImageIcon(iconPath));
             }
 
-            headerButton.setPreferredSize(new Dimension(200, 45));
-            headerButton.setButtonColor(GbuyColor.MAIN_COLOR);
-            headerButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
-            headerButton.setDrawBorder(false);
-            headerButton.setButtonFont(GbuyFont.MULI_LIGHT.deriveFont(16f));
-            headerButton.setIconTextGap(20);
-            headerButton.setCornerRadius(10);
+            if(typeOfPanel != SEARCH_PANEL){
+                headerButton.setPreferredSize(new Dimension(200, 45));
+                headerButton.setButtonColor(GbuyColor.MAIN_COLOR);
+                headerButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                headerButton.setDrawBorder(false);
+                headerButton.setButtonFont(GbuyFont.MULI_LIGHT.deriveFont(16f));
+                headerButton.setIconTextGap(20);
+                headerButton.setCornerRadius(10);
+            }
 
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -242,15 +255,14 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             gbc.anchor = GridBagConstraints.LINE_START;
             add(contentName, gbc);
 
-            gbc.gridx++;
-            gbc.anchor = GridBagConstraints.LINE_END;
-            add(headerButton, gbc);
-
+            if(typeOfPanel != SEARCH_PANEL){
+                gbc.gridx++;
+                gbc.anchor = GridBagConstraints.LINE_END;
+                add(headerButton, gbc);
+            }
 
             setBackground(GbuyColor.PANEL_COLOR);
-
         }
-
     }
 
     class MyListingScrollable extends JPanel{
@@ -313,6 +325,9 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                 case ListingDisplayer.MY_GROUPBUYS_PANEL:
                     fromWhere = ListingViewer.FROM_MY_GROUPBUYS;
                     break;
+                case ListingDisplayer.SEARCH_PANEL:
+                    fromWhere = ListingViewer.FROM_SEARCH;
+                    break;
                 default:
                     fromWhere = -1;
                     break;
@@ -325,6 +340,7 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    myListings.refresh();
                     myListings.getcLayout().show(myListings.getCardContainer(), ListingDisplayer.LIST_VIEW);
                 }
             });
@@ -337,7 +353,6 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                     myListings.getcLayout().show(myListings.getCardContainer(), ListingDisplayer.LIST_VIEW);
                 }
             });
-            // myListings.refresh();
             myListings.getCardContainer().add(pView, ListingDisplayer.PRODUCT_VIEW);
             myListings.revalidate();
             myListings.repaint();

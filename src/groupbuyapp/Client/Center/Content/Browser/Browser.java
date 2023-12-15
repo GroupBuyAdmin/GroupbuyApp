@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.newBrowserImplementation;
+package groupbuyapp.Client.Center.Content.Browser;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -18,7 +18,7 @@ import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Interface.Refreshable;
 
 
-public class NewBrowser extends JPanel implements Refreshable{
+public class Browser extends JPanel implements Refreshable{
     User currentUser;
     ScrollablePanel scrollablePanel;
     JScrollPane scrollPane;
@@ -37,11 +37,9 @@ public class NewBrowser extends JPanel implements Refreshable{
     public static final String BROWSE_LISTING = "browse listing";
     public static final String VIEW_BROWSED = "view browsed";
     public static final String SEE_ALL_LISTING = "see all listing";
+    private static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 
-    static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
-
-
-    public NewBrowser(User currentUser, Content content, SideBar sideBar){
+    public Browser(User currentUser, Content content, SideBar sideBar){
         this.content = content;
         this.madeCategoryPanels = new ArrayList<>();
         this.currentUser = currentUser;
@@ -63,13 +61,14 @@ public class NewBrowser extends JPanel implements Refreshable{
     public void populateBrowse(SideBar sideBar){
         for(String category : categories){
             if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){             //check if category has products
-                CategoryPanel categoryPanel = new CategoryPanel(category, NewBrowser.this, currentUser, content, sideBar);
+                CategoryPanel categoryPanel = new CategoryPanel(category, Browser.this, currentUser, content, sideBar);
                 scrollablePanel.add(categoryPanel);
                 madeCategoryPanels.add(categoryPanel);
             }
         }
     }
 
+    @Override
     public void refresh(){
         for(CategoryPanel c : madeCategoryPanels){
             c.refresh();

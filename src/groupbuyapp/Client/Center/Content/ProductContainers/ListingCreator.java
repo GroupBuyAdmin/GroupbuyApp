@@ -10,6 +10,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +27,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,7 +40,6 @@ import javax.swing.filechooser.FileFilter;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 
-import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -214,7 +216,6 @@ public class ListingCreator {
 
         public ImagePanel getImagePanel() {return imagePanel;}
         public DetailsPanel getDetailsPanel() {return detailsPanel;}
-         BrowseGroupbuys b;
         
         public CenterPanel(){
             this.imagePanel = new ImagePanel();
@@ -548,11 +549,21 @@ public class ListingCreator {
                     nameFieldLabel.setHorizontalAlignment(JLabel.LEFT);
 
                     this.nameTextField = new RoundedCornerTextField();
-                    nameTextField.setText("Enter name");
+                    nameTextField.setText("Enter product name");
                     nameTextField.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
-                    nameTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     nameTextField.setForeground(GbuyColor.MAIN_COLOR);
+                    nameTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     nameTextField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+                    nameTextField.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            nameTextField.setText("");
+                        }
+                        @Override
+                        public void focusLost(FocusEvent e) {}
+                        
+                    });
+
 
                     //inside descFieldPanel
                     JLabel descFieldLabel = new JLabel("Description");
@@ -561,9 +572,19 @@ public class ListingCreator {
 
 
                     this.descTextArea = new RoundedCornerTextArea();
+                    descTextArea.setText("Enter description");
                     descTextArea.setFont(GbuyFont.MULI_LIGHT.deriveFont(12f));
                     descTextArea.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
                     descTextArea.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+                    descTextArea.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            descTextArea.setText("");
+                        }
+                        @Override
+                        public void focusLost(FocusEvent e) {}
+                        
+                    });
 
                     JScrollPane descScrollPanel = new JScrollPane(descTextArea);
                     descScrollPanel.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
@@ -578,6 +599,16 @@ public class ListingCreator {
                     locationTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     locationTextField.setForeground(GbuyColor.MAIN_COLOR);
                     locationTextField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+                    locationTextField.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {   
+                         
+                            locationTextField.setText("");
+                        }
+                        @Override
+                        public void focusLost(FocusEvent e) {}
+                        
+                    });
 
                     //layout
                     setLayout(new GridBagLayout());
@@ -656,13 +687,23 @@ public class ListingCreator {
                     JLabel priceLabel = new JLabel("Price $");
                     priceLabel.setHorizontalAlignment(JLabel.LEFT);
                     priceLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
-
+                    
+                    
                     this.priceTextField = new RoundedCornerTextField();
-                    priceTextField.setText("0.00");
                     priceTextField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
                     priceTextField.setForeground(GbuyColor.MAIN_COLOR);
                     priceTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     priceTextField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
+                    priceTextField.setText("0.00");
+                    priceTextField.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            priceTextField.setText("");
+                        }
+                        @Override
+                        public void focusLost(FocusEvent e) {
+                        }
+                    });
 
                     JLabel userLimitLabel = new JLabel("Join Limit ");
                     this.userlimitField = new RoundedCornerTextField();
@@ -671,6 +712,19 @@ public class ListingCreator {
                     userlimitField.setForeground(GbuyColor.MAIN_COLOR);
                     userlimitField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     userlimitField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
+                    userlimitField.addFocusListener(new FocusListener() {
+
+                        @Override
+                        public void focusGained(FocusEvent e) {
+                            userlimitField.setText("");
+                        }
+
+                        @Override
+                        public void focusLost(FocusEvent e) {
+
+                        }
+                        
+                    });
 
                     JLabel dateTimePickerLabel = new JLabel("Deadline");
                     dateTimePicker = new DateTimePicker();

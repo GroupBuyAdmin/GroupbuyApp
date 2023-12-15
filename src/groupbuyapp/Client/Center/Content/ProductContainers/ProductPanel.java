@@ -36,6 +36,10 @@ public class ProductPanel extends RoundedPanel{
     private final Dimension browserPanelDimension = new Dimension(330, 340);
     private final Dimension normalPanelDimension = new Dimension(285, 265);
 
+    private final static String ON_GOING = "ongoing";
+    private final static String COMPELETED = "completed";
+    private final static String EXPIRED = "expired";
+
     public ImageContainer getImageContainer() {
         return imageContainer;
     }
@@ -94,7 +98,19 @@ public class ProductPanel extends RoundedPanel{
         add(detailsContainer, BorderLayout.SOUTH);
 
         //default
-        setContainerStatus(Status.ONGOING);
+        setContainerStatus(determineStatus(product.getProductStatus()));
+    }
+
+    private int determineStatus(String status){
+        if(status.equals(ProductPanel.ON_GOING)){
+            return Status.ONGOING;
+        } else if(status.equals(ProductPanel.COMPELETED)){
+            return Status.COMPLETED;
+        } else if(status.equals(ProductPanel.EXPIRED)){
+            return Status.EXPIRED;
+        }
+        
+        return -1;
     }
 
     public void setContainerStatus(int status){
@@ -279,7 +295,6 @@ public class ProductPanel extends RoundedPanel{
             gbc.weightx = 0.1;
             gbc.anchor = GridBagConstraints.LINE_END;
             add(statusContainer, gbc);
-
 
         }
 

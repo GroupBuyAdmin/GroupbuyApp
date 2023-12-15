@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 
 import groupbuyapp.Client.Center.Content.Content;
-import groupbuyapp.Client.Center.Content.newBrowserImplementation.NewBrowser;
+import groupbuyapp.Client.Center.Content.Browser.Browser;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -44,20 +44,16 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
 public class ListingViewer extends RoundedPanel{
     private Product product;
     private User currentUser;
-    
     private ImagePanel imagePanel;
     private DetailsPanel detailsPanel;
     private boolean isUser;
-
     private RoundedButton backButton;
     private int fromWhere;
-    private NewBrowser newBrowser;
-    private Content content;
-    private SideBar sideBar;
-    
+ 
     public static final int FROM_MY_LISTING = 1;
     public static final int FROM_MY_GROUPBUYS = 2;
     public static final int FROM_BROWSE = 3;
+    public static final int FROM_SEARCH = 4;
     
     public int getFromWhere() {return fromWhere;}
     public boolean isUser() {return isUser;}
@@ -73,20 +69,16 @@ public class ListingViewer extends RoundedPanel{
         this(product, false, fromWhere, currentUser, null, content, null);
     }
 
-    public ListingViewer(Product product, int fromWhere, User currentUser, NewBrowser newBrowser, Content content, SideBar sideBar){
+    public ListingViewer(Product product, int fromWhere, User currentUser, Browser newBrowser, Content content, SideBar sideBar){
         this(product, false, fromWhere, currentUser, newBrowser, content, sideBar);
     }
 
 
-    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, NewBrowser newBrowser, Content content, SideBar sidebar){
+    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, Browser newBrowser, Content content, SideBar sidebar){
         this.product = product;
         this.isUser = isUser;
         this.fromWhere = fromWhere;
-        this.newBrowser = newBrowser;
         this.currentUser = currentUser;
-        this.content = content;
-        this.sideBar = sidebar;
-
         this.imagePanel = new ImagePanel(product.getImageIcon());
         imagePanel.setPreferredSize(new Dimension(700, 645));
         this.detailsPanel = new DetailsPanel(product);
@@ -285,40 +277,52 @@ public class ListingViewer extends RoundedPanel{
             buttonPanels.add(countLabel, BorderLayout.WEST);
 
             if(fromWhere != FROM_MY_LISTING){
-                buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
-                boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
-
-                if(joined){
-                    toggleJoinButton.setText("Leave Groupbuy");
-                } else {
-                    toggleJoinButton.setText("Join Groubuy");
-                }
-                toggleJoinButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if(joined){
-                            if(toggleJoinButton.isSelected()){
-                                GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
-                                JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                                toggleJoinButton.setText("Join Groubuy");
-                            } else {
-                                GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
-                                JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
-                                toggleJoinButton.setText("Leave Groupbuy");
-                            }
-                        } else {
-                            if(toggleJoinButton.isSelected()){
-                                GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
-                                JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
-                                toggleJoinButton.setText("Leave Groupbuy");
-                            } else {
-                                GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
-                                JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                                toggleJoinButton.setText("Join Groubuy");
-                            }
-                        }
+                SingleProductContainer p = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
+                if(p.userCount == p.userLimit){
+                    RoundedButton completedButton = new RoundedButton("completed");
+                    completedButton.setButtonColor(GbuyColor.COMPLETED_COLOR);
+                    completedButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                    completedButton.setEnabled(false);
+                    completedButton.setFocusable(false);
+                    buttonPanels.add(completedButton, BorderLayout.EAST);
+                } else {                    
+                    buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
+                    boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
+    
+                    if(joined){
+                        toggleJoinButton.setText("Leave Groupbuy");
+                    } else {
+                        toggleJoinButton.setText("Join Groubuy");
                     }
-                });
+                    toggleJoinButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if(joined){
+                                if(toggleJoinButton.isSelected()){
+                                    GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
+                                    JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
+                                    toggleJoinButton.setText("Join Groubuy");
+                                } else {
+                                    GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
+                                    JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                                    toggleJoinButton.setText("Leave Groupbuy");
+                                }
+                            } else {
+                                if(toggleJoinButton.isSelected()){
+                                    GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
+                                    JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                                    toggleJoinButton.setText("Leave Groupbuy");
+                                } else {
+                                    GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
+                                    JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
+                                    toggleJoinButton.setText("Join Groubuy");
+                                }
+                            }
+                            updateCountLabel(countLabel);
+                        }
+                    });
+                }
+
             }
             
             setLayout(new BorderLayout(0, 20));
@@ -326,6 +330,11 @@ public class ListingViewer extends RoundedPanel{
             add(buttonPanels, BorderLayout.SOUTH);
         }
 
+        private void updateCountLabel(JLabel label){
+            SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
+            label.setText("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));    
+
+        }
 
         public static String formatTimestamp(Timestamp timestamp) {
             try {

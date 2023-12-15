@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.newBrowserImplementation;
+package groupbuyapp.Client.Center.Content.Browser;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,12 +29,12 @@ public class CategoryPanel extends JPanel implements Refreshable{
     String category;
     Header header;
     SideScrollPanel sideScrollPanel;
-    NewBrowser newBrowser;
+    Browser newBrowser;
     User currentUser;
     Content content;
     SideBar sideBar;
 
-    public CategoryPanel(String category, NewBrowser newBrowser, User currentUser, Content content, SideBar sideBar){
+    public CategoryPanel(String category, Browser newBrowser, User currentUser, Content content, SideBar sideBar){
         this.category = category;
         this.newBrowser = newBrowser;
         this.header = new Header();
@@ -109,11 +109,11 @@ public class CategoryPanel extends JPanel implements Refreshable{
     private static class ContainerListener extends MouseAdapter {
         private final ProductPanel pPanel;
         private final Color oldColor;
-        private NewBrowser newBrowser;
+        private Browser newBrowser;
         private Content content;
         private SideBar sideBar;
 
-        public ContainerListener(ProductPanel pPanel, NewBrowser newBrowser, Content content, SideBar sideBar) {
+        public ContainerListener(ProductPanel pPanel, Browser newBrowser, Content content, SideBar sideBar) {
             this.pPanel = pPanel;
             this.oldColor = pPanel.getDetailsContainer().getNameLabel().getForeground();
             this.newBrowser = newBrowser;
@@ -127,14 +127,14 @@ public class CategoryPanel extends JPanel implements Refreshable{
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.BROWSE_LISTING);
+                    newBrowser.cardLayout.show(newBrowser.cardContainer, Browser.BROWSE_LISTING);
                 }
             });
 
-            newBrowser.cardContainer.add(pView, NewBrowser.VIEW_BROWSED);
+            newBrowser.cardContainer.add(pView, Browser.VIEW_BROWSED);
             newBrowser.revalidate();
             newBrowser.repaint();
-            newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.VIEW_BROWSED);
+            newBrowser.cardLayout.show(newBrowser.cardContainer, Browser.VIEW_BROWSED);
         }
 
         @Override
@@ -160,9 +160,9 @@ public class CategoryPanel extends JPanel implements Refreshable{
         private final String category;
         private Content content;
         private SideBar sideBar;
-        private NewBrowser newBrowser;
+        private Browser newBrowser;
 
-        public SeeAllListener(JLabel label, String category, Content content, SideBar sideBar, NewBrowser newBrowser){
+        public SeeAllListener(JLabel label, String category, Content content, SideBar sideBar, Browser newBrowser){
             this.oldColor = label.getForeground();
             this.label = label;
             this.category = category;
@@ -178,15 +178,15 @@ public class CategoryPanel extends JPanel implements Refreshable{
             lDisplayer.getHeaderButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.BROWSE_LISTING);
+                    newBrowser.cardLayout.show(newBrowser.cardContainer, Browser.BROWSE_LISTING);
                 }
                 
             });
             
-            newBrowser.cardContainer.add(lDisplayer, NewBrowser.SEE_ALL_LISTING);
+            newBrowser.cardContainer.add(lDisplayer, Browser.SEE_ALL_LISTING);
             newBrowser.revalidate();
             newBrowser.repaint();
-            newBrowser.cardLayout.show(newBrowser.cardContainer, NewBrowser.SEE_ALL_LISTING);
+            newBrowser.cardLayout.show(newBrowser.cardContainer, Browser.SEE_ALL_LISTING);
             
         }
 

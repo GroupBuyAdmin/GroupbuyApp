@@ -2,13 +2,15 @@ package groupbuyapp.Client.Center.Content;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
-import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
+import groupbuyapp.Client.Center.Content.Browser.Browser;
 import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
-import groupbuyapp.Client.Center.Content.newBrowserImplementation.NewBrowser;
+import groupbuyapp.Client.Center.TopNavBar.TopNavBar;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -23,12 +25,13 @@ public class Content extends JPanel{
     private Home home;
     private ListingDisplayer myListings;
     private ListingDisplayer myGroupbuys;
-    private BrowseGroupbuys browseGroupbuys;
     private CardLayout layout;
 
-    private NewBrowser n;
+    private Browser browser;
     
     private int currentPanel;
+
+    private TopNavBar topNavBar;
     
     private static final int IN_HOME = 1;
     private static final int IN_MY_LISTINGS = 2;
@@ -51,12 +54,8 @@ public class Content extends JPanel{
         return myGroupbuys;
     }
     
-    public BrowseGroupbuys getBrowseGroupbuys() {
-        return browseGroupbuys;
-    }
-
-    public NewBrowser getNewBrowser() {
-        return n;
+    public Browser getNewBrowser() {
+        return browser;
     }
 
     public User getCurrentUser() {
@@ -67,13 +66,28 @@ public class Content extends JPanel{
     private static final String MY_LISTINGS = "my listings";
     private static final String MY_GROUPBUYS = "my groupbuys";
     private static final String BROWSE_GROUPBUYS = "browse groupbuys";
+    private static final String SEARCH = "search";
 
-    public Content(User currentUser, SideBar sideBar){
+    public Content(User currentUser, SideBar sideBar, TopNavBar topNavBar){
+        
+        this.topNavBar = topNavBar;
+        var searchButtonref = this.topNavBar.getSearchBar().getSearchButton();
+        searchButtonref.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchItem = topNavBar.getSearchBar().getSearchedItem();
+                System.out.println(searchItem);
+                ListingDisplayer searchedDisplayer = new ListingDisplayer(currentUser, ListingDisplayer.SEARCH_PANEL, Content.this, sideBar, null, searchItem);
+                contentContainer.add(searchedDisplayer, SEARCH);
+                searchedDisplayer.refresh();
+                layout.show(contentContainer, SEARCH);
+            }
+        });
+        
         home = new Home();
         myListings = new ListingDisplayer(currentUser, ListingDisplayer.MY_LISTING_PANEL, Content.this, sideBar);
         myGroupbuys = new ListingDisplayer(currentUser, ListingDisplayer.MY_GROUPBUYS_PANEL, Content.this, sideBar);
-        browseGroupbuys = new BrowseGroupbuys();
-        n = new NewBrowser(currentUser, Content.this, sideBar);
+        browser = new Browser(currentUser, Content.this, sideBar);
 
         contentContainer = new JPanel();
         layout = new CardLayout();
@@ -82,7 +96,7 @@ public class Content extends JPanel{
         contentContainer.add(home, HOME);
         contentContainer.add(myListings, MY_LISTINGS);
         contentContainer.add(myGroupbuys, MY_GROUPBUYS);
-        contentContainer.add(n, BROWSE_GROUPBUYS);
+        contentContainer.add(browser, BROWSE_GROUPBUYS);
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -115,9 +129,10 @@ public class Content extends JPanel{
 
     public void showBrowseGroupbuys(){
         if(Current_Panel_Is(IN_BROWSE_GROUPBUYS)){
-            n.refresh();
+            browser.refresh();
         }
-        n.showBrowserPage();
+        browser.refresh();
+        browser.showBrowserPage();
         layout.show(contentContainer, BROWSE_GROUPBUYS);
     }
 
