@@ -1,6 +1,7 @@
 package groupbuyapp.Client;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,7 @@ import groupbuyapp.Client.Center.Center;
 import groupbuyapp.Client.Center.Content.MyListings.MyListings;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
+import groupbuyapp.Client.SideBar.Buttons.Buttons;
 
 public class MainFrame extends JFrame{
     private User currentUser;
@@ -33,7 +35,8 @@ public class MainFrame extends JFrame{
         this.currentUser = user;
         setFrame();
         this.sideBar = new SideBar();
-        this.center = new Center(currentUser);
+        initializeSideBarControls();
+        this.center = new Center(currentUser, sideBar);
 
         Container pane = getContentPane();
 
@@ -41,7 +44,6 @@ public class MainFrame extends JFrame{
         pane.add(sideBar, BorderLayout.WEST);
         pane.add(center, BorderLayout.CENTER);
 
-        initializeSideBarControls();
 
     }
 
@@ -59,7 +61,7 @@ public class MainFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 center.getContent().showHome();
-                sideBar.getButtons().setSelected(1);
+                sideBar.getButtons().setSelected(Buttons.HOME);
             }
         });
 
@@ -70,7 +72,7 @@ public class MainFrame extends JFrame{
                 var myListingContainer = center.getContent().getMyListings().getCardContainer();
                 var myListingCardLayout = center.getContent().getMyListings().getcLayout();
                 myListingCardLayout.show(myListingContainer, MyListings.MY_LISTING);
-                sideBar.getButtons().setSelected(2);
+                sideBar.getButtons().setSelected(Buttons.MY_LISTINGS);
             }
         });
 
@@ -78,7 +80,7 @@ public class MainFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 center.getContent().showMyGroupBuys();
-                sideBar.getButtons().setSelected(3);
+                sideBar.getButtons().setSelected(Buttons.MY_GROUPBUYS);
             }
         });
 
@@ -86,7 +88,7 @@ public class MainFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 center.getContent().showBrowseGroupbuys();
-                sideBar.getButtons().setSelected(4);
+                sideBar.getButtons().setSelected(Buttons.BROWSE_GROUPBUYS);
             }
         });
 
@@ -94,7 +96,7 @@ public class MainFrame extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 center.getContent().showHome();
-                sideBar.getButtons().setSelected(1);
+                sideBar.getButtons().setSelected(Buttons.HOME);
             }
             @Override
             public void mousePressed(MouseEvent e) {}

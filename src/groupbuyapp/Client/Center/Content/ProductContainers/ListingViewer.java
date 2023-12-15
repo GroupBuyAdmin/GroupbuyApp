@@ -27,7 +27,10 @@ import javax.swing.JToggleButton;
 
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
+import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.SideBar.SideBar;
+import groupbuyapp.Client.SideBar.Buttons.Buttons;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
@@ -56,6 +59,7 @@ public class ListingViewer extends RoundedPanel{
     private NewBrowser newBrowser;
 
     private Content content;
+    private SideBar sideBar;
     
     public static final int FROM_MY_LISTING = 1;
     public static final int FROM_MY_GROUPBUYS = 2;
@@ -70,33 +74,24 @@ public class ListingViewer extends RoundedPanel{
     public Product getProduct() {return product;} 
     public void setProduct(Product product) {this.product = product;}
 
-    public ListingViewer(){
-        this(null, true, null);
+
+    public ListingViewer(Product product, int fromWhere, User currentUser, Content content){
+        this(product, false, fromWhere, currentUser, null, content, null);
     }
 
-    public ListingViewer(Product product, User currentUser){
-        this(product, true, currentUser);
+    public ListingViewer(Product product, int fromWhere, User currentUser, NewBrowser newBrowser, Content content, SideBar sideBar){
+        this(product, false, fromWhere, currentUser, newBrowser, content, sideBar);
     }
 
-    public ListingViewer(Product product, boolean isUser, User currentUser){
-        this(product, isUser, FROM_MY_LISTING, currentUser, null, null);
-    }
 
-    public ListingViewer(Product product, int fromWhere, User currentUser){
-        this(product, false, fromWhere, currentUser, null, null);
-    }
-
-    public ListingViewer(Product product, int fromWhere, User currentUser, NewBrowser newBrowser, Content content){
-        this(product, false, fromWhere, currentUser, newBrowser, content);
-    }
-
-    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, NewBrowser newBrowser, Content content){
+    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, NewBrowser newBrowser, Content content, SideBar sidebar){
         this.product = product;
         this.isUser = isUser;
         this.fromWhere = fromWhere;
         this.newBrowser = newBrowser;
         this.currentUser = currentUser;
         this.content = content;
+        this.sideBar = sidebar;
 
         this.imagePanel = new ImagePanel(product.getImageIcon());
         imagePanel.setPreferredSize(new Dimension(700, 645));
@@ -305,7 +300,11 @@ public class ListingViewer extends RoundedPanel{
                         public void actionPerformed(ActionEvent e) {
                             GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
                             JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                            newBrowser.getCardLayout().show(newBrowser.getCardContainer(), NewBrowser.BROWSE_LISTING);
+                            if(fromWhere == FROM_BROWSE){
+                                newBrowser.getCardLayout().show(newBrowser.getCardContainer(), NewBrowser.BROWSE_LISTING);
+                            } else if(fromWhere == FROM_MY_GROUPBUYS){
+                                content.getMyGroupbuys().getcLayout().show(content.getMyGroupbuys().getCardContainer(), ListingDisplayer.LIST_VIEW);
+                            }
                         }
                     });
                 } else {    
@@ -315,6 +314,8 @@ public class ListingViewer extends RoundedPanel{
                         public void actionPerformed(ActionEvent e) {
                             GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
                             JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
+                            sideBar.getButtons().setSelected(Buttons.MY_GROUPBUYS);
+                            content.getMyGroupbuys().refresh();
                             content.showMyGroupBuys();
                         }          
                     });

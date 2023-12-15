@@ -38,6 +38,11 @@ public class Buttons extends JPanel{
 
     private static Dimension buttonSize = new Dimension(200, 45);
 
+    public static final int HOME = 1;
+    public static final int MY_LISTINGS = 2;
+    public static final int MY_GROUPBUYS = 3;
+    public static final int BROWSE_GROUPBUYS = 4;
+
     private ArrayList<RoundedButton> allButtons;
 
     public RoundedButton getHomeButton() {
@@ -111,28 +116,28 @@ public class Buttons extends JPanel{
     
     public void setSelected(int index){
         switch (index) {
-            case 1:
+            case HOME:
                 setToSelectedState(homeButton, homeIconAlt);
                 setToNormalState(myListingsButton,  myListingsIcon);
                 setToNormalState(myGroupbuysButton, myGroupbuysIcon);
                 setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);
                 break;
                 
-            case 2:
+            case MY_LISTINGS:
                 setToNormalState(homeButton, homeIcon);
                 setToSelectedState(myListingsButton, myListingsIconAlt);
                 setToNormalState(myGroupbuysButton, myGroupbuysIcon);
                 setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);
                 break;
                 
-            case 3:
+            case MY_GROUPBUYS:
                 setToNormalState(homeButton, homeIcon);
                 setToNormalState(myListingsButton,  myListingsIcon);
                 setToSelectedState(myGroupbuysButton, myGroupbuysIconAlt);
                 setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);
                 break;
         
-            case 4:
+            case BROWSE_GROUPBUYS:
                 setToNormalState(homeButton, homeIcon);
                 setToNormalState(myListingsButton,  myListingsIcon);
                 setToNormalState(myGroupbuysButton, myGroupbuysIcon);

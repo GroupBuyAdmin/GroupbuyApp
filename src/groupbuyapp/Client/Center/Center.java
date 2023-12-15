@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.TopNavBar.TopNavBar;
 import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.SideBar.SideBar;
 
 public class Center extends JPanel{
     private Content content;
@@ -20,8 +21,8 @@ public class Center extends JPanel{
         return topNavBar;
     }
 
-    public Center(User currentUser){
-        this.content = new Content(currentUser);
+    public Center(User currentUser, SideBar sideBar){
+        this.content = new Content(currentUser, sideBar);
         this.topNavBar = new TopNavBar();
 
         setLayout(new BorderLayout());
@@ -29,3 +30,4 @@ public class Center extends JPanel{
         add(content, BorderLayout.CENTER);
     }
 }
+

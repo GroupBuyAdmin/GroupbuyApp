@@ -191,8 +191,6 @@ public class GbuyDatabase {
     public List<Product> getMyListings(User user){
         List<Product> allListings = new ArrayList<>();
         try {
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM `products` WHERE `productCreatorID` = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, user.getUserID());
@@ -225,21 +223,6 @@ public class GbuyDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // finally {
-        //     try {
-        //         if (resultSet != null) {
-        //             resultSet.close();
-        //         }
-        //         if (preparedStatement != null) {
-        //             preparedStatement.close();
-        //         }
-        //         if (connection != null) {
-        //             connection.close();
-        //         }
-        //     } catch (Exception e) {
-        //         e.printStackTrace();   
-        //     }
-        // }
         return allListings;
     }
 
@@ -316,18 +299,7 @@ public class GbuyDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // finally {
-        //     try {
-        //         if (preparedStatement != null) {
-        //             preparedStatement.close();
-        //         }
-        //         if (connection != null) {
-        //             connection.close();
-        //         }
-        //     } catch (SQLException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
+
     }
 
     /**
@@ -361,18 +333,7 @@ public class GbuyDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // finally {
-        //     try {
-        //         if (preparedStatement != null) {
-        //             preparedStatement.close();
-        //         }
-        //         if (connection != null) {
-        //             connection.close();
-        //         }
-        //     } catch (SQLException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
+
         return spc;
     }
 
@@ -405,8 +366,6 @@ public class GbuyDatabase {
 
     public User getUser(UserLoginData uld){
         try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM users WHERE userName = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, uld.username);
@@ -534,21 +493,6 @@ public class GbuyDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // finally {
-        //     try {
-        //         if (resultSet != null) {
-        //             resultSet.close();
-        //         }
-        //         if (preparedStatement != null) {
-        //             preparedStatement.close();
-        //         }
-        //         if (connection != null) {
-        //             connection.close();
-        //         }
-        //     } catch (Exception e) {
-        //         e.printStackTrace();   
-        //     }
-        // }
 
         return allProducts;
     }
@@ -701,11 +645,30 @@ public class GbuyDatabase {
     }
 
     public List<Product> getMyGroupbuys(User user){
+        List<Integer> allproductIDs = getProductIDFromMyGroupbuys(user.getUserID());
         List<Product> allListings = new ArrayList<>();
+        if(allproductIDs.isEmpty()){
+            return allListings;
+        }
+
         try {
-            query = "SELECT * FROM `groupbuys` WHERE `productCreatorID` = ?";
+            //build query
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM products WHERE productID IN (");
+            for (int i = 0; i < allproductIDs.size(); i++) {
+                queryBuilder.append("?");
+                if (i < allproductIDs.size() - 1) {
+                    queryBuilder.append(",");
+                }
+            }
+            queryBuilder.append(")");
+
+            query = queryBuilder.toString();
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, user.getUserID());
+
+            for(int i = 0; i < allproductIDs.size(); i++){
+                preparedStatement.setInt(i + 1, allproductIDs.get(i));
+            }
+
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()){
@@ -736,5 +699,24 @@ public class GbuyDatabase {
             e.printStackTrace();
         }
         return allListings;
+    }
+
+    private List<Integer> getProductIDFromMyGroupbuys(int userID){
+        List<Integer> allProductIDs = new ArrayList<>();
+        try{
+            query = "SELECT productID FROM groupbuys WHERE userID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userID);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                allProductIDs.add(resultSet.getInt("productID"));
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return allProductIDs;
     }
 }

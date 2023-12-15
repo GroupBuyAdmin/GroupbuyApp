@@ -8,9 +8,9 @@ import javax.swing.JPanel;
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.newBrowserImplementation.NewBrowser;
 import groupbuyapp.Client.Center.Content.Home.Home;
-import groupbuyapp.Client.Center.Content.MyGroupbuys.MyGroupbuys;
-import groupbuyapp.Client.Center.Content.MyListings.MyListings;
+import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 
 public class Content extends JPanel{
@@ -21,38 +21,42 @@ public class Content extends JPanel{
 
     
     private Home home;
-    private MyListings myListings;
-    private MyGroupbuys myGroupbuys;
+    private ListingDisplayer myListings;
+    private ListingDisplayer myGroupbuys;
     private BrowseGroupbuys browseGroupbuys;
     private CardLayout layout;
 
     private NewBrowser n;
     
     private int currentPanel;
-
+    
     private static final int IN_HOME = 1;
     private static final int IN_MY_LISTINGS = 2;
     private static final int IN_MY_GROUPBUYS = 3;
     private static final int IN_BROWSE_GROUPBUYS = 4;
-
+    
     public Home getHome() {
         return home;
     }
-
+    
     public JPanel getContentContainer() {
         return contentContainer;
     }
-
-    public MyListings getMyListings() {
+    
+    public ListingDisplayer getMyListings() {
         return myListings;
     }
-
-    public MyGroupbuys getMyGroupbuys() {
+    
+    public ListingDisplayer getMyGroupbuys() {
         return myGroupbuys;
     }
-
+    
     public BrowseGroupbuys getBrowseGroupbuys() {
         return browseGroupbuys;
+    }
+
+    public NewBrowser getNewBrowser() {
+        return n;
     }
 
     public User getCurrentUser() {
@@ -64,12 +68,12 @@ public class Content extends JPanel{
     private static final String MY_GROUPBUYS = "my groupbuys";
     private static final String BROWSE_GROUPBUYS = "browse groupbuys";
 
-    public Content(User currentUser){
+    public Content(User currentUser, SideBar sideBar){
         home = new Home();
-        myListings = new MyListings(currentUser);
-        myGroupbuys = new MyGroupbuys();
+        myListings = new ListingDisplayer(currentUser, ListingDisplayer.MY_LISTING_PANEL, Content.this, sideBar);
+        myGroupbuys = new ListingDisplayer(currentUser, ListingDisplayer.MY_GROUPBUYS_PANEL, Content.this, sideBar);
         browseGroupbuys = new BrowseGroupbuys();
-        n = new NewBrowser(currentUser, Content.this);
+        n = new NewBrowser(currentUser, Content.this, sideBar);
 
         contentContainer = new JPanel();
         layout = new CardLayout();
@@ -102,7 +106,9 @@ public class Content extends JPanel{
     }
 
     public void showMyGroupBuys(){
-        Current_Panel_Is(IN_MY_GROUPBUYS);
+        if(Current_Panel_Is(IN_MY_GROUPBUYS)){
+            myGroupbuys.refresh();
+        }
 
         layout.show(contentContainer, MY_GROUPBUYS);
     }

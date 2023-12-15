@@ -38,7 +38,7 @@ import javax.swing.filechooser.FileFilter;
 import com.github.lgooddatepicker.components.DateTimePicker;
 
 import groupbuyapp.Client.Center.Content.BrowseGroupbuys.BrowseGroupbuys;
-import groupbuyapp.Client.Center.Content.MyListings.MyListings;
+import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
@@ -61,7 +61,7 @@ public class ListingCreator {
     private JFrame mainFrame;
     private JPanel masterPanel;
 
-    private MyListings myListings;
+    private ListingDisplayer abstractList;
 
     public static final boolean EDIT = true;
     public static final boolean CREATE = false;
@@ -70,39 +70,39 @@ public class ListingCreator {
     private Product product;
     private User currentUser;
 
-    public MyListings getMyListings() {
-        return myListings;
+    public ListingDisplayer getMyListings() {
+        return abstractList;
     }
 
     /**
      * Constructor for creating a new product listing. Initializes the GUI components and sets up the main frame.
-     * @param myListings
+     * @param abstractList
      */
 
-    public ListingCreator(MyListings myListings, User currentUser){
-        this(myListings, CREATE, null, currentUser);
+    public ListingCreator(ListingDisplayer abstractList, User currentUser){
+        this(abstractList, CREATE, null, currentUser);
     }
 
     /**
      * Constructor for editing an existing product listing. Initializes the GUI components with the existing product information.
-     * @param myListings
+     * @param abstractList
      * @param product
      */
 
-    public ListingCreator(MyListings myListings, Product product, User currentUser){
-        this(myListings, EDIT, product, currentUser);
+    public ListingCreator(ListingDisplayer abstractList, Product product, User currentUser){
+        this(abstractList, EDIT, product, currentUser);
     }
 
     /**
      * Constructor for the ListingCreator class.
      * 
-     * @param myListings An instance of the MyListings class.
+     * @param abstractList An instance of the abstractList class.
      * @param editProduct A boolean value indicating whether the product is being edited or not.
      * @param product An instance of the Product class.
      */
     
-    public ListingCreator(MyListings myListings, boolean editProduct, Product product, User currentUser){
-        this.myListings = myListings;
+    public ListingCreator(ListingDisplayer abstractList, boolean editProduct, Product product, User currentUser){
+        this.abstractList = abstractList;
         this.editProduct = editProduct;
         this.product = product;
         this.currentUser = currentUser;
@@ -285,12 +285,12 @@ public class ListingCreator {
                         spc.creatorID = currentUser.getUserID();
                         spc.productStatus = "ongoing";
                         GbuyDatabase.getInstance().insertProduct(spc);
-                        myListings.refresh();
+                        abstractList.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
                     } else {
                         spc.productStatus = product.getProductStatus();
                         GbuyDatabase.getInstance().editProduct(spc, product.getId());
-                        myListings.refresh();
+                        abstractList.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
                     }
                 }
@@ -321,7 +321,7 @@ public class ListingCreator {
                 public void actionPerformed(ActionEvent e) {
                     GbuyDatabase.getInstance().deleteProduct(product.getId());
                     JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
-                    myListings.refresh();
+                    abstractList.refresh();
                     mainFrame.dispose();
                
                 }
@@ -639,7 +639,7 @@ public class ListingCreator {
   
                     String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
                     this.comboBox = new RoundedCornerComboBox(categories);
-                    ImageIcon img = new ImageIcon("src/groupbuyapp/Client/Center/Content/MyListings/img/Arrow-Down.png");
+                    ImageIcon img = new ImageIcon("src/groupbuyapp/Client/Center/Content/abstractList/img/Arrow-Down.png");
                     Icon customDropdownIcon = new ImageIcon(img.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH));
                     comboBox.setCustomDropdownIcon(customDropdownIcon);
                     comboBox.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);

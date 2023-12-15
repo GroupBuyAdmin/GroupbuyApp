@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel.ScrollableSizeHint;
 import groupbuyapp.Misc.Database.GbuyDatabase;
@@ -43,11 +44,8 @@ public class NewBrowser extends JPanel implements Refreshable{
 
     static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 
-    public NewBrowser(){
-        this(null, null);
-    }
 
-    public NewBrowser(User currentUser, Content content){
+    public NewBrowser(User currentUser, Content content, SideBar sideBar){
         this.content = content;
         this.madeCategoryPanels = new ArrayList<>();
         this.currentUser = currentUser;
@@ -61,15 +59,15 @@ public class NewBrowser extends JPanel implements Refreshable{
         cardContainer = new JPanel(cardLayout);
         cardContainer.add(scrollPane, BROWSE_LISTING);
 
-        populateBrowse();
+        populateBrowse(sideBar);
         setLayout(new BorderLayout());
         add(cardContainer);
     }
 
-    public void populateBrowse(){
+    public void populateBrowse(SideBar sideBar){
         for(String category : categories){
             if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){             //check if category has products
-                CategoryPanel categoryPanel = new CategoryPanel(category, NewBrowser.this, currentUser, content);
+                CategoryPanel categoryPanel = new CategoryPanel(category, NewBrowser.this, currentUser, content, sideBar);
                 scrollablePanel.add(categoryPanel);
                 madeCategoryPanels.add(categoryPanel);
             }
