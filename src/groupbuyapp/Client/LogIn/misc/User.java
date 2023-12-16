@@ -1,4 +1,4 @@
-package groupbuyapp.Client.LogIn;
+package groupbuyapp.Client.LogIn.misc;
 
 import groupbuyapp.Misc.Database.GbuyDatabase;
 

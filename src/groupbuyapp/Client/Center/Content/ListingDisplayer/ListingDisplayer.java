@@ -25,7 +25,7 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ListingCreator;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
-import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Client.SideBar.Buttons.Buttons;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -50,7 +50,6 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     public static final String LIST_VIEW = "my listing";
     public static final String PRODUCT_VIEW = "product view";
 
-    
     private MyListingPanel myListingPanel;
     private List<ProductPanel> allContainers;
     private ListingViewer productView;
@@ -62,7 +61,12 @@ public class ListingDisplayer extends JPanel implements Refreshable{
     private JPanel cardContainer;
     private String category;
     private String searchItem;
+    private List<Product> dbProducts;
     
+    public void setDbProducts(List<Product> dbProducts) {
+        this.dbProducts = dbProducts;
+    }
+
     public JPanel getCardContainer() {
         return cardContainer;
     }
@@ -107,6 +111,7 @@ public class ListingDisplayer extends JPanel implements Refreshable{
         this.sidebar = sideBar;
         this.category = category;
         this.searchItem = searchItem;
+        this.dbProducts = null;
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -133,16 +138,14 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                 public void actionPerformed(ActionEvent e) {
                     content.getMyGroupbuys().refresh();
                     sideBar.getButtons().setSelected(Buttons.BROWSE_GROUPBUYS);
-                    content.showBrowseGroupbuys();
+                    // content.showBrowseGroupbuys();
                 }
             });
         }
     }
     
     @Override
-    public void refresh() {
-        List<Product> dbProducts = null;
-        
+    public void refresh() {        
         if(typeOfPanel == MY_LISTING_PANEL){
             dbProducts = GbuyDatabase.getInstance().getMyListings(currentUser);
         } else if (typeOfPanel == MY_GROUPBUYS_PANEL){

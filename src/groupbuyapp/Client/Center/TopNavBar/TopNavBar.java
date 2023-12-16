@@ -12,13 +12,14 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
+import groupbuyapp.Misc.CustomComponents.RoundProfilePicturePanel;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextField;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 
 public class TopNavBar extends JPanel{
     private SearchBar searchBar;
-    
+    private RoundProfilePicturePanel profileContainer;
     
     public SearchBar getSearchBar() {
         return searchBar;
@@ -30,10 +31,13 @@ public class TopNavBar extends JPanel{
         setLayout(new BorderLayout());
         
         setBackground(GbuyColor.MAIN_COLOR);
-        setBorder(BorderFactory.createEmptyBorder(15, 50, 15, 10));
+        setBorder(BorderFactory.createEmptyBorder(15, 50, 15, 15));
 
         searchBar = new SearchBar();
+        profileContainer = new RoundProfilePicturePanel(new ImageIcon("src/groupbuyapp/Client/LogIn/img/default profile.png"));
+        profileContainer.setOpaque(false);
 
+        add(profileContainer, BorderLayout.EAST);
         add(searchBar, BorderLayout.WEST);
     }
 

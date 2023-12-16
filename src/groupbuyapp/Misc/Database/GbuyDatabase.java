@@ -15,8 +15,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Client.LogIn.User;
-import groupbuyapp.Client.LogIn.UserLoginData;
+import groupbuyapp.Client.LogIn.misc.User;
+import groupbuyapp.Client.LogIn.misc.UserLoginData;
 
 /**
  * The {@code GbuyProductDatabase} class is responsible for managing the database operations related to products in the Gbuy application.

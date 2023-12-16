@@ -8,9 +8,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerPasswordField;
@@ -21,8 +23,16 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
 public class SignUp extends JPanel{
     SignUpForm signUpForm;
 
+    public SignUpForm getSignUpForm() {
+        return signUpForm;
+    }
+
     public JLabel getSignInLabel(){
         return signUpForm.footer.signInLabel;
+    }
+
+    public JButton getSignUpButton(){
+        return signUpForm.getCenter().getSignUpbutton();
     }
 
     public SignUp(){
@@ -50,6 +60,15 @@ public class SignUp extends JPanel{
         Header header;
         Center center;
         Footer footer;
+        public Header getHeader() {
+            return header;
+        }
+        public Center getCenter() {
+            return center;
+        }
+        public Footer getFooter() {
+            return footer;
+        }
         public SignUpForm(){
             setArcs(new Dimension(20, 20));
             setDrawBorder(true);
@@ -90,6 +109,11 @@ public class SignUp extends JPanel{
         RoundedCornerPasswordField confirmPasswordField;
         RoundedCornerTextField usernameField;
         RoundedButton signUpbutton;
+
+
+        public RoundedButton getSignUpbutton() {
+            return signUpbutton;
+        }
 
 
         public Center(){

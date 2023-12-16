@@ -8,28 +8,36 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import groupbuyapp.Client.Center.Content.Browser.Browser;
+import groupbuyapp.Client.Center.Content.Controller.ContentController;
+import groupbuyapp.Client.Center.Content.Controller.ListDisplayerFactory;
 import groupbuyapp.Client.Center.Content.Home.Home;
+import groupbuyapp.Client.Center.Content.ListingDisplayer.ListDisplayer;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
+import groupbuyapp.Client.Center.Content.ProductContainers.ListDisplayerController;
 import groupbuyapp.Client.Center.TopNavBar.TopNavBar;
-import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 
 public class Content extends JPanel{
     private User currentUser;
     private JPanel contentContainer;
+
     private Home home;
-    private ListingDisplayer myListings;
-    private ListingDisplayer myGroupbuys;
-    private CardLayout layout;
+
+    private ListDisplayer newMyListing;
+    private ListDisplayer newMyGroupbuys;
+
+
     private Browser browser;
-    private int currentPanel;
     private TopNavBar topNavBar;
-    private static final int IN_HOME = 1;
-    private static final int IN_MY_LISTINGS = 2;
-    private static final int IN_MY_GROUPBUYS = 3;
-    private static final int IN_BROWSE_GROUPBUYS = 4;
-    
+    private CardLayout layout;
+    private ContentController contentController;
+
+    public ContentController getContentController() {
+        return contentController;
+    }
+
     public CardLayout getLayout() {
         return layout;
     }
@@ -42,15 +50,15 @@ public class Content extends JPanel{
         return contentContainer;
     }
     
-    public ListingDisplayer getMyListings() {
-        return myListings;
+    public ListDisplayer getMyListings() {
+        return newMyListing;
     }
     
-    public ListingDisplayer getMyGroupbuys() {
-        return myGroupbuys;
+    public ListDisplayer getMyGroupbuys() {
+        return newMyGroupbuys;
     }
     
-    public Browser getNewBrowser() {
+    public Browser getBrowser() {
         return browser;
     }
 
@@ -83,67 +91,31 @@ public class Content extends JPanel{
         });
         
         home = new Home(browser, currentUser, Content.this, sideBar);
-        myListings = new ListingDisplayer(currentUser, ListingDisplayer.MY_LISTING_PANEL, Content.this, sideBar);
-        myGroupbuys = new ListingDisplayer(currentUser, ListingDisplayer.MY_GROUPBUYS_PANEL, Content.this, sideBar);
+
         browser = new Browser(currentUser, Content.this, sideBar);
         
+        ListDisplayerFactory l = new ListDisplayerFactory();
+        newMyListing = l.create(ListDisplayerFactory.MY_LISTING_PANEL, currentUser);
+        l = new ListDisplayerFactory();
+        newMyGroupbuys = l.create(ListDisplayerFactory.MY_GROUPBUYS_PANEL, currentUser);
+
+
         contentContainer = new JPanel();
         layout = new CardLayout();
 
         contentContainer.setLayout(layout);
         contentContainer.add(home, HOME);
-        contentContainer.add(myListings, MY_LISTINGS);
-        contentContainer.add(myGroupbuys, MY_GROUPBUYS);
+        contentContainer.add(newMyListing, MY_LISTINGS);
+        contentContainer.add(newMyGroupbuys, MY_GROUPBUYS);
         contentContainer.add(browser, BROWSE_GROUPBUYS);
 
         setBackground(GbuyColor.PANEL_COLOR);
         setLayout(new BorderLayout());
 
         add(contentContainer, BorderLayout.CENTER);
-        this.currentPanel = IN_HOME;
-    }
 
-    public void showHome(){
-        if(Current_Panel_Is(IN_HOME)){
-            home.refresh();
-        }
-        // home.refresh();
-        layout.show(contentContainer, HOME);
+        contentController = new ContentController(this, ContentController.IN_HOME);
+        ListDisplayerController myListingController = new ListDisplayerController(newMyListing, currentUser);
+        ListDisplayerController myGroupbuyController = new ListDisplayerController(newMyGroupbuys, currentUser);
     }
-
-    public void showMyListings(){
-        if(Current_Panel_Is(IN_MY_LISTINGS)){
-            myListings.refresh();
-        }
-
-        layout.show(contentContainer, MY_LISTINGS);
-    }
-
-    public void showMyGroupBuys(){
-        if(Current_Panel_Is(IN_MY_GROUPBUYS)){
-            myGroupbuys.refresh();
-        }
-        myGroupbuys.refresh();
-        layout.show(contentContainer, MY_GROUPBUYS);
-    }
-
-    public void showBrowseGroupbuys(){
-        if(Current_Panel_Is(IN_BROWSE_GROUPBUYS)){
-            browser.refresh();
-            browser.showBrowserPage();
-        }
-        // browser.refresh();
-        // browser.showBrowserPage();
-        layout.show(contentContainer, BROWSE_GROUPBUYS);
-    }
-
-    private boolean Current_Panel_Is(int desiredPanel){         //when a sidebar button is clicked twice, the current panel will refresh   
-        if(currentPanel == desiredPanel){
-            return true;
-        } else {
-            currentPanel = desiredPanel;
-            return false;
-        }
-    }
-    
 }

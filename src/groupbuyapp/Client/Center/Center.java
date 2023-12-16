@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.TopNavBar.TopNavBar;
-import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Client.SideBar.SideBar;
 
 public class Center extends JPanel{

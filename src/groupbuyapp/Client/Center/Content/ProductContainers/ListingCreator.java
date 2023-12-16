@@ -40,7 +40,7 @@ import javax.swing.filechooser.FileFilter;
 import com.github.lgooddatepicker.components.DateTimePicker;
 
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
-import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerComboBox;

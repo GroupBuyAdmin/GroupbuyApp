@@ -3,27 +3,26 @@ package groupbuyapp.Client;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
 import groupbuyapp.Client.Center.Center;
-import groupbuyapp.Client.LogIn.User;
+import groupbuyapp.Client.LogIn.misc.User;
 import groupbuyapp.Client.SideBar.SideBar;
-import groupbuyapp.Client.SideBar.Buttons.Buttons;
 
 public class MainFrame extends JFrame{
     private User currentUser;
+    private MainFrameController mainFrameController;
+    private Center center;
+    private SideBar sideBar;
     
+    public MainFrameController getMainFrameController() {
+        return mainFrameController;
+    }
+
     public User getCurrentUser() {
         return currentUser;
     }
-
-    private Center center;
-    private SideBar sideBar;
 
     public MainFrame(){
         this(null);
@@ -33,14 +32,13 @@ public class MainFrame extends JFrame{
         this.currentUser = user;
         setFrame();
         this.sideBar = new SideBar();
-        initializeSideBarControls();
         this.center = new Center(currentUser, sideBar);
-
         Container pane = getContentPane();
-
         pane.setLayout(new BorderLayout());
         pane.add(sideBar, BorderLayout.WEST);
         pane.add(center, BorderLayout.CENTER);
+        this.mainFrameController = new MainFrameController(center, sideBar);
+        mainFrameController.init();
 
     }
 
@@ -51,55 +49,5 @@ public class MainFrame extends JFrame{
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-    }
-
-    private void initializeSideBarControls(){
-        sideBar.getButtons().getHomeButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                center.getContent().showHome();
-                sideBar.getButtons().setSelected(Buttons.HOME);
-            }
-        });
-
-        sideBar.getButtons().getMyListingsButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                center.getContent().showMyListings();
-                sideBar.getButtons().setSelected(Buttons.MY_LISTINGS);
-            }
-        });
-
-        sideBar.getButtons().getMyGroupbuysButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                center.getContent().showMyGroupBuys();
-                sideBar.getButtons().setSelected(Buttons.MY_GROUPBUYS);
-            }
-        });
-
-        sideBar.getButtons().getBrowseGroupbuysButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                center.getContent().showBrowseGroupbuys();
-                sideBar.getButtons().setSelected(Buttons.BROWSE_GROUPBUYS);
-            }
-        });
-
-        sideBar.getLogo().getLogoContainer().addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                center.getContent().showHome();
-                sideBar.getButtons().setSelected(Buttons.HOME);
-            }
-            @Override
-            public void mousePressed(MouseEvent e) {}
-            @Override
-            public void mouseReleased(MouseEvent e) {}
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-            @Override
-            public void mouseExited(MouseEvent e) {}
-        });
     }
 }

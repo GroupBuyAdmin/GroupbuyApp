@@ -26,6 +26,19 @@ public class RoundedButton extends JButton {
     private boolean drawBorder;
     protected int cornerRadius;
     
+
+    public RoundedButton(){
+        super();
+        this.buttonColor = getBackground();
+        this.cornerRadius = 10;
+        this.borderColor = Color.black;
+        this.drawBorder = true;
+        getFont();
+        setContentAreaFilled(false); 
+        updateHoverColor();
+        updatePressedColor();
+    }
+
     /**
      * Constructs a new RoundedButton object with the given text.
      * 

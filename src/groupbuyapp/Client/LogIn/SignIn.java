@@ -10,9 +10,11 @@ import java.awt.Insets;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import groupbuyapp.Client.LogIn.misc.UserLoginData;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerPasswordField;
@@ -22,6 +24,26 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
 public class SignIn extends JPanel{
     ImageContainer imageContainer;
     DetailsPanel detailsPanel;
+
+    public ImageContainer getImageContainer() {
+        return imageContainer;
+    }
+
+    public DetailsPanel getDetailsPanel() {
+        return detailsPanel;
+    }
+
+    public RoundedCornerTextField getUserNameField(){
+        return detailsPanel.getSignInForm().getCenter().getUsernameField();
+    }
+
+    public JLabel getSignUpLabel(){
+        return detailsPanel.getSignInForm().getFooter().getSignUpLabel();
+    }
+
+    public JButton getSignInButton(){
+        return detailsPanel.getSignInForm().getCenter().getSignInButton();
+    }
 
     public SignIn(){
         setBackground(GbuyColor.PANEL_COLOR);
@@ -59,6 +81,10 @@ public class SignIn extends JPanel{
     class DetailsPanel extends JPanel{
         SignInForm signInForm;
 
+        public SignInForm getSignInForm() {
+            return signInForm;
+        }
+
         public DetailsPanel(){
             signInForm = new SignInForm();
             setLayout(new FlowLayout(FlowLayout.CENTER, 30, 50));
@@ -71,6 +97,18 @@ public class SignIn extends JPanel{
         Header header;
         Center center;
         Footer footer;
+
+        public Header getHeader() {
+            return header;
+        }
+
+        public Center getCenter() {
+            return center;
+        }
+
+        public Footer getFooter() {
+            return footer;
+        }
 
         public SignInForm(){
             setOpaque(false);
@@ -109,6 +147,18 @@ public class SignIn extends JPanel{
             RoundedCornerPasswordField passwordField;
             RoundedButton signInButton;
             
+            public RoundedCornerTextField getUsernameField() {
+                return usernameField;
+            }
+
+            public RoundedCornerPasswordField getPasswordField() {
+                return passwordField;
+            }
+
+            public RoundedButton getSignInButton() {
+                return signInButton;
+            }
+
             public Center(){
                 setOpaque(false);
                 JLabel usernameLabel = new JLabel("Username");
@@ -172,6 +222,9 @@ public class SignIn extends JPanel{
 
         class Footer extends JPanel{
             JLabel signUpLabel;
+            public JLabel getSignUpLabel() {
+                return signUpLabel;
+            }
             public Footer(){    
                 setOpaque(false);
                 JLabel string = new JLabel("Don't have an Account? ");
