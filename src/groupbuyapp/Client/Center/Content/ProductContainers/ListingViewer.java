@@ -64,7 +64,6 @@ public class ListingViewer extends RoundedPanel{
     public Product getProduct() {return product;} 
     public void setProduct(Product product) {this.product = product;}
 
-
     public ListingViewer(Product product, int fromWhere, User currentUser, Content content){
         this(product, false, fromWhere, currentUser, null, content, null);
     }
@@ -88,7 +87,6 @@ public class ListingViewer extends RoundedPanel{
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-
         this.backButton = new RoundedButton("Back <-");
         backButton.setButtonColor(GbuyColor.PANEL_COLOR);
         backButton.setForeground(GbuyColor.MAIN_COLOR);
@@ -102,8 +100,6 @@ public class ListingViewer extends RoundedPanel{
         add(buttonContainer, BorderLayout.NORTH);
         add(imagePanel, BorderLayout.CENTER);
         add(detailsPanel, BorderLayout.EAST);
-
-
     }
 
     class ImagePanel extends JPanel{
@@ -290,7 +286,6 @@ public class ListingViewer extends RoundedPanel{
                 expiredPanel.add(label);
                 buttonPanels.add(expiredPanel, BorderLayout.EAST);
             }
-
             else if (fromWhere != FROM_MY_LISTING){
                 if(p.userCount != p.userLimit) {                    
                     buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
@@ -338,8 +333,6 @@ public class ListingViewer extends RoundedPanel{
                         }
                     });
                 } else {
-
-  
                         RoundedPanel completedPanel = new RoundedPanel();
                         completedPanel.setBackground(GbuyColor.COMPLETED_COLOR);
                         completedPanel.setShady(false);
@@ -359,7 +352,7 @@ public class ListingViewer extends RoundedPanel{
             add(descScrollPanel, BorderLayout.CENTER);
             add(buttonPanels, BorderLayout.SOUTH);
 
-            if(product.getProductStatus().equals("expired")){
+            if(product.getProductStatus().equals("expired") && isUser){
                 JOptionPane.showMessageDialog(null, "Your listing has expired, You may reschedule or delete your listing throught the edit button");
             }
         }

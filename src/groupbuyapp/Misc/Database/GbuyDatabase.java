@@ -1,5 +1,4 @@
 package groupbuyapp.Misc.Database;
-
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,9 +36,6 @@ public class GbuyDatabase {
 
     private String query = null;
     private Connection connection = null;
-    private PreparedStatement preparedStatement = null;
-    private ResultSet resultSet = null;
-
 
     private GbuyDatabase(){
         try {
@@ -82,32 +78,37 @@ public class GbuyDatabase {
 
     public void insertProduct(SingleProductContainer spc){
         try {
-            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId, productUserLimit, productDeadline) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setString(1, spc.productName);
-            preparedStatement.setString(2, spc.productCategory);
-            preparedStatement.setDouble(3, spc.productPrice);
-            preparedStatement.setString(4, spc.productDescription);
-            preparedStatement.setString(5, spc.productLocation);
-            try (FileInputStream inputStream = new FileInputStream(spc.selectedFile)) {
-                byte[] imageData = new byte[(int) spc.selectedFile.length()];
-                inputStream.read(imageData);
-                preparedStatement.setBytes(6, imageData);
+            // Validate the input
+            if (spc == null || spc.productName == null || spc.productCategory == null || spc.productDescription == null || spc.productLocation == null || spc.selectedFile == null || spc.productStatus == null || spc.deadlineString == null) {
+                throw new IllegalArgumentException("Invalid input");
             }
-            preparedStatement.setString(7, spc.productStatus);
-            preparedStatement.setInt(8, spc.creatorID);
-            preparedStatement.setInt(9, spc.userLimit);
-            Timestamp timeStamp = convertDateToTimestamp(spc.deadlineString);
-            preparedStatement.setTimestamp(10, timeStamp);
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println(rowsAffected + " row(s) affected");
-            System.out.println(spc.productName + " was product added");
+            query = "INSERT INTO products (productName, productCategory, productPrice, productDescription, productLocation, productImage, productStatus, productCreatorId, productUserLimit, productDeadline) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, spc.productName);
+                preparedStatement.setString(2, spc.productCategory);
+                preparedStatement.setDouble(3, spc.productPrice);
+                preparedStatement.setString(4, spc.productDescription);
+                preparedStatement.setString(5, spc.productLocation);
+                try (FileInputStream inputStream = new FileInputStream(spc.selectedFile)) {
+                    byte[] imageData = new byte[(int) spc.selectedFile.length()];
+                    inputStream.read(imageData);
+                    preparedStatement.setBytes(6, imageData);
+                }
+                preparedStatement.setString(7, spc.productStatus);
+                preparedStatement.setInt(8, spc.creatorID);
+                preparedStatement.setInt(9, spc.userLimit);
+                Timestamp timeStamp = convertDateToTimestamp(spc.deadlineString);
+                preparedStatement.setTimestamp(10, timeStamp);
 
+                int rowsAffected = preparedStatement.executeUpdate();
+                System.out.println(rowsAffected + " row(s) affected");
+                System.out.println(spc.productName + " was product added");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private Timestamp convertDateToTimestamp(String dateTimeString){
@@ -132,11 +133,8 @@ public class GbuyDatabase {
     
     public List<Product> getProducts(){
         List<Product> allproducts = new ArrayList<>();
-        try {
-
-            query = "SELECT * FROM `products`";
-            preparedStatement = connection.prepareStatement(query);
-            resultSet = preparedStatement.executeQuery();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `products`");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while(resultSet.next()){
                 int productID = resultSet.getInt("productID");
@@ -160,12 +158,11 @@ public class GbuyDatabase {
                 Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
                 p.setId(productID);
                 allproducts.add(p);
-
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } 
         return allproducts;
     }
 
@@ -173,32 +170,33 @@ public class GbuyDatabase {
         List<Product> allListings = new ArrayList<>();
         try {
             query = "SELECT * FROM `products` WHERE `productCreatorID` = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, user.getUserID());
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-                int productID = resultSet.getInt("productID");
-                String productName = resultSet.getString("productName");
-                String productCategory = resultSet.getString("productCategory");
-                double productPrice = resultSet.getDouble("productPrice");
-                String productDescription = resultSet.getString("productDescription");
-                String productLocation = resultSet.getString("productLocation");
-                byte[] byteImage = resultSet.getBytes("productImage");
-            
-                //convert image data to image object
-                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
-                
-                String productStatus = resultSet.getString("productStatus");
-                int creatorId = resultSet.getInt("productCreatorID");
-                
-                int userLimit = resultSet.getInt("productUserLimit");
-                
-                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
-                
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
-                p.setId(productID);
-                allListings.add(p);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, user.getUserID());
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        int productID = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                    
+                        //convert image data to image object
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
+                        
+                        int userLimit = resultSet.getInt("productUserLimit");
+                        
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(productID);
+                        allListings.add(p);
+                    }
+                }
             }
 
         } catch (Exception e) {
@@ -207,253 +205,37 @@ public class GbuyDatabase {
         return allListings;
     }
 
-    /**
-     * Deletes a product from the database based on the provided product ID.
-     *
-     * @param productIdToDelete The ID of the product to be deleted from the database.
-     */
-    
-    public void deleteProduct(int productIdToDelete){
-        try {
-            query = "DELETE FROM `products` WHERE `productId` = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, productIdToDelete);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Row with ID " + productIdToDelete + " deleted successfully.");
-            } else {
-                System.out.println("No rows deleted. ID " + productIdToDelete + " not found.");
-            }
-
-            preparedStatement.close();
-        
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Updates a product in the database with new information provided by the user.
-     *
-     * @param spc The SingleProductContainer object that contains the new information for the product.
-     * @param productIdtoEdit An integer representing the ID of the product to be edited.
-     */
-
-    public void editProduct(SingleProductContainer spc, int productIdtoEdit){
-        try {
-            query = "UPDATE products SET productName = ?, productCategory = ?, productPrice = ?, productDescription = ?, productLocation = ?, productImage = ?, productUserLimit = ?, productDeadline = ? WHERE productId = ?";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setString(1, spc.productName);
-            preparedStatement.setString(2, spc.productCategory);
-            preparedStatement.setDouble(3, spc.productPrice);  
-            preparedStatement.setString(4, spc.productDescription);
-            preparedStatement.setString(5, spc.productLocation);  
-            try (FileInputStream inputStream = new FileInputStream(spc.selectedFile)) {
-                byte[] imageData = new byte[(int) spc.selectedFile.length()];
-                inputStream.read(imageData);
-                preparedStatement.setBytes(6, imageData);
-            }
-
-            preparedStatement.setInt(7, spc.userLimit);
-
-            Timestamp timestamp = convertDateToTimestamp(spc.deadlineString);
-
-            preparedStatement.setTimestamp(8, timestamp);
-
-            preparedStatement.setInt(9, productIdtoEdit);  
-            int rowsAffected = preparedStatement.executeUpdate();
-
-
-            if (rowsAffected > 0) {
-                System.out.println("Update successful");
-            } else {
-                System.out.println("No rows updated. Check if the productId exists.");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Retrieves a single product from the database based on the provided product ID.
-     *
-     * @param productID The ID of the product to be retrieved from the database.
-     * @return SingleProductContainer object containing the details of the retrieved product from the database.
-     */
-    
-    public SingleProductContainer getSingleProduct(int productID){
-        SingleProductContainer spc = new SingleProductContainer();
-        try {
-            query = "SELECT * FROM products WHERE productId = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, productID);
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                spc.productName = resultSet.getString("productName");
-                spc.productCategory = resultSet.getString("productCategory");
-                spc.productPrice = resultSet.getDouble("productPrice");
-                spc.productDescription = resultSet.getString("productDescription");
-                spc.productLocation = resultSet.getString("productLocation");
-                spc.byteImage = resultSet.getBytes("productImage");
-                spc.userLimit = resultSet.getInt("productUserLimit");
-                spc.deadlineStamp = resultSet.getTimestamp("productDeadline");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return spc;
-    }
-
-
-    public void uploadUser(User user){
-        try {
-            query = "INSERT INTO users (userName, userPassword, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setString(1, user.getUserName());
-            preparedStatement.setString(2, user.getUserPassword());
-            preparedStatement.setString(3, user.getFirstName());
-            preparedStatement.setString(4, user.getLastName());
-            preparedStatement.setString(5, user.getLastName());
-            
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("uploaded user");
-            } else {
-                System.out.println("No rows updated.");
-            }
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public User getUser(UserLoginData uld){
-        try{
-            query = "SELECT * FROM users WHERE userName = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, uld.username);
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){       //if username is found
-                if(resultSet.getString("userPassword").equals(uld.password)){   //if password matches
-                    System.out.println("password match");
-                    int userID = resultSet.getInt("userID");
-                    String userName = resultSet.getString("userName");
-                    String userPassword = resultSet.getString("userPassword");
-                    String firstName = resultSet.getString("firstName");
-                    String lastName = resultSet.getString("lastName");
-                    String email = resultSet.getString("email");
-                    User user = new User(userName, userPassword, firstName, lastName, email);
-                    user.setUserID(userID);
-                    return user;
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-
-    public boolean userExists(User user){
-        try{
-            query = "SELECT * FROM users WHERE userName = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user.getUserName());
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public String getUserName(int userId){
-        try{
-            query = "SELECT userName FROM users WHERE userId = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, userId);
-            resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                return resultSet.getString("userName");
-            } else {
-                return null;
-            }
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-    
-    public int getUserID(User user){
-        try{
-            query = "SELECT * FROM users WHERE userName = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user.getUserName());
-            
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){       //if username is found
-                System.out.println("user id found");
-                int userID = resultSet.getInt("userID");
-                return userID;
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        
-        return -1;
-    }
-
     public List<Product> getCategorizedProducts(String category, int creatorID){
         List<Product> allProducts = new ArrayList<>();
         try {
             query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ? AND `productUserCount` < `productUserLimit` AND `productStatus` != \"expired\"";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, category);
-            preparedStatement.setInt(2, creatorID);
-            resultSet = preparedStatement.executeQuery();
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, category);
+                preparedStatement.setInt(2, creatorID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        int productID = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                    
+                        //convert image data to image object
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
 
-            while(resultSet.next()){
-                int productID = resultSet.getInt("productID");
-                String productName = resultSet.getString("productName");
-                String productCategory = resultSet.getString("productCategory");
-                double productPrice = resultSet.getDouble("productPrice");
-                String productDescription = resultSet.getString("productDescription");
-                String productLocation = resultSet.getString("productLocation");
-                byte[] byteImage = resultSet.getBytes("productImage");
-            
-                //convert image data to image object
-                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
-                
-                String productStatus = resultSet.getString("productStatus");
-                int creatorId = resultSet.getInt("productCreatorID");
-
-                int userLimit = resultSet.getInt("productUserLimit");
-                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
-                
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
-                p.setId(productID);
-                allProducts.add(p);
+                        int userLimit = resultSet.getInt("productUserLimit");
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(productID);
+                        allProducts.add(p);
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -465,17 +247,16 @@ public class GbuyDatabase {
     public boolean checkForCategory(String category, int creatorID){
         List<Product> categorizedProduct = new ArrayList<>();
         try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
             query = "SELECT * FROM products WHERE productCategory = ? AND productCreatorID != ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, category);
-            preparedStatement.setInt(2, creatorID);
-            
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){       
-                System.out.println("category found");
-                categorizedProduct.add(new Product());
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, category);
+                preparedStatement.setInt(2, creatorID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){       
+                        System.out.println("category found");
+                        categorizedProduct.add(new Product());
+                    }
+                }
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -485,127 +266,6 @@ public class GbuyDatabase {
             return false;
         } else {
             return true;
-        }
-    }
-
-    public SingleProductContainer getProductUserCountAndLimit(int productID){
-        SingleProductContainer spc = new SingleProductContainer();
-        try{
-            
-            query = "SELECT productUserCount, productUserLimit, productStatus FROM products WHERE productID = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, productID);
-            
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){      
-                spc.userCount = resultSet.getInt("productUserCount");
-                spc.userLimit = resultSet.getInt("productUserLimit");
-                spc.productStatus = resultSet.getString("productStatus");
-                return spc;
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        
-        return spc;
-    }
-
-    public void createGroupbuy(int productID, int userID){
-        try{
-            // Class.forName(driver);
-            // connection = DriverManager.getConnection(url, username, password);
-            query = "INSERT INTO groupbuys(productID, userID) VALUES (?, ?)";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, productID);
-            preparedStatement.setInt(2, userID);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println(rowsAffected + " row(s) affected");
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        incrementUserCount(productID);
-    }
-
-    private void incrementUserCount(int productID){
-        try {
-            query = "UPDATE products SET productUserCount = productUserCount + 1 WHERE productID = ?";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, productID);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-
-
-            if (rowsAffected > 0) {
-                System.out.println("incremented");
-            } else {
-                System.out.println("No rows updated. Check if the productId exists.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean alreadyJoined(int productID, int userID){
-        // List<Integer> foundIds = new ArrayList<>();
-        try{
-
-            query = "SELECT * FROM groupbuys WHERE productID = ? AND userID = ?";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, productID);
-            preparedStatement.setInt(2, userID);
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
-                System.out.println("already joined");
-                return true;
-            }
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        System.out.println("haven't joined");
-        return false;
-    }
-
-    public void deleteGroupbuy(int productID, int userID){
-        try {
-            query = "DELETE FROM groupbuys WHERE productID = ? AND userID = ?";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, productID);
-            preparedStatement.setInt(2, userID);
-
-            preparedStatement.executeUpdate();
-            System.out.println("groupbuy deleted");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        decrementUserCount(productID);
-    }
-
-    private void decrementUserCount(int productID){
-        try {
-            query = "UPDATE products SET productUserCount = productUserCount - 1 WHERE productID = ?";
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, productID);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("decremented");
-            } else {
-                System.out.println("No rows updated. Check if the productId exists.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -628,36 +288,35 @@ public class GbuyDatabase {
             queryBuilder.append(")");
 
             query = queryBuilder.toString();
-            preparedStatement = connection.prepareStatement(query);
-
-            for(int i = 0; i < allproductIDs.size(); i++){
-                preparedStatement.setInt(i + 1, allproductIDs.get(i));
-            }
-
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-                int productID = resultSet.getInt("productID");
-                String productName = resultSet.getString("productName");
-                String productCategory = resultSet.getString("productCategory");
-                double productPrice = resultSet.getDouble("productPrice");
-                String productDescription = resultSet.getString("productDescription");
-                String productLocation = resultSet.getString("productLocation");
-                byte[] byteImage = resultSet.getBytes("productImage");
-            
-                //convert image data to image object
-                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
-                
-                String productStatus = resultSet.getString("productStatus");
-                int creatorId = resultSet.getInt("productCreatorID");
-                
-                int userLimit = resultSet.getInt("productUserLimit");
-                
-                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
-                
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
-                p.setId(productID);
-                allListings.add(p);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                for(int i = 0; i < allproductIDs.size(); i++){
+                    preparedStatement.setInt(i + 1, allproductIDs.get(i));
+                }
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        int productID = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                    
+                        //convert image data to image object
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
+                        
+                        int userLimit = resultSet.getInt("productUserLimit");
+                        
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(productID);
+                        allListings.add(p);
+                    }
+                }
             }
 
         } catch (Exception e) {
@@ -670,12 +329,13 @@ public class GbuyDatabase {
         List<Integer> allProductIDs = new ArrayList<>();
         try{
             query = "SELECT productID FROM groupbuys WHERE userID = ?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, userID);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-                allProductIDs.add(resultSet.getInt("productID"));
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, userID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        allProductIDs.add(resultSet.getInt("productID"));
+                    }
+                }
             }
 
         } catch (Exception e){
@@ -689,31 +349,31 @@ public class GbuyDatabase {
         List<Product> allProducts = new ArrayList<>();
 
         try {
-            query = "SELECT * FROM products WHERE (productName LIKE \"%" + searchItem + "%\" OR productDescription LIKE \"%" + searchItem + "%\") AND productCreatorID != ? AND productStatus != \"completed\"";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, useriD);
-
-            System.out.println(preparedStatement.toString());
-
-            resultSet = preparedStatement.executeQuery();
-            while(resultSet.next()){
-                int productID = resultSet.getInt("productID");
-                String productName = resultSet.getString("productName");
-                String productCategory = resultSet.getString("productCategory");
-                double productPrice = resultSet.getDouble("productPrice");
-                String productDescription = resultSet.getString("productDescription");
-                String productLocation = resultSet.getString("productLocation");
-                byte[] byteImage = resultSet.getBytes("productImage");
-                //convert image data to image object
-                ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
-                String productStatus = resultSet.getString("productStatus");
-                int creatorId = resultSet.getInt("productCreatorID");
-                int userLimit = resultSet.getInt("productUserLimit");                
-                Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
-                
-                Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
-                p.setId(productID);
-                allProducts.add(p);
+            query = "SELECT * FROM products WHERE (productName LIKE ? OR productDescription LIKE ?) AND productCreatorID != ? AND productStatus != \"completed\"";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, "%" + searchItem + "%");
+                preparedStatement.setString(2, "%" + searchItem + "%");
+                preparedStatement.setInt(3, useriD);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        int productID = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
+                        int userLimit = resultSet.getInt("productUserLimit");                
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(productID);
+                        allProducts.add(p);
+                    }
+                }
             }
 
         } catch (Exception e) {
@@ -722,5 +382,345 @@ public class GbuyDatabase {
 
 
         return allProducts;
+    }
+
+    /**
+     * Deletes a product from the database based on the provided product ID.
+     *
+     * @param productIdToDelete The ID of the product to be deleted from the database.
+     */
+    
+    public void deleteProduct(int productIdToDelete){
+        try {
+            query = "DELETE FROM `products` WHERE `productId` = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productIdToDelete);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Row with ID " + productIdToDelete + " deleted successfully.");
+                } else {
+                    System.out.println("No rows deleted. ID " + productIdToDelete + " not found.");
+                }
+            }
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Updates a product in the database with new information provided by the user.
+     *
+     * @param spc The SingleProductContainer object that contains the new information for the product.
+     * @param productIdtoEdit An integer representing the ID of the product to be edited.
+     */
+
+    public void editProduct(SingleProductContainer spc, int productIdtoEdit){
+        try {
+            query = "UPDATE products SET productName = ?, productCategory = ?, productPrice = ?, productDescription = ?, productLocation = ?, productImage = ?, productUserLimit = ?, productDeadline = ? WHERE productId = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, spc.productName);
+                preparedStatement.setString(2, spc.productCategory);
+                preparedStatement.setDouble(3, spc.productPrice);  
+                preparedStatement.setString(4, spc.productDescription);
+                preparedStatement.setString(5, spc.productLocation);  
+                try (FileInputStream inputStream = new FileInputStream(spc.selectedFile)) {
+                    byte[] imageData = new byte[(int) spc.selectedFile.length()];
+                    inputStream.read(imageData);
+                    preparedStatement.setBytes(6, imageData);
+                }
+
+                preparedStatement.setInt(7, spc.userLimit);
+
+                Timestamp timestamp = convertDateToTimestamp(spc.deadlineString);
+
+                preparedStatement.setTimestamp(8, timestamp);
+
+                preparedStatement.setInt(9, productIdtoEdit);  
+                int rowsAffected = preparedStatement.executeUpdate();
+
+
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful");
+                } else {
+                    System.out.println("No rows updated. Check if the productId exists.");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Retrieves a single product from the database based on the provided product ID.
+     *
+     * @param productID The ID of the product to be retrieved from the database.
+     * @return SingleProductContainer object containing the details of the retrieved product from the database.
+     */
+    
+    public SingleProductContainer getSingleProduct(int productID){
+        SingleProductContainer spc = new SingleProductContainer();
+        try {
+            query = "SELECT * FROM products WHERE productId = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        spc.productName = resultSet.getString("productName");
+                        spc.productCategory = resultSet.getString("productCategory");
+                        spc.productPrice = resultSet.getDouble("productPrice");
+                        spc.productDescription = resultSet.getString("productDescription");
+                        spc.productLocation = resultSet.getString("productLocation");
+                        spc.byteImage = resultSet.getBytes("productImage");
+                        spc.userLimit = resultSet.getInt("productUserLimit");
+                        spc.deadlineStamp = resultSet.getTimestamp("productDeadline");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return spc;
+    }
+
+
+    public void uploadUser(User user){
+        try {
+            query = "INSERT INTO users (userName, userPassword, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, user.getUserName());
+                preparedStatement.setString(2, user.getUserPassword());
+                preparedStatement.setString(3, user.getFirstName());
+                preparedStatement.setString(4, user.getLastName());
+                preparedStatement.setString(5, user.getLastName());
+                
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("uploaded user");
+                } else {
+                    System.out.println("No rows updated.");
+                }
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public User getUser(UserLoginData uld){
+        try{
+            query = "SELECT * FROM users WHERE userName = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, uld.username);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){       //if username is found
+                        if(resultSet.getString("userPassword").equals(uld.password)){   //if password matches
+                            System.out.println("password match");
+                            int userID = resultSet.getInt("userID");
+                            String userName = resultSet.getString("userName");
+                            String userPassword = resultSet.getString("userPassword");
+                            String firstName = resultSet.getString("firstName");
+                            String lastName = resultSet.getString("lastName");
+                            String email = resultSet.getString("email");
+                            User user = new User(userName, userPassword, firstName, lastName, email);
+                            user.setUserID(userID);
+                            return user;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+
+    public boolean userExists(User user){
+        try{
+            query = "SELECT * FROM users WHERE userName = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, user.getUserName());
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public String getUserName(int userId){
+        try{
+            query = "SELECT userName FROM users WHERE userId = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, userId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        return resultSet.getString("userName");
+                    } else {
+                        return null;
+                    }
+                }
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    public int getUserID(User user){
+        try{
+            query = "SELECT * FROM users WHERE userName = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, user.getUserName());
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){       //if username is found
+                        System.out.println("user id found");
+                        int userID = resultSet.getInt("userID");
+                        return userID;
+                    }
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
+
+    public SingleProductContainer getProductUserCountAndLimit(int productID){
+        SingleProductContainer spc = new SingleProductContainer();
+        try{
+            
+            query = "SELECT productUserCount, productUserLimit, productStatus FROM products WHERE productID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){      
+                        spc.userCount = resultSet.getInt("productUserCount");
+                        spc.userLimit = resultSet.getInt("productUserLimit");
+                        spc.productStatus = resultSet.getString("productStatus");
+                        return spc;
+                    }
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return spc;
+    }
+
+    public void createGroupbuy(int productID, int userID){
+        try{
+            query = "INSERT INTO groupbuys(productID, userID) VALUES (?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                preparedStatement.setInt(2, userID);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+                System.out.println(rowsAffected + " row(s) affected");
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        incrementUserCount(productID);
+    }
+
+    private void incrementUserCount(int productID){
+        try {
+            query = "UPDATE products SET productUserCount = productUserCount + 1 WHERE productID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("incremented");
+                } else {
+                    System.out.println("No rows updated. Check if the productId exists.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean alreadyJoined(int productID, int userID){
+        try{
+
+            query = "SELECT * FROM groupbuys WHERE productID = ? AND userID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                preparedStatement.setInt(2, userID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        System.out.println("already joined");
+                        return true;
+                    }
+                }
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("haven't joined");
+        return false;
+    }
+
+    public void deleteGroupbuy(int productID, int userID){
+        try {
+            query = "DELETE FROM groupbuys WHERE productID = ? AND userID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                preparedStatement.setInt(2, userID);
+
+                preparedStatement.executeUpdate();
+                System.out.println("groupbuy deleted");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        decrementUserCount(productID);
+    }
+
+    private void decrementUserCount(int productID){
+        try {
+            query = "UPDATE products SET productUserCount = productUserCount - 1 WHERE productID = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("decremented");
+                } else {
+                    System.out.println("No rows updated. Check if the productId exists.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

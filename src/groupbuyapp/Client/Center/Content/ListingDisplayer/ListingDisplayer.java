@@ -49,6 +49,8 @@ public class ListingDisplayer extends JPanel implements Refreshable{
 
     public static final String LIST_VIEW = "my listing";
     public static final String PRODUCT_VIEW = "product view";
+
+    
     private MyListingPanel myListingPanel;
     private List<ProductPanel> allContainers;
     private ListingViewer productView;
@@ -278,8 +280,8 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-            scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+            scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(8);
 
             setLayout(new BorderLayout());
             add(scrollPane, BorderLayout.CENTER);

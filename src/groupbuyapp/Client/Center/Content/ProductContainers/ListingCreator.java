@@ -556,7 +556,7 @@ public class ListingCreator {
                     nameTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            if(!editProduct)
+                            if(!editProduct && nameTextField.getText().isEmpty())
                                 nameTextField.setText("");
                         }
                         @Override
@@ -579,7 +579,7 @@ public class ListingCreator {
                     descTextArea.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            if(!editProduct)
+                            if(!editProduct && nameTextField.getText().isEmpty())
                                 descTextArea.setText("");
                         }
                         @Override
@@ -603,7 +603,7 @@ public class ListingCreator {
                     locationTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {   
-                            if(!editProduct)
+                            if(!editProduct && nameTextField.getText().isEmpty())
                                 locationTextField.setText("");
                         }
                         @Override
@@ -699,7 +699,7 @@ public class ListingCreator {
                     priceTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            if(!editProduct)
+                            if(!editProduct && priceTextField.getText().isEmpty())
                                 priceTextField.setText("");
                         }
                         @Override
@@ -718,7 +718,7 @@ public class ListingCreator {
 
                         @Override
                         public void focusGained(FocusEvent e) {
-                            if(!editProduct)
+                            if(!editProduct && userlimitField.getText().isEmpty())
                                 userlimitField.setText("");
                         }
 

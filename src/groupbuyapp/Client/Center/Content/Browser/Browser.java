@@ -61,6 +61,7 @@ public class Browser extends JPanel implements Refreshable{
         scrollPane = new JScrollPane(scrollablePanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollablePanel.setBackground(GbuyColor.PANEL_COLOR);
 

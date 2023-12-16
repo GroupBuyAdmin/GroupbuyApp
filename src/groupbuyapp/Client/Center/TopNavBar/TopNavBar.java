@@ -18,7 +18,7 @@ import groupbuyapp.Misc.Fonts.GbuyFont;
 
 public class TopNavBar extends JPanel{
     private SearchBar searchBar;
-
+    
     
     public SearchBar getSearchBar() {
         return searchBar;

@@ -3,6 +3,7 @@ package groupbuyapp.Client.Center.Content.Browser;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -155,7 +156,8 @@ public class CategoryPanel extends JPanel implements Refreshable{
             this.scrollpane = new JScrollPane(scrollablePanel);
             scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scrollpane.getHorizontalScrollBar().setUnitIncrement(16);
+            scrollpane.getHorizontalScrollBar().setUnitIncrement(8);
+            scrollpane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
             scrollpane.setBorder(BorderFactory.createEmptyBorder());
             setLayout(new BorderLayout());
             add(scrollpane);

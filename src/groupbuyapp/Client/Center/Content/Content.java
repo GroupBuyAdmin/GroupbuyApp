@@ -17,25 +17,14 @@ import groupbuyapp.Misc.ColorPalette.GbuyColor;
 
 public class Content extends JPanel{
     private User currentUser;
-
-
     private JPanel contentContainer;
-
-    
     private Home home;
     private ListingDisplayer myListings;
     private ListingDisplayer myGroupbuys;
     private CardLayout layout;
-
-    
     private Browser browser;
-    
     private int currentPanel;
-    
     private TopNavBar topNavBar;
-
-    private SideBar sidebar;
-    
     private static final int IN_HOME = 1;
     private static final int IN_MY_LISTINGS = 2;
     private static final int IN_MY_GROUPBUYS = 3;
@@ -93,8 +82,6 @@ public class Content extends JPanel{
             }
         });
         
-        this.sidebar = sideBar;
-
         home = new Home(browser, currentUser, Content.this, sideBar);
         myListings = new ListingDisplayer(currentUser, ListingDisplayer.MY_LISTING_PANEL, Content.this, sideBar);
         myGroupbuys = new ListingDisplayer(currentUser, ListingDisplayer.MY_GROUPBUYS_PANEL, Content.this, sideBar);
@@ -120,7 +107,7 @@ public class Content extends JPanel{
         if(Current_Panel_Is(IN_HOME)){
             home.refresh();
         }
-        home.refresh();
+        // home.refresh();
         layout.show(contentContainer, HOME);
     }
 
@@ -143,9 +130,10 @@ public class Content extends JPanel{
     public void showBrowseGroupbuys(){
         if(Current_Panel_Is(IN_BROWSE_GROUPBUYS)){
             browser.refresh();
+            browser.showBrowserPage();
         }
-        browser.refresh();
-        browser.showBrowserPage();
+        // browser.refresh();
+        // browser.showBrowserPage();
         layout.show(contentContainer, BROWSE_GROUPBUYS);
     }
 
