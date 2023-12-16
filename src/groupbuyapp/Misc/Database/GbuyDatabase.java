@@ -427,7 +427,7 @@ public class GbuyDatabase {
     public List<Product> getCategorizedProducts(String category, int creatorID){
         List<Product> allProducts = new ArrayList<>();
         try {
-            query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ? AND `productUserCount` < `productUserLimit`";
+            query = "SELECT * FROM `products` WHERE `productCategory` = ? AND `productCreatorID` != ? AND `productUserCount` < `productUserLimit` AND `productStatus` != \"expired\"";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, category);
             preparedStatement.setInt(2, creatorID);
@@ -492,7 +492,7 @@ public class GbuyDatabase {
         SingleProductContainer spc = new SingleProductContainer();
         try{
             
-            query = "SELECT productUserCount, productUserLimit FROM products WHERE productID = ?";
+            query = "SELECT productUserCount, productUserLimit, productStatus FROM products WHERE productID = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, productID);
             
@@ -500,6 +500,7 @@ public class GbuyDatabase {
             if(resultSet.next()){      
                 spc.userCount = resultSet.getInt("productUserCount");
                 spc.userLimit = resultSet.getInt("productUserLimit");
+                spc.productStatus = resultSet.getString("productStatus");
                 return spc;
             }
         } catch (Exception e){

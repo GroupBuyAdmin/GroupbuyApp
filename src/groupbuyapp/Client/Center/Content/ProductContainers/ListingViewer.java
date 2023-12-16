@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
 
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.Browser.Browser;
@@ -31,6 +30,7 @@ import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
+import groupbuyapp.Misc.CustomComponents.RoundedToggleButton;
 import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
@@ -73,7 +73,6 @@ public class ListingViewer extends RoundedPanel{
         this(product, false, fromWhere, currentUser, newBrowser, content, sideBar);
     }
 
-
     public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, Browser newBrowser, Content content, SideBar sidebar){
         this.product = product;
         this.isUser = isUser;
@@ -103,6 +102,8 @@ public class ListingViewer extends RoundedPanel{
         add(buttonContainer, BorderLayout.NORTH);
         add(imagePanel, BorderLayout.CENTER);
         add(detailsPanel, BorderLayout.EAST);
+
+
     }
 
     class ImagePanel extends JPanel{
@@ -153,7 +154,7 @@ public class ListingViewer extends RoundedPanel{
         private RoundedCornerTextArea descriptionArea;
         private RoundedButton joinButton;
         private RoundedButton unjoinButton;
-        private JToggleButton toggleJoinButton;
+        private RoundedToggleButton toggleJoinButton;
         private JLabel countLabel;
 
         public RoundedButton getEditButton() {return editButton;}
@@ -211,7 +212,9 @@ public class ListingViewer extends RoundedPanel{
             unjoinButton.setForeground(GbuyColor.ONGOING_COLOR);
             unjoinButton.setBorderColor(GbuyColor.ONGOING_COLOR);
 
-            this.toggleJoinButton = new JToggleButton();
+            this.toggleJoinButton = new RoundedToggleButton("");
+            toggleJoinButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+            toggleJoinButton.setDrawBorder(false);
 
             SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
             this.countLabel = new JLabel("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
@@ -275,24 +278,32 @@ public class ListingViewer extends RoundedPanel{
 
             buttonPanels.add(deadlineLabel, BorderLayout.NORTH);
             buttonPanels.add(countLabel, BorderLayout.WEST);
+            SingleProductContainer p = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
 
-            if(fromWhere != FROM_MY_LISTING){
-                SingleProductContainer p = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
-                if(p.userCount == p.userLimit){
-                    RoundedButton completedButton = new RoundedButton("completed");
-                    completedButton.setButtonColor(GbuyColor.COMPLETED_COLOR);
-                    completedButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
-                    completedButton.setEnabled(false);
-                    completedButton.setFocusable(false);
-                    buttonPanels.add(completedButton, BorderLayout.EAST);
-                } else {                    
+            if(p.productStatus.equals("expired")){
+                RoundedPanel expiredPanel = new RoundedPanel();
+                expiredPanel.setBackground(GbuyColor.EXPIRED_COLOR);
+                expiredPanel.setShady(false);
+                JLabel label = new JLabel("expired");
+                label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
+                label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                expiredPanel.add(label);
+                buttonPanels.add(expiredPanel, BorderLayout.EAST);
+            }
+
+            else if (fromWhere != FROM_MY_LISTING){
+                if(p.userCount != p.userLimit) {                    
                     buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
                     boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
     
                     if(joined){
                         toggleJoinButton.setText("Leave Groupbuy");
+                        toggleJoinButton.setDefaultColor(GbuyColor.MAIN_COLOR);
+                        toggleJoinButton.setPressedColor(GbuyColor.ONGOING_COLOR);
                     } else {
                         toggleJoinButton.setText("Join Groubuy");
+                        toggleJoinButton.setDefaultColor(GbuyColor.ONGOING_COLOR);
+                        toggleJoinButton.setPressedColor(GbuyColor.MAIN_COLOR);
                     }
                     toggleJoinButton.addActionListener(new ActionListener() {
                         @Override
@@ -302,25 +313,44 @@ public class ListingViewer extends RoundedPanel{
                                     GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
                                     JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
                                     toggleJoinButton.setText("Join Groubuy");
+                         
                                 } else {
                                     GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
                                     JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
                                     toggleJoinButton.setText("Leave Groupbuy");
+                          
                                 }
                             } else {
                                 if(toggleJoinButton.isSelected()){
                                     GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
                                     JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
                                     toggleJoinButton.setText("Leave Groupbuy");
+
+                                    
                                 } else {
                                     GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
                                     JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
                                     toggleJoinButton.setText("Join Groubuy");
+        
                                 }
                             }
                             updateCountLabel(countLabel);
                         }
                     });
+                } else {
+
+  
+                        RoundedPanel completedPanel = new RoundedPanel();
+                        completedPanel.setBackground(GbuyColor.COMPLETED_COLOR);
+                        completedPanel.setShady(false);
+                        JLabel label = new JLabel("completed");
+                        label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
+                        label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                        completedPanel.add(label);
+                        buttonPanels.add(completedPanel, BorderLayout.EAST);
+
+
+                    // buttonPanels.add(completedButton, BorderLayout.EAST);
                 }
 
             }
@@ -328,6 +358,10 @@ public class ListingViewer extends RoundedPanel{
             setLayout(new BorderLayout(0, 20));
             add(descScrollPanel, BorderLayout.CENTER);
             add(buttonPanels, BorderLayout.SOUTH);
+
+            if(product.getProductStatus().equals("expired")){
+                JOptionPane.showMessageDialog(null, "Your listing has expired, You may reschedule or delete your listing throught the edit button");
+            }
         }
 
         private void updateCountLabel(JLabel label){
@@ -349,5 +383,7 @@ public class ListingViewer extends RoundedPanel{
                 return null;
             }
         }
+
+
     }
 }

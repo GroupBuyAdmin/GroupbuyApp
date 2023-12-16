@@ -27,7 +27,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -63,7 +62,7 @@ public class ListingCreator {
     private JFrame mainFrame;
     private JPanel masterPanel;
 
-    private ListingDisplayer abstractList;
+    private ListingDisplayer listingDisplayer;
 
     public static final boolean EDIT = true;
     public static final boolean CREATE = false;
@@ -73,38 +72,38 @@ public class ListingCreator {
     private User currentUser;
 
     public ListingDisplayer getMyListings() {
-        return abstractList;
+        return listingDisplayer;
     }
 
     /**
      * Constructor for creating a new product listing. Initializes the GUI components and sets up the main frame.
-     * @param abstractList
+     * @param listingDisplayer
      */
 
-    public ListingCreator(ListingDisplayer abstractList, User currentUser){
-        this(abstractList, CREATE, null, currentUser);
+    public ListingCreator(ListingDisplayer listingDisplayer, User currentUser){
+        this(listingDisplayer, CREATE, null, currentUser);
     }
 
     /**
      * Constructor for editing an existing product listing. Initializes the GUI components with the existing product information.
-     * @param abstractList
+     * @param listingDisplayer
      * @param product
      */
 
-    public ListingCreator(ListingDisplayer abstractList, Product product, User currentUser){
-        this(abstractList, EDIT, product, currentUser);
+    public ListingCreator(ListingDisplayer listingDisplayer, Product product, User currentUser){
+        this(listingDisplayer, EDIT, product, currentUser);
     }
 
     /**
      * Constructor for the ListingCreator class.
      * 
-     * @param abstractList An instance of the abstractList class.
+     * @param listingDisplayer An instance of the listingDisplayer class.
      * @param editProduct A boolean value indicating whether the product is being edited or not.
      * @param product An instance of the Product class.
      */
     
-    public ListingCreator(ListingDisplayer abstractList, boolean editProduct, Product product, User currentUser){
-        this.abstractList = abstractList;
+    public ListingCreator(ListingDisplayer listingDisplayer, boolean editProduct, Product product, User currentUser){
+        this.listingDisplayer = listingDisplayer;
         this.editProduct = editProduct;
         this.product = product;
         this.currentUser = currentUser;
@@ -286,12 +285,12 @@ public class ListingCreator {
                         spc.creatorID = currentUser.getUserID();
                         spc.productStatus = "ongoing";
                         GbuyDatabase.getInstance().insertProduct(spc);
-                        abstractList.refresh();
+                        listingDisplayer.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
                     } else {
                         spc.productStatus = product.getProductStatus();
                         GbuyDatabase.getInstance().editProduct(spc, product.getId());
-                        abstractList.refresh();
+                        listingDisplayer.refresh();
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
                     }
                 }
@@ -322,7 +321,7 @@ public class ListingCreator {
                 public void actionPerformed(ActionEvent e) {
                     GbuyDatabase.getInstance().deleteProduct(product.getId());
                     JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
-                    abstractList.refresh();
+                    listingDisplayer.refresh();
                     mainFrame.dispose();
                
                 }
@@ -557,7 +556,8 @@ public class ListingCreator {
                     nameTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            nameTextField.setText("");
+                            if(!editProduct)
+                                nameTextField.setText("");
                         }
                         @Override
                         public void focusLost(FocusEvent e) {}
@@ -579,7 +579,8 @@ public class ListingCreator {
                     descTextArea.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            descTextArea.setText("");
+                            if(!editProduct)
+                                descTextArea.setText("");
                         }
                         @Override
                         public void focusLost(FocusEvent e) {}
@@ -602,8 +603,8 @@ public class ListingCreator {
                     locationTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {   
-                         
-                            locationTextField.setText("");
+                            if(!editProduct)
+                                locationTextField.setText("");
                         }
                         @Override
                         public void focusLost(FocusEvent e) {}
@@ -670,7 +671,7 @@ public class ListingCreator {
   
                     String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
                     this.comboBox = new RoundedCornerComboBox(categories);
-                    ImageIcon img = new ImageIcon("src/groupbuyapp/Client/Center/Content/abstractList/img/Arrow-Down.png");
+                    ImageIcon img = new ImageIcon("src/groupbuyapp/Client/Center/Content/listingDisplayer/img/Arrow-Down.png");
                     Icon customDropdownIcon = new ImageIcon(img.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH));
                     comboBox.setCustomDropdownIcon(customDropdownIcon);
                     comboBox.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
@@ -698,7 +699,8 @@ public class ListingCreator {
                     priceTextField.addFocusListener(new FocusListener() {
                         @Override
                         public void focusGained(FocusEvent e) {
-                            priceTextField.setText("");
+                            if(!editProduct)
+                                priceTextField.setText("");
                         }
                         @Override
                         public void focusLost(FocusEvent e) {
@@ -716,7 +718,8 @@ public class ListingCreator {
 
                         @Override
                         public void focusGained(FocusEvent e) {
-                            userlimitField.setText("");
+                            if(!editProduct)
+                                userlimitField.setText("");
                         }
 
                         @Override

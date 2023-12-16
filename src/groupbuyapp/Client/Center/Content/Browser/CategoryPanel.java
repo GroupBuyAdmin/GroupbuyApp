@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,8 +22,10 @@ import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
+import groupbuyapp.Client.SideBar.Buttons.Buttons;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.Database.GbuyDatabase;
+import groupbuyapp.Misc.Fonts.GbuyFont;
 import groupbuyapp.Misc.Interface.Refreshable;
 
 public class CategoryPanel extends JPanel implements Refreshable{
@@ -34,30 +37,64 @@ public class CategoryPanel extends JPanel implements Refreshable{
     Content content;
     SideBar sideBar;
 
+    int fromWhere;
+
+
+    public static final int HOME_MY_LISTING = 1;
+    public static final int HOME_MY_GROUPBUYS = 2;
+    public static final int HOME_BROWSER = 3;
+    public static final int JUST_CATEGORY = 4;
+
     public CategoryPanel(String category, Browser newBrowser, User currentUser, Content content, SideBar sideBar){
-        this.category = category;
-        this.newBrowser = newBrowser;
-        this.header = new Header();
-        this.sideScrollPanel = new SideScrollPanel();
+        this(JUST_CATEGORY, category, newBrowser, currentUser, content, sideBar);
+    }
+
+    public CategoryPanel(int fromWhere, String category, Browser newBrowser, User currentUser, Content content, SideBar sideBar){
         this.currentUser = currentUser;
         this.content = content;
         this.sideBar = sideBar;
+        this.fromWhere = fromWhere;
+
+        this.category = category;
+        this.newBrowser = newBrowser;
+        this.header = new Header(content, sideBar);
+        this.sideScrollPanel = new SideScrollPanel();
+
 
         setLayout(new BorderLayout());
         add(header, BorderLayout.NORTH);
         add(sideScrollPanel, BorderLayout.CENTER);
-
+        setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
+        setBackground(GbuyColor.PANEL_COLOR);
         refresh();
     }
 
     private void addToList(Product product, JPanel scrollablePanelRef){
-        ProductPanel pPanel = new ProductPanel(product, ProductPanel.BROWSER_PANEL);
-        pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser, content, sideBar));
+         ProductPanel pPanel = null;
+        if(fromWhere == JUST_CATEGORY){
+            pPanel = new ProductPanel(product, ProductPanel.BROWSER_PANEL);
+        } else {
+            pPanel = new ProductPanel(product);
+        }
+
+        if(fromWhere == JUST_CATEGORY){
+            pPanel.addMouseListener(new ContainerListener(pPanel, newBrowser, content, sideBar));
+        } else {
+            pPanel.addMouseListener(new HomeContainerListener(pPanel, content, this.sideBar, fromWhere));
+        }
         scrollablePanelRef.add(pPanel);
     }
 
     public void refresh(){
-        List<Product> dbProducts = GbuyDatabase.getInstance().getCategorizedProducts(category, currentUser.getUserID());
+        List<Product> dbProducts = null;
+        if(fromWhere == JUST_CATEGORY){
+            dbProducts = GbuyDatabase.getInstance().getCategorizedProducts(category, currentUser.getUserID());
+        } else if( fromWhere == HOME_MY_LISTING){
+            dbProducts = GbuyDatabase.getInstance().getMyListings(currentUser);
+        } else if(fromWhere == HOME_MY_GROUPBUYS){
+            dbProducts = GbuyDatabase.getInstance().getMyGroupbuys(currentUser);
+        }
+
         sideScrollPanel.scrollablePanel.removeAll();
         
         for(Product p : dbProducts){
@@ -71,14 +108,31 @@ public class CategoryPanel extends JPanel implements Refreshable{
     class Header extends JPanel{
         JLabel categoryName;
         JLabel seeAll;
+        Content content;
+        SideBar sideBar;
 
-        public Header(){
+        public Header(Content content, SideBar sideBar){
+            this.content = content;
+            this.sideBar = sideBar;
             setOpaque(false);
             setLayout(new BorderLayout());
 
             categoryName = new JLabel(category);
+            if(fromWhere == JUST_CATEGORY){
+                categoryName.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(16f));
+            } else {
+                categoryName.setFont(GbuyFont.MULI_BOLD.deriveFont(24f));
+            }
+            categoryName.setForeground(GbuyColor.MAIN_COLOR);
+
             seeAll = new JLabel("See All");
-            seeAll.addMouseListener(new SeeAllListener(seeAll, category, content, sideBar, newBrowser));
+            seeAll.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(12f));
+
+            if(fromWhere == JUST_CATEGORY){
+                seeAll.addMouseListener(new SeeAllListener(seeAll, category, content, sideBar, newBrowser));
+            } else {
+                seeAll.addMouseListener(new HomeSeeAllListener(categoryName, content, sideBar, fromWhere));
+            }
 
             categoryName.setHorizontalAlignment(JLabel.LEADING);
             seeAll.setHorizontalAlignment(JLabel.TRAILING);
@@ -96,11 +150,13 @@ public class CategoryPanel extends JPanel implements Refreshable{
             setOpaque(false);
 
             this.scrollablePanel = new JPanel();
+            scrollablePanel.setBackground(GbuyColor.PANEL_COLOR);
             scrollablePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
             this.scrollpane = new JScrollPane(scrollablePanel);
             scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollpane.getHorizontalScrollBar().setUnitIncrement(16);
+            scrollpane.setBorder(BorderFactory.createEmptyBorder());
             setLayout(new BorderLayout());
             add(scrollpane);
         }
@@ -205,5 +261,105 @@ public class CategoryPanel extends JPanel implements Refreshable{
             label.revalidate();
             label.repaint();
         }
+    }
+    private class HomeContainerListener extends MouseAdapter{
+        private final ProductPanel pPanel;
+        private Color oldColor;
+        private Content content;
+        private int fromWhere;
+
+        public HomeContainerListener(ProductPanel pPanel, Content content, SideBar sideBar, int fromWhere){
+            this.pPanel = pPanel;
+            this.content = content;
+            this.fromWhere = fromWhere;
+        }
+
+        public void mouseClicked(MouseEvent e){
+            ListingViewer pView = new ListingViewer(pPanel.getProduct(),fromWhere ,content.getCurrentUser() , content);
+            
+            pView.getBackButton().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    content.getHome().refresh();
+                    content.getLayout().show(content.getContentContainer(), Content.HOME);
+                }
+                
+            });
+
+            content.getContentContainer().add(pView, Content.HOME_VIEW);
+            content.revalidate();
+            content.repaint();
+            content.getLayout().show(content.getContentContainer(), Content.HOME_VIEW);
+        }
+
+        public void mouseEntered(MouseEvent e){
+            pPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            pPanel.getDetailsContainer().getNameLabel().setForeground(GbuyColor.MAIN_COLOR);
+            pPanel.revalidate();
+            pPanel.repaint();
+        }
+
+        public void mouseExited(MouseEvent e){
+            pPanel.getDetailsContainer().getNameLabel().setForeground(oldColor);
+            pPanel.setCursor(Cursor.getDefaultCursor());
+            pPanel.revalidate();
+            pPanel.repaint();
+        }
+    }
+
+    private static class HomeSeeAllListener extends MouseAdapter{
+        private final Color oldColor;
+        private final JLabel label;
+        private Content content;
+        private SideBar sideBar;
+        private String destination;
+        private int buttonSet;
+
+        public HomeSeeAllListener(JLabel label, Content content, SideBar sideBar, int fromWhere){
+            this.oldColor = label.getForeground();
+            this.label = label;
+            this.content = content;
+            this.sideBar = sideBar;
+            this.destination = "";
+            this.buttonSet = -1;
+
+            switch (fromWhere) {
+                case HOME_MY_LISTING:
+                    destination = Content.MY_LISTINGS;
+                    buttonSet = Buttons.MY_LISTINGS;
+                    break;
+            
+                case HOME_MY_GROUPBUYS:
+                    destination = Content.MY_GROUPBUYS;
+                    buttonSet = Buttons.MY_GROUPBUYS;
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e){
+            sideBar.getButtons().setSelected(buttonSet);
+            content.getLayout().show(content.getContentContainer(), destination);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e){
+            label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            label.setForeground(GbuyColor.MAIN_COLOR);
+            label.revalidate();
+            label.repaint();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e){
+            label.setCursor(Cursor.getDefaultCursor());
+            label.setForeground(oldColor);
+            label.revalidate();
+            label.repaint();
+        }
+        
     }
 }

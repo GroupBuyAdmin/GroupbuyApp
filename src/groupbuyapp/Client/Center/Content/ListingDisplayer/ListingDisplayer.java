@@ -6,8 +6,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -237,7 +235,6 @@ public class ListingDisplayer extends JPanel implements Refreshable{
             }
 
             if(typeOfPanel != SEARCH_PANEL){
-                headerButton.setPreferredSize(new Dimension(200, 45));
                 headerButton.setButtonColor(GbuyColor.MAIN_COLOR);
                 headerButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
                 headerButton.setDrawBorder(false);
@@ -246,19 +243,11 @@ public class ListingDisplayer extends JPanel implements Refreshable{
                 headerButton.setCornerRadius(10);
             }
 
-            setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 1.0;
-            gbc.weighty = 1.0;
-            gbc.anchor = GridBagConstraints.LINE_START;
-            add(contentName, gbc);
+            setLayout(new BorderLayout());
+            add(contentName, BorderLayout.WEST);
 
             if(typeOfPanel != SEARCH_PANEL){
-                gbc.gridx++;
-                gbc.anchor = GridBagConstraints.LINE_END;
-                add(headerButton, gbc);
+                add(headerButton, BorderLayout.EAST);
             }
 
             setBackground(GbuyColor.PANEL_COLOR);

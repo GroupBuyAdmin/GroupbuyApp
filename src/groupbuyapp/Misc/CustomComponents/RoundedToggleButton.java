@@ -1,70 +1,42 @@
 package groupbuyapp.Misc.CustomComponents;
 
-import javax.swing.JButton;
+import javax.swing.*;
 
-import javax.swing.ImageIcon;
+import groupbuyapp.Misc.ColorPalette.GbuyColor;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-/**
- * The {@code RoundedButton} class is a custom implementation of the {@code JButton} class in Java Swing.
- * It creates a button with rounded corners and allows customization of its appearance, including the button color, hover color, pressed color, corner radius, border color, and whether to draw a border.
- * The class overrides the `paintComponent` and `paintBorder` methods to customize the button's rendering.
- *
- * @author BSCS 2A group 5
- */
-public class RoundedButton extends JButton {
+public class RoundedToggleButton extends JToggleButton {
 
-    protected Color buttonColor;
-    protected Color hoverColor;
-    protected Color pressedColor;
+    private Color defaultColor;
+    private Color hoverColor;
+    private Color pressedColor;
     private Color borderColor;
     private boolean drawBorder;
-    protected int cornerRadius;
-    
-    /**
-     * Constructs a new RoundedButton object with the given text.
-     * 
-     * @param text The text to be displayed on the button.
-     */
-    public RoundedButton(String text) { 
+    private int cornerRadius;
+
+    public RoundedToggleButton(String text) {
         super(text);
-        this.buttonColor = getBackground();
+        this.defaultColor = getBackground();
         this.cornerRadius = 10;
         this.borderColor = Color.black;
         this.drawBorder = true;
-        getFont();
-        setContentAreaFilled(false); 
-        updateHoverColor();
-        updatePressedColor();
-    }
-
-    /**
-     * Constructs a new RoundedButton object with the given text and image icon.
-     * 
-     * @param text The text to be displayed on the button.
-     * @param imageIcon An optional image icon to be displayed on the button.
-     */
-    public RoundedButton(String text, ImageIcon imageIcon){
-        super(text, imageIcon);
-        this.buttonColor = getBackground();
-        this.cornerRadius = 10;
-        this.borderColor = Color.black;
-        this.drawBorder = true;
-        getFont();
-        setContentAreaFilled(false); 
+        setContentAreaFilled(false);
         updateHoverColor();
         updatePressedColor();
 
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                repaint();
+            }
+        });
     }
-
 
     private void updateHoverColor() {
-        float[] hsb = Color.RGBtoHSB(buttonColor.getRed(), buttonColor.getGreen(), buttonColor.getBlue(), null);
+        float[] hsb = Color.RGBtoHSB(defaultColor.getRed(), defaultColor.getGreen(), defaultColor.getBlue(), null);
         float brightness = Math.max(0, hsb[2] - 0.1f);
         hoverColor = Color.getHSBColor(hsb[0], hsb[1], brightness);
     }
@@ -75,11 +47,10 @@ public class RoundedButton extends JButton {
         pressedColor = Color.getHSBColor(hsb[0], hsb[1], brightness);
     }
 
-    public void setButtonColor(Color buttonColor) {
-        this.buttonColor = buttonColor;
+    public void setDefaultColor(Color defaultColor) {
+        this.defaultColor = defaultColor;
         updateHoverColor();
         updatePressedColor();
-
     }
 
     public void setHoverColor(Color hoverColor) {
@@ -102,21 +73,17 @@ public class RoundedButton extends JButton {
         this.drawBorder = drawBorder;
     }
 
-    public void setButtonFont(Font buttonFont) {
-        setFont(buttonFont);
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (getModel().isPressed()) {
+        if (isSelected()) {
             g2.setColor(pressedColor);
         } else if (getModel().isRollover()) {
             g2.setColor(hoverColor);
         } else {
-            g2.setColor(buttonColor);
+            g2.setColor(defaultColor);
         }
 
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
@@ -137,5 +104,23 @@ public class RoundedButton extends JButton {
     @Override
     public boolean isFocusPainted() {
         return false;
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Customizable Color ToggleButton Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 200);
+
+        RoundedToggleButton toggleButton = new RoundedToggleButton("Toggle");
+        toggleButton.setDefaultColor(GbuyColor.MAIN_COLOR);
+        toggleButton.setPressedColor(GbuyColor.ONGOING_COLOR);
+        toggleButton.setCornerRadius(15);
+        toggleButton.setDrawBorder(false);
+        toggleButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+
+
+        frame.getContentPane().add(toggleButton);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }

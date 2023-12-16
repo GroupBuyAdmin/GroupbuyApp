@@ -194,6 +194,10 @@ public class ProductPanel extends RoundedPanel{
         private Image resizeImage(ImageIcon imageIcon){
             int newWidth = 0;
             int preferredHeight = 160;
+            if(isBrowserPanel){
+                preferredHeight = 260;
+            }
+
             int iconWidth = imageIcon.getIconWidth();
             int iconHeight = imageIcon.getIconHeight();
             

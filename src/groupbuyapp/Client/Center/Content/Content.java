@@ -27,17 +27,24 @@ public class Content extends JPanel{
     private ListingDisplayer myGroupbuys;
     private CardLayout layout;
 
+    
     private Browser browser;
     
     private int currentPanel;
-
+    
     private TopNavBar topNavBar;
+
+    private SideBar sidebar;
     
     private static final int IN_HOME = 1;
     private static final int IN_MY_LISTINGS = 2;
     private static final int IN_MY_GROUPBUYS = 3;
     private static final int IN_BROWSE_GROUPBUYS = 4;
     
+    public CardLayout getLayout() {
+        return layout;
+    }
+
     public Home getHome() {
         return home;
     }
@@ -62,14 +69,16 @@ public class Content extends JPanel{
         return currentUser;
     }
 
-    private static final String HOME = "home";
-    private static final String MY_LISTINGS = "my listings";
-    private static final String MY_GROUPBUYS = "my groupbuys";
-    private static final String BROWSE_GROUPBUYS = "browse groupbuys";
-    private static final String SEARCH = "search";
+    public static final String HOME = "home";
+    public static final String HOME_VIEW = "home view";
+    public static final String MY_LISTINGS = "my listings";
+    public static final String MY_GROUPBUYS = "my groupbuys";
+    public static final String BROWSE_GROUPBUYS = "browse groupbuys";
+    public static final String SEARCH = "search";
 
     public Content(User currentUser, SideBar sideBar, TopNavBar topNavBar){
-        
+        this.currentUser = currentUser;
+
         this.topNavBar = topNavBar;
         var searchButtonref = this.topNavBar.getSearchBar().getSearchButton();
         searchButtonref.addActionListener(new ActionListener() {
@@ -84,11 +93,13 @@ public class Content extends JPanel{
             }
         });
         
-        home = new Home();
+        this.sidebar = sideBar;
+
+        home = new Home(browser, currentUser, Content.this, sideBar);
         myListings = new ListingDisplayer(currentUser, ListingDisplayer.MY_LISTING_PANEL, Content.this, sideBar);
         myGroupbuys = new ListingDisplayer(currentUser, ListingDisplayer.MY_GROUPBUYS_PANEL, Content.this, sideBar);
         browser = new Browser(currentUser, Content.this, sideBar);
-
+        
         contentContainer = new JPanel();
         layout = new CardLayout();
 
@@ -98,16 +109,18 @@ public class Content extends JPanel{
         contentContainer.add(myGroupbuys, MY_GROUPBUYS);
         contentContainer.add(browser, BROWSE_GROUPBUYS);
 
-        setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+        setBackground(GbuyColor.PANEL_COLOR);
         setLayout(new BorderLayout());
-        add(contentContainer, BorderLayout.CENTER);
 
+        add(contentContainer, BorderLayout.CENTER);
         this.currentPanel = IN_HOME;
     }
 
     public void showHome(){
-        Current_Panel_Is(IN_HOME);
-
+        if(Current_Panel_Is(IN_HOME)){
+            home.refresh();
+        }
+        home.refresh();
         layout.show(contentContainer, HOME);
     }
 
