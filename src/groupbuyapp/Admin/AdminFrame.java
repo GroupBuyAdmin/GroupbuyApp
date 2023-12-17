@@ -14,12 +14,15 @@ public class AdminFrame extends JFrame{
     private AtopNavbar aTopNavBar;
     private AContent aContent;
     private ASidebar aSidebar;
+    private AdminController adminController;
     
     
     public AdminFrame(){
         this.aTopNavBar = new AtopNavbar();
         this.aContent = new AContent();
         this.aSidebar = new ASidebar();
+        this.adminController = new AdminController(aTopNavBar, aContent, aSidebar);
+        adminController.init();
 
         initlayout();
         initFrame();
@@ -34,9 +37,9 @@ public class AdminFrame extends JFrame{
     }
 
     private void initFrame(){
-        // setSize(1600, 800);
+        setSize(1600, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
+        // pack();
         setLocationRelativeTo(null);
         setVisible(true);
 

@@ -384,6 +384,60 @@ public class GbuyDatabase {
         return allProducts;
     }
 
+    public static final int FOR_PURCHASING = 1;
+    public static final int FOR_DELIVERY = 2;
+    public static final int DELIVERED = 3;
+
+
+    public List<Product> getProductsForAdmin(int statusType){
+        List<Product> allProducts = new ArrayList<>();
+        try {
+            switch (statusType) {
+                case FOR_PURCHASING:
+                    query = "SELECT * FROM `products` WHERE `productStatus` = \"completed\"";
+                    break;
+                
+                case FOR_DELIVERY:
+                    query = "SELECT * FROM `products` WHERE `productStatus` = \"purchasing\"";
+                    break;
+            
+                case DELIVERED:
+                    query = "SELECT * FROM `products` WHERE `productStatus` = \"delivered\"";
+                    break;
+                default:
+                    query = null;
+                    break;
+            }
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while(resultSet.next()){
+                        int productID = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
+                        int userLimit = resultSet.getInt("productUserLimit");                
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        Product p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(productID);
+                        allProducts.add(p);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allProducts;
+    }
+
     /**
      * Deletes a product from the database based on the provided product ID.
      *
@@ -720,6 +774,40 @@ public class GbuyDatabase {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final int TO_PURCHASING = 1;
+    public static final int TO_DELIVERED = 2;
+
+    public void updateStatusByAdmin(int productId, int statusType){
+        try{
+            switch (statusType) {
+                case TO_PURCHASING:
+                    query = "UPDATE products SET productStatus = \"purchasing\" WHERE productID = ?" ;
+                    break;
+            
+                case TO_DELIVERED:
+                    query = "UPDATE products SET productStatus = \"delivered\" WHERE productID = ?" ;                    
+                    break;
+            
+                default:
+                    break;
+            }
+
+            try(PreparedStatement preparedStatement = connection.prepareStatement(query)){
+                preparedStatement.setInt(1, productId);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("updated to product status");
+                } else {
+                    System.out.println("No rows updated. Check if the productId exists.");
+                }
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

@@ -23,4 +23,8 @@ public class GbuyColor {
     public static final Color COMPLETED_COLOR = Color.decode("#3EF050");
    
     public static final Color EXPIRED_COLOR = Color.decode("#F20530");
+
+    public static final Color DELIVER_COLOR = Color.decode("#F0E93E");
+
+    
 }
