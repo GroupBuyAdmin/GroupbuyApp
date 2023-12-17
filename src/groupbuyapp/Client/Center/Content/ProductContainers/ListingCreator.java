@@ -39,6 +39,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 
+import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
@@ -63,6 +64,7 @@ public class ListingCreator {
     private JPanel masterPanel;
 
     private ListingDisplayer listingDisplayer;
+    private Home home;
 
     public static final boolean EDIT = true;
     public static final boolean CREATE = false;
@@ -81,7 +83,7 @@ public class ListingCreator {
      */
 
     public ListingCreator(ListingDisplayer listingDisplayer, User currentUser){
-        this(listingDisplayer, CREATE, null, currentUser);
+        this(listingDisplayer, CREATE, null, currentUser, null);
     }
 
     /**
@@ -91,7 +93,11 @@ public class ListingCreator {
      */
 
     public ListingCreator(ListingDisplayer listingDisplayer, Product product, User currentUser){
-        this(listingDisplayer, EDIT, product, currentUser);
+        this(listingDisplayer, EDIT, product, currentUser, null);
+    }
+
+    public ListingCreator(Home home, Product product, User currentUser){
+        this(null, EDIT, product, currentUser, home);
     }
 
     /**
@@ -102,11 +108,12 @@ public class ListingCreator {
      * @param product An instance of the Product class.
      */
     
-    public ListingCreator(ListingDisplayer listingDisplayer, boolean editProduct, Product product, User currentUser){
+    public ListingCreator(ListingDisplayer listingDisplayer, boolean editProduct, Product product, User currentUser, Home home){
         this.listingDisplayer = listingDisplayer;
         this.editProduct = editProduct;
         this.product = product;
         this.currentUser = currentUser;
+        this.home = home;
 
         masterPanel = new JPanel();
 
@@ -290,7 +297,11 @@ public class ListingCreator {
                     } else {
                         spc.productStatus = product.getProductStatus();
                         GbuyDatabase.getInstance().editProduct(spc, product.getId());
-                        listingDisplayer.refresh();
+                        if(home != null){
+                            home.refresh();
+                        } else {
+                            listingDisplayer.refresh();
+                        }
                         JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
                     }
                 }

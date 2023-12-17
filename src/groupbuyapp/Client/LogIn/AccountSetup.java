@@ -28,6 +28,7 @@ public class AccountSetup extends JFrame{
     public final static String SIGN_UP = "sign up";
 
     public AccountSetup(){
+        System.out.println("Running account setup page");
         Container container = getContentPane();
 
         this.signInPage = new SignIn();

@@ -5,12 +5,16 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import groupbuyapp.Client.Center.Center;
+import groupbuyapp.Client.LogIn.AccountSetup;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Client.SideBar.Buttons.Buttons;
@@ -18,12 +22,12 @@ import groupbuyapp.Client.SideBar.Buttons.Buttons;
 public class MainFrame extends JFrame{
     private User currentUser;
     
+    private Center center;
+    private SideBar sideBar;
+    
     public User getCurrentUser() {
         return currentUser;
     }
-
-    private Center center;
-    private SideBar sideBar;
 
     public MainFrame(){
         this(null);
@@ -36,6 +40,7 @@ public class MainFrame extends JFrame{
         initializeSideBarControls();
         this.center = new Center(currentUser, sideBar);
 
+        initTopNavBarControls();
         Container pane = getContentPane();
 
         pane.setLayout(new BorderLayout());
@@ -102,4 +107,43 @@ public class MainFrame extends JFrame{
             public void mouseExited(MouseEvent e) {}
         });
     }
+
+    private void initTopNavBarControls(){
+        var profileIcon = center.getTopNavBar().getProfileIcon();
+        profileIcon.setToolTipText(currentUser.getUserName());
+
+        var signOutButton = center.getTopNavBar().getSignOutIcon();
+        signOutButton.addMouseListener(new SignOutListener());
+
+    }
+
+    class SignOutListener extends MouseAdapter{
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int option = JOptionPane.showConfirmDialog(
+                    null, 
+                    "Do you want to sign out?", 
+                    "Sign Out",
+                    JOptionPane.YES_NO_OPTION); 
+
+            if (option == JOptionPane.YES_OPTION) {
+                System.out.println("Signing out");
+                dispose();
+                runAccountSetup();
+            } else {
+                System.out.println("User clicked No");
+            }
+        }
+    }
+
+    private void runAccountSetup(){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new AccountSetup();
+            }
+            
+        });
+    }
+
 }

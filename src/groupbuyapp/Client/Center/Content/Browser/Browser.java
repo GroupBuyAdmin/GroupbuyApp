@@ -31,6 +31,7 @@ public class Browser extends JPanel implements Refreshable{
     CardLayout cardLayout;
     List<CategoryPanel> madeCategoryPanels;
     Content content;
+    int fromWhere;
     
     public JPanel getCardContainer() {
         return cardContainer;
@@ -48,10 +49,19 @@ public class Browser extends JPanel implements Refreshable{
     public static final String SEE_ALL_LISTING = "see all listing";
     private static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 
+    public static final int DEFAULT = 1;
+    public static final int HOME_BROWSER = 2;
+
     public Browser(User currentUser, Content content, SideBar sideBar){
+        this(DEFAULT, currentUser, content, sideBar);
+    }
+
+
+    public Browser(int fromWhere, User currentUser, Content content, SideBar sideBar){
         this.content = content;
         this.madeCategoryPanels = new ArrayList<>();
         this.currentUser = currentUser;
+        this.fromWhere = fromWhere;
 
         scrollablePanel = new ScrollablePanel(new GridLayout(0, 1));
         scrollablePanel.setScrollableHeight(ScrollableSizeHint.NONE);
@@ -81,8 +91,13 @@ public class Browser extends JPanel implements Refreshable{
 
     public void populateBrowse(SideBar sideBar){
         for(String category : categories){
-            if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){             //check if category has products
-                CategoryPanel categoryPanel = new CategoryPanel(category, Browser.this, currentUser, content, sideBar);
+            if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){   
+                CategoryPanel categoryPanel = null;          //check if category has products
+                if(fromWhere == DEFAULT){
+                    categoryPanel = new CategoryPanel(category, Browser.this, currentUser, content, sideBar);
+                } else {
+                    categoryPanel = new CategoryPanel(CategoryPanel.HOME_BROWSER, category, Browser.this, currentUser, content, sideBar);
+                }
                 scrollablePanel.add(categoryPanel);
                 madeCategoryPanels.add(categoryPanel);
             }

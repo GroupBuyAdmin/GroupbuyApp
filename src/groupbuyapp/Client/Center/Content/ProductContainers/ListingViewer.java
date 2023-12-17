@@ -285,8 +285,16 @@ public class ListingViewer extends RoundedPanel{
                 label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
                 expiredPanel.add(label);
                 buttonPanels.add(expiredPanel, BorderLayout.EAST);
-            }
-            else if (fromWhere != FROM_MY_LISTING){
+            } else if (p.productStatus.equals("completed")){
+                RoundedPanel completedPanel = new RoundedPanel();
+                completedPanel.setBackground(GbuyColor.COMPLETED_COLOR);
+                completedPanel.setShady(false);
+                JLabel label = new JLabel("completed");
+                label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
+                label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                completedPanel.add(label);
+                buttonPanels.add(completedPanel, BorderLayout.EAST);
+            } else if (fromWhere != FROM_MY_LISTING){
                 if(p.userCount != p.userLimit) {                    
                     buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
                     boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
@@ -332,19 +340,7 @@ public class ListingViewer extends RoundedPanel{
                             updateCountLabel(countLabel);
                         }
                     });
-                } else {
-                        RoundedPanel completedPanel = new RoundedPanel();
-                        completedPanel.setBackground(GbuyColor.COMPLETED_COLOR);
-                        completedPanel.setShady(false);
-                        JLabel label = new JLabel("completed");
-                        label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
-                        label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
-                        completedPanel.add(label);
-                        buttonPanels.add(completedPanel, BorderLayout.EAST);
-
-
-                    // buttonPanels.add(completedButton, BorderLayout.EAST);
-                }
+                } 
 
             }
             

@@ -3,26 +3,44 @@ package groupbuyapp.Client.Center.TopNavBar;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
+import groupbuyapp.Misc.CustomComponents.RoundProfilePicturePanel;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextField;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 
 public class TopNavBar extends JPanel{
     private SearchBar searchBar;
+    private Profile profile;
     
     
+    public Profile getProfile() {
+        return profile;
+    }
+
     public SearchBar getSearchBar() {
         return searchBar;
     }
+
+    public JPanel getProfileIcon(){
+        return profile.getProfileIcon();
+    }
+
+    public JLabel getSignOutIcon(){
+        return profile.getSignOutButton();
+    }
+
+    
 
     public TopNavBar(){
         setPreferredSize(new Dimension(getWidth(), 75));
@@ -33,8 +51,10 @@ public class TopNavBar extends JPanel{
         setBorder(BorderFactory.createEmptyBorder(15, 50, 15, 10));
 
         searchBar = new SearchBar();
+        profile = new Profile();
 
         add(searchBar, BorderLayout.WEST);
+        add(profile, BorderLayout.EAST);
     }
 
     public class SearchBar extends RoundedPanel{
@@ -98,7 +118,37 @@ public class TopNavBar extends JPanel{
             setArcs(new Dimension(50, 50));
         }
 
+    }
 
+    public class Profile extends JPanel{
+        private RoundProfilePicturePanel profileIcon;
+        private JLabel signOutButton;
+
+        public RoundProfilePicturePanel getProfileIcon() {
+            return profileIcon;
+        }
+
+        public JLabel getSignOutButton() {
+            return signOutButton;
+        }
+
+        private static String defaultProfile = "src/groupbuyapp/Client/Center/TopNavBar/img/default profile2.png";
+        private static String signOutIcon = "src/groupbuyapp/Client/Center/TopNavBar/img/sign out.png";
+
+        public Profile(){
+            setOpaque(false);
+
+            this.profileIcon = new RoundProfilePicturePanel(new ImageIcon(defaultProfile));
+            this.signOutButton = new JLabel();
+            signOutButton.setIcon(new ImageIcon(signOutIcon));
+
+
+            setLayout(new FlowLayout(FlowLayout.TRAILING, 25, 0));
+
+            add(profileIcon);
+            add(signOutButton);
+
+        }
 
     }
 }

@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
+import groupbuyapp.Client.Center.Content.ProductContainers.ListingCreator;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
@@ -277,8 +278,17 @@ public class CategoryPanel extends JPanel implements Refreshable{
         }
 
         public void mouseClicked(MouseEvent e){
-            ListingViewer pView = new ListingViewer(pPanel.getProduct(),fromWhere ,content.getCurrentUser() , content);
-            
+            ListingViewer pView = new ListingViewer(pPanel.getProduct(), fromWhere ,content.getCurrentUser() , content);
+
+            pView.getEditButton().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                   new ListingCreator(content.getHome(), pPanel.getProduct(), currentUser);
+                   content.getLayout().show(content.getContentContainer(), Content.HOME);
+                }
+                
+            });
+
             pView.getBackButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

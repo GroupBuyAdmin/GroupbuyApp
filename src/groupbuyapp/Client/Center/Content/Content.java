@@ -107,7 +107,7 @@ public class Content extends JPanel{
         if(Current_Panel_Is(IN_HOME)){
             home.refresh();
         }
-        // home.refresh();
+        home.refresh();
         layout.show(contentContainer, HOME);
     }
 
