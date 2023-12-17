@@ -113,7 +113,6 @@ public class Buttons extends JPanel{
         setToNormalState(browseGroupbuysButton, browseGroupbuysIcon);
     }
         
-    
     public void setSelected(int index){
         switch (index) {
             case HOME:

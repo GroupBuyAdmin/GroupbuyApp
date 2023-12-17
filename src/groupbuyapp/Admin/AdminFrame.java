@@ -21,7 +21,7 @@ public class AdminFrame extends JFrame{
         this.aTopNavBar = new AtopNavbar();
         this.aContent = new AContent();
         this.aSidebar = new ASidebar();
-        this.adminController = new AdminController(aTopNavBar, aContent, aSidebar);
+        this.adminController = new AdminController(aTopNavBar, aContent, aSidebar, this);
         adminController.init();
 
         initlayout();

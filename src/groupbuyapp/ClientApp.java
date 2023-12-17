@@ -14,7 +14,6 @@ public class ClientApp {
             public void run() {
                 new AccountSetup();
             }
-            
         });
     }
     

@@ -3,6 +3,8 @@ package groupbuyapp.Admin;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,11 @@ public class AdminController {
     private AtopNavbar atopNavbar;
     private AContent aContent;
     private ASidebar aSidebar;
+    private AdminFrame adminFrame;
+
+    public AdminFrame getAdminFrame() {
+        return adminFrame;
+    }
 
     public AtopNavbar getAtopNavbar() {
         return atopNavbar;
@@ -37,16 +44,18 @@ public class AdminController {
 
     public AdminController(){}
 
-    public AdminController(AtopNavbar atopNavbar, AContent aContent, ASidebar aSidebar){
+    public AdminController(AtopNavbar atopNavbar, AContent aContent, ASidebar aSidebar, AdminFrame adminFrame){
         this.atopNavbar = atopNavbar;
         this.aContent = aContent;
         this.aSidebar = aSidebar;
+        this.adminFrame = adminFrame;
     }
 
     public void init(){
         var forPurchaseButton = aSidebar.getForPurchaseButton();
         var forDeliveryButton = aSidebar.getForDeliveryButton();
         var deliveredButton = aSidebar.getDeliveredButton();
+        var logOut = aSidebar.getLogoutIcon();
 
         forPurchaseButton.addActionListener(new ActionListener() {
             @Override
@@ -56,6 +65,7 @@ public class AdminController {
                 currentDisplay.setAllcontentContainers(generateDefault(currentDisplay));
                 currentDisplay.revalidate();
                 currentDisplay.repaint();
+                aSidebar.getButtons().setSelected(ASidebar.FOR_PURCHASE);
             }
             
         });
@@ -68,6 +78,7 @@ public class AdminController {
                 currentDisplay.setAllcontentContainers(generateForDelivery(currentDisplay));
                 currentDisplay.revalidate();
                 currentDisplay.repaint();
+                aSidebar.getButtons().setSelected(ASidebar.FOR_DELIVERY);
             }   
             
         });
@@ -80,9 +91,12 @@ public class AdminController {
                 currentDisplay.setAllcontentContainers(generateDelivered(currentDisplay));
                 currentDisplay.revalidate();
                 currentDisplay.repaint();
+                aSidebar.getButtons().setSelected(ASidebar.DELIVERED);
             }
             
         });
+
+        logOut.addMouseListener(new LogOutAction());
     }
 
 
@@ -207,6 +221,13 @@ public class AdminController {
             contentDisplayer.repaint();
         }
         
+    }
+
+    class LogOutAction extends MouseAdapter{
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            adminFrame.dispose();
+        }
     }
 
 }
