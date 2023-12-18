@@ -15,10 +15,9 @@ import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel.ScrollableSizeHint;
 import groupbuyapp.SystemFiles.Fonts.GbuyFont;
-import groupbuyapp.SystemFiles.Interface.Refreshable;
 
 
-public class ClientBrowser extends JPanel implements Refreshable{
+public class ClientBrowser extends JPanel{
     private ScrollablePanel scrollablePanel;
     private JScrollPane scrollPane;
     
@@ -85,7 +84,6 @@ public class ClientBrowser extends JPanel implements Refreshable{
         add(cardContainer, BorderLayout.CENTER);
     }
 
-    @Override
     public void refresh(){
         scrollablePanel.removeAll();
 

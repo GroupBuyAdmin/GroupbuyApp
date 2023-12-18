@@ -40,7 +40,7 @@ public class ProductPanel extends RoundedPanel{
     private final static String ON_GOING = "ongoing";
     private final static String COMPELETED = "completed";
     private final static String EXPIRED = "expired";
-    private final static String FOR_PURCHASE = "for purchase";
+    private final static String FOR_PURCHASE = "purchasing";
     private final static String FOR_DELIVERY = "for delivery";
     private final static String DELIVERED = "delivered";
 
