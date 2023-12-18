@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.ProductContainers;
+package groupbuyapp.NewClient.ClientCenter.ClientContent.ClientPopUp;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,19 +8,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -39,8 +32,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 
-import groupbuyapp.Client.Center.Content.Home.Home;
-import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
+import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerComboBox;
@@ -50,7 +42,6 @@ import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
-import groupbuyapp.NewClient.LogIn.User;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -59,62 +50,81 @@ import net.miginfocom.swing.MigLayout;
  * such as its name, description, price, and category. Users can also upload an image for the product. 
  * The class handles validation of the input fields and interacts with a database to store the product information. 
  */
-public class ListingCreator {
+public class ClientListingCreator {
     private JFrame mainFrame;
     private JPanel masterPanel;
+    private Product product;
 
-    private ListingDisplayer listingDisplayer;
-    private Home home;
+    public Product getProduct() {
+        return product;
+    }
+
+    private CenterPanel centerPanel;
+
+    public CenterPanel getCenterPanel() {
+        return centerPanel;
+    }
 
     public static final boolean EDIT = true;
     public static final boolean CREATE = false;
 
     private boolean editProduct;
-    private Product product;
-    private User currentUser;
 
-    public ListingDisplayer getMyListings() {
-        return listingDisplayer;
+    public boolean isEditProduct() {
+        return editProduct;
     }
 
-    /**
-     * Constructor for creating a new product listing. Initializes the GUI components and sets up the main frame.
-     * @param listingDisplayer
-     */
-
-    public ListingCreator(ListingDisplayer listingDisplayer, User currentUser){
-        this(listingDisplayer, CREATE, null, currentUser, null);
+    public JButton getCancelButton(){
+        return centerPanel.getDetailsPanel().getUploadPanel().getCancelButton();
     }
 
-    /**
-     * Constructor for editing an existing product listing. Initializes the GUI components with the existing product information.
-     * @param listingDisplayer
-     * @param product
-     */
-
-    public ListingCreator(ListingDisplayer listingDisplayer, Product product, User currentUser){
-        this(listingDisplayer, EDIT, product, currentUser, null);
+    public JButton getUploadButton(){
+        return centerPanel.getDetailsPanel().getUploadPanel().getUploadButton();
     }
-
-    public ListingCreator(Home home, Product product, User currentUser){
-        this(null, EDIT, product, currentUser, home);
-    }
-
-    /**
-     * Constructor for the ListingCreator class.
-     * 
-     * @param listingDisplayer An instance of the listingDisplayer class.
-     * @param editProduct A boolean value indicating whether the product is being edited or not.
-     * @param product An instance of the Product class.
-     */
     
-    public ListingCreator(ListingDisplayer listingDisplayer, boolean editProduct, Product product, User currentUser, Home home){
-        this.listingDisplayer = listingDisplayer;
-        this.editProduct = editProduct;
-        this.product = product;
-        this.currentUser = currentUser;
-        this.home = home;
+    public JButton getAddPhotoButton(){
+        return centerPanel.getImagePanel().getIconButton().getButton();
+    }
 
+    public JButton getDeleteButton(){
+        return centerPanel.getDetailsPanel().getUploadPanel().getDeleteButton();
+    }
+
+    public JFileChooser getFileChooser(){
+        return centerPanel.getImagePanel().getIconButton().getFileChooser();
+    }
+
+    public int getImagePanelWidth(){
+        return centerPanel.getImagePanel().getWidth();
+    }
+
+    public int getImagePanelHeight(){
+        return centerPanel.getImagePanel().getHeight();
+    }
+    
+
+    public void close(){
+        mainFrame.dispose();
+    }
+
+    public JLabel getImage(){
+        return centerPanel.getImagePanel().getImageContainer().getImageLabel();
+    }
+
+
+
+    public ClientListingCreator(){
+        this(null);
+    }
+
+
+    public ClientListingCreator(Product product){
+        this.product = product;
+        if(product != null){
+            editProduct = true;
+        } else{
+            editProduct = false;
+        }
         masterPanel = new JPanel();
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
@@ -130,7 +140,7 @@ public class ListingCreator {
         headerLabel.setForeground(GbuyColor.MAIN_TEXT_COLOR);
         headerPanel.add(headerLabel);
 
-        CenterPanel centerPanel = new CenterPanel();
+        centerPanel = new CenterPanel();
         centerPanel.setBackground(Color.white);
 
         masterPanel.setLayout(new BorderLayout());
@@ -245,99 +255,6 @@ public class ListingCreator {
             gbc.weightx = 0.4;
             gbc.anchor = GridBagConstraints.EAST;
             add(detailsPanel, gbc);
-
-            //setup panel buttons
-
-            JButton cancelButton = detailsPanel.getUploadPanel().getCancelButton();
-            cancelButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("exiting");
-                    mainFrame.dispose();
-                }
-            });
-
-            JButton uploadButton = detailsPanel.getUploadPanel().getUploadButton();
-            uploadButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (completedFields(CenterPanel.this) && validFields(CenterPanel.this)) {
-                        uploadProductToDatabase();
-                        mainFrame.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(CenterPanel.this, "Please complete all fields");
-                    }
-                }
-
-                private void uploadProductToDatabase() {
-                    SingleProductContainer spc = new SingleProductContainer();
-                    spc.productName = detailsPanel.getFields().getTextFields().getNameTextField().getText();
-                    spc.productDescription = detailsPanel.getFields().getTextFields().getDescTextArea().getText();
-                    spc.productLocation = detailsPanel.getFields().getTextFields().getLocationTextField().getText();
-                    JComboBox<String> comboBox = detailsPanel.getFields().getSubDescription().getComboBox();
-                    spc.productCategory = (String) comboBox.getSelectedItem();
-                    spc.productPrice = Double.parseDouble(detailsPanel.getFields().getSubDescription().getPriceTextField().getText());
-                    spc.userLimit = Integer.parseInt(detailsPanel.getFields().getSubDescription().userlimitField.getText());
-                    String date = detailsPanel.getFields().getSubDescription().dateTimePicker.getDatePicker().getText();
-                    String time = detailsPanel.getFields().getSubDescription().dateTimePicker.getTimePicker().getText();
-                    spc.deadlineString = formatDateString(date + " " + time);
-
-                    if (imagePanel.getIconButton().HasSelected()) {
-                        spc.selectedFile = imagePanel.getIconButton().getFileChooser().getSelectedFile();
-                    } else {
-                        spc.selectedFile = createTempFile(imagePanel.getImageContainer().getOriginalImage());
-                    }
-
-                    if (!editProduct) {
-                        spc.creatorID = currentUser.getUserID();
-                        spc.productStatus = "ongoing";
-                        GbuyDatabase.getInstance().insertProduct(spc);
-                        listingDisplayer.refresh();
-                        JOptionPane.showMessageDialog(CenterPanel.this, spc.productName + " was added");
-                    } else {
-                        spc.productStatus = product.getProductStatus();
-                        GbuyDatabase.getInstance().editProduct(spc, product.getId());
-                        if(home != null){
-                            home.refresh();
-                        } else {
-                            listingDisplayer.refresh();
-                        }
-                        JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " was edited");
-                    }
-                }
-            });
-
-            JButton addButton = imagePanel.getIconButton().getButton();
-            addButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    JFileChooser fChooser = imagePanel.getIconButton().getFileChooser();
-                    int result = fChooser.showOpenDialog(CenterPanel.this);
-                    if(result == JFileChooser.APPROVE_OPTION){
-                        imagePanel.getIconButton().setHasSelected(true);
-                        File selectedFile = fChooser.getSelectedFile();
-                        ImageIcon selectedImage = new ImageIcon(selectedFile.getPath());
-                        Image resizedImage = resizeImage(selectedImage);
-                        ImageIcon resizedIcon = new ImageIcon(resizedImage);
-                        imagePanel.imageContainer.getImageLabel().setIcon(resizedIcon);
-                        imagePanel.imageContainer.refresh();
-                        addButton.setText("Change Photo");
-                        imagePanel.getIconButton().refresh();
-                    }
-                }
-            });
-
-            var delButton = detailsPanel.getUploadPanel().getDeleteButton();
-            delButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    GbuyDatabase.getInstance().deleteProduct(product.getId());
-                    JOptionPane.showMessageDialog(CenterPanel.this, "product " + product.getId() + " " + product.getName() + " was deleted");             
-                    listingDisplayer.refresh();
-                    mainFrame.dispose();
-               
-                }
-                
-            });
         }
 
         /**
@@ -407,8 +324,6 @@ public class ListingCreator {
             imagePanel.imageContainer.refresh();
             imagePanel.iconButton.getButton().setText("Change Photo");
             imagePanel.getIconButton().refresh();
-
-
         }
 
     }
@@ -889,51 +804,5 @@ public class ListingCreator {
         }
     }
 
-    private static File createTempFile(byte[] fileData) {
-        File tempFile = null;
-        FileOutputStream fos = null;
-
-        try {
-            // Create a temporary file
-            tempFile = File.createTempFile("temp", ".tmp");
-
-            // Write the byte array to the temporary file
-            fos = new FileOutputStream(tempFile);
-            fos.write(fileData);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            // Close the FileOutputStream if it's open
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return tempFile;
-    }
-
-    public String formatDateString(String inputDateString) {
-        try {
-            // Parse the input date string
-            SimpleDateFormat inputFormat = new SimpleDateFormat("MMMM dd, yyyy h:mma");
-            Date date = inputFormat.parse(inputDateString);
-
-            // Format the date into the desired output format
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            System.err.println("Error parsing date: " + e.getMessage());
-            return null;
-        }
-    }
-
-    // public static void main(String[] args) {
-    //     new ListingCreator(null, null);
-    // }
 
 }

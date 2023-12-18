@@ -16,6 +16,14 @@ public class Product {
     private String productStatus;
     private int creatorID;
     
+    public void setProductStatus(String productStatus) {
+        this.productStatus = productStatus;
+    }
+
+    public void setCreatorID(int creatorID) {
+        this.creatorID = creatorID;
+    }
+
     private int userLimit;
     
     private Timestamp deadlineStamp;

@@ -2,20 +2,16 @@ package groupbuyapp;
 
 import javax.swing.SwingUtilities;
 
-import groupbuyapp.NewClient.LogIn.AccountSetup;
+import groupbuyapp.Admin.AdminFrame;
 
-/**
- *
- * @author BSCS 2A Group 5
- */
-public class ClientApp {
+public class AdminApp {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new AccountSetup();
+                new AdminFrame();
             }
+            
         });
     }
-    
 }

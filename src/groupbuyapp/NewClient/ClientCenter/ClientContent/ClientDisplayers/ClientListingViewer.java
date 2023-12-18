@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.ProductContainers;
+package groupbuyapp.NewClient.ClientCenter.ClientContent.ClientDisplayers;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,8 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -18,22 +16,17 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
-import groupbuyapp.Client.Center.Content.Content;
-import groupbuyapp.Client.Center.Content.Browser.Browser;
-import groupbuyapp.Client.SideBar.SideBar;
+import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.RoundedButton;
 import groupbuyapp.Misc.CustomComponents.RoundedCornerTextArea;
 import groupbuyapp.Misc.CustomComponents.RoundedPanel;
 import groupbuyapp.Misc.CustomComponents.RoundedToggleButton;
-import groupbuyapp.Misc.Database.GbuyDatabase;
-import groupbuyapp.Misc.Database.SingleProductContainer;
 import groupbuyapp.Misc.Fonts.GbuyFont;
-import groupbuyapp.NewClient.LogIn.User;
 
 /**
  * The {@code ListingViewer} class is a Java class that extends the {@code RoundedPanel} class.
@@ -41,42 +34,89 @@ import groupbuyapp.NewClient.LogIn.User;
  * 
  * @author BSCS 2A Group 5
  */
-public class ListingViewer extends RoundedPanel{
-    private Product product;
-    private User currentUser;
+public class ClientListingViewer extends RoundedPanel{
     private ImagePanel imagePanel;
     private DetailsPanel detailsPanel;
-    private boolean isUser;
+
+    public ImagePanel getImagePanel() {
+        return imagePanel;
+    }
+
+    public void setImagePanel(ImagePanel imagePanel) {
+        this.imagePanel = imagePanel;
+    }
+
+    public DetailsPanel getDetailsPanel() {
+        return detailsPanel;
+    }
+
+    public void setDetailsPanel(DetailsPanel detailsPanel) {
+        this.detailsPanel = detailsPanel;
+    }
+
+    private Product product;
+
+    public Product getProduct() {
+        return product;
+    }
+
     private RoundedButton backButton;
+    
     private int fromWhere;
- 
+    
     public static final int FROM_MY_LISTING = 1;
     public static final int FROM_MY_GROUPBUYS = 2;
     public static final int FROM_BROWSE = 3;
     public static final int FROM_SEARCH = 4;
     
-    public int getFromWhere() {return fromWhere;}
-    public boolean isUser() {return isUser;}
-    public ImagePanel getImagePanel() {return imagePanel;}
-    public DetailsPanel getDetailsPanel() {return detailsPanel;}
-    public JButton getBackButton(){return backButton;} 
-    public JButton getEditButton(){ return detailsPanel.getEditButton();}
-    public Product getProduct() {return product;} 
-    public void setProduct(Product product) {this.product = product;}
-
-    public ListingViewer(Product product, int fromWhere, User currentUser, Content content){
-        this(product, false, fromWhere, currentUser, null, content, null);
+    public RoundedButton getBackButton() {
+        return backButton;
     }
 
-    public ListingViewer(Product product, int fromWhere, User currentUser, Browser newBrowser, Content content, SideBar sideBar){
-        this(product, false, fromWhere, currentUser, newBrowser, content, sideBar);
+    public JLabel getImage(){
+        return imagePanel.getImageLabel();
     }
 
-    public ListingViewer(Product product, boolean isUser, int fromWhere, User currentUser, Browser newBrowser, Content content, SideBar sidebar){
-        this.product = product;
-        this.isUser = isUser;
+    public JButton getEditButton(){
+        return detailsPanel.getEditButton();
+    }
+
+    public JLabel getProductNameLabel(){
+        return detailsPanel.getProductNameLabel();
+    }
+
+    public JLabel getProductPriceLabel(){
+        return detailsPanel.getProductPriceLabel();
+    }
+
+    public JLabel getCreatorLabel(){
+        return detailsPanel.getCreatorLabel();
+    }
+
+    public JLabel getLocationLabel(){
+        return detailsPanel.getLocationLabel();
+    }
+
+    public JTextArea getDescriptionArea(){
+        return detailsPanel.getDescriptionArea();
+    }
+
+    public RoundedToggleButton getToggleJoinButton(){
+        return detailsPanel.getToggleJoinButton();
+    }
+
+    public JLabel getDeadlineLabel(){
+        return detailsPanel.getDeadlineLabel();
+    }
+
+    public JLabel getCountLabel(){
+        return detailsPanel.getCountLabel();
+    }
+
+
+    public ClientListingViewer(Product product, boolean isUser, int fromWhere){
         this.fromWhere = fromWhere;
-        this.currentUser = currentUser;
+        this.product = product;
         this.imagePanel = new ImagePanel(product.getImageIcon());
         imagePanel.setPreferredSize(new Dimension(700, 645));
         this.detailsPanel = new DetailsPanel(product);
@@ -148,10 +188,17 @@ public class ListingViewer extends RoundedPanel{
         private JLabel creatorLabel;
         private JLabel locationLabel;
         private RoundedCornerTextArea descriptionArea;
-        private RoundedButton joinButton;
-        private RoundedButton unjoinButton;
         private RoundedToggleButton toggleJoinButton;
         private JLabel countLabel;
+        private JLabel deadlineLabel;
+
+        public JLabel getDeadlineLabel() {
+            return deadlineLabel;
+        }
+
+        public RoundedToggleButton getToggleJoinButton() {
+            return toggleJoinButton;
+        }
 
         public RoundedButton getEditButton() {return editButton;}
         public JLabel getProductNameLabel() {return productNameLabel;}
@@ -159,8 +206,8 @@ public class ListingViewer extends RoundedPanel{
         public JLabel getCreatorLabel() {return creatorLabel;}
         public JLabel getLocationLabel() {return locationLabel;}
         public RoundedCornerTextArea getDescriptionArea() {return descriptionArea;}
-        public RoundedButton getJoinButton() {return joinButton;}
         public JLabel getCountLabel() {return countLabel;}
+
 
         public DetailsPanel(Product product){
             setOpaque(false);
@@ -179,12 +226,9 @@ public class ListingViewer extends RoundedPanel{
             productPriceLabel.setForeground(GbuyColor.MAIN_COLOR);
             productPriceLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(36f));
 
-            if(fromWhere != ListingViewer.FROM_MY_LISTING){
-                this.creatorLabel = new JLabel("Creator: " + GbuyDatabase.getInstance().getUserName(product.getCreatorID()));
-            } else {
-                this.creatorLabel = new JLabel("Creator: " + currentUser.getUserName());
-            }
+            this.creatorLabel = new JLabel("");
 
+        
             creatorLabel.setForeground(Color.lightGray);
             creatorLabel.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
             
@@ -200,20 +244,12 @@ public class ListingViewer extends RoundedPanel{
             descriptionArea.setEditable(false);
             descriptionArea.setCaretPosition(0);
 
-            this.joinButton = new RoundedButton("");
-            joinButton.setCornerRadius(30);
-
-            this.unjoinButton = new RoundedButton("");
-            unjoinButton.setButtonColor(GbuyColor.PANEL_COLOR);
-            unjoinButton.setForeground(GbuyColor.ONGOING_COLOR);
-            unjoinButton.setBorderColor(GbuyColor.ONGOING_COLOR);
 
             this.toggleJoinButton = new RoundedToggleButton("");
             toggleJoinButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
             toggleJoinButton.setDrawBorder(false);
 
-            SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
-            this.countLabel = new JLabel("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
+            this.countLabel = new JLabel("");
             countLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(16f));
 
             JPanel scrollablePanel = new JPanel();
@@ -256,7 +292,6 @@ public class ListingViewer extends RoundedPanel{
             scrollablePanel.add(descriptionArea, gbc);
             // descriptionArea.setCaretPosition(0);
 
-
             JScrollPane descScrollPanel = new JScrollPane(scrollablePanel);
             descScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             descScrollPanel.setBorder(BorderFactory.createEmptyBorder());
@@ -267,16 +302,15 @@ public class ListingViewer extends RoundedPanel{
             JPanel buttonPanels = new JPanel(new BorderLayout(10, 10));
             buttonPanels.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
             
-            String formattedTime = formatTimestamp(product.getDeadlineStamp());
-            JLabel deadlineLabel = new JLabel(formattedTime);
+            // String formattedTime = formatTimestamp(product.getDeadlineStamp());
+            deadlineLabel = new JLabel("");
 
             buttonPanels.setOpaque(false);
 
             buttonPanels.add(deadlineLabel, BorderLayout.NORTH);
             buttonPanels.add(countLabel, BorderLayout.WEST);
-            SingleProductContainer p = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
 
-            if(p.productStatus.equals("expired")){
+            if(product.getProductStatus().equals("expired")){
                 RoundedPanel expiredPanel = new RoundedPanel();
                 expiredPanel.setBackground(GbuyColor.EXPIRED_COLOR);
                 expiredPanel.setShady(false);
@@ -285,7 +319,8 @@ public class ListingViewer extends RoundedPanel{
                 label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
                 expiredPanel.add(label);
                 buttonPanels.add(expiredPanel, BorderLayout.EAST);
-            } else if (p.productStatus.equals("completed")){
+
+            } else if (product.getProductStatus().equals("completed")){
                 RoundedPanel completedPanel = new RoundedPanel();
                 completedPanel.setBackground(GbuyColor.COMPLETED_COLOR);
                 completedPanel.setShady(false);
@@ -294,69 +329,36 @@ public class ListingViewer extends RoundedPanel{
                 label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
                 completedPanel.add(label);
                 buttonPanels.add(completedPanel, BorderLayout.EAST);
-            } else if (fromWhere != FROM_MY_LISTING){
-                if(p.userCount != p.userLimit) {                    
-                    buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
-                    boolean joined = GbuyDatabase.getInstance().alreadyJoined(product.getId(), currentUser.getUserID());
-    
-                    if(joined){
-                        toggleJoinButton.setText("Leave Groupbuy");
-                        toggleJoinButton.setDefaultColor(GbuyColor.MAIN_COLOR);
-                        toggleJoinButton.setPressedColor(GbuyColor.ONGOING_COLOR);
-                    } else {
-                        toggleJoinButton.setText("Join Groubuy");
-                        toggleJoinButton.setDefaultColor(GbuyColor.ONGOING_COLOR);
-                        toggleJoinButton.setPressedColor(GbuyColor.MAIN_COLOR);
-                    }
-                    toggleJoinButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            if(joined){
-                                if(toggleJoinButton.isSelected()){
-                                    GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
-                                    JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                                    toggleJoinButton.setText("Join Groubuy");
-                         
-                                } else {
-                                    GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
-                                    JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
-                                    toggleJoinButton.setText("Leave Groupbuy");
-                          
-                                }
-                            } else {
-                                if(toggleJoinButton.isSelected()){
-                                    GbuyDatabase.getInstance().createGroupbuy(product.getId(), currentUser.getUserID());
-                                    JOptionPane.showMessageDialog(ListingViewer.this, "You joined the groupbuy");
-                                    toggleJoinButton.setText("Leave Groupbuy");
 
-                                    
-                                } else {
-                                    GbuyDatabase.getInstance().deleteGroupbuy(product.getId(), currentUser.getUserID());
-                                    JOptionPane.showMessageDialog(ListingViewer.this, "You Left this groupbuy");
-                                    toggleJoinButton.setText("Join Groubuy");
-        
-                                }
-                            }
-                            updateCountLabel(countLabel);
-                        }
-                    });
-                } 
+            } else if(product.getProductStatus().equals("purchasing")){
+                RoundedPanel purchasingPanel = new RoundedPanel();
+                purchasingPanel.setBackground(GbuyColor.COMPLETED_COLOR);
+                purchasingPanel.setShady(false);
+                JLabel label = new JLabel("purchasing");
+                label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
+                label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                purchasingPanel.add(label);
+                buttonPanels.add(purchasingPanel, BorderLayout.EAST);
+
+            } else if(product.getProductStatus().equals("delivered")){
+                RoundedPanel deliveredPanel = new RoundedPanel();
+                deliveredPanel.setBackground(GbuyColor.DELIVER_COLOR);
+                deliveredPanel.setShady(false);
+                JLabel label = new JLabel("delivered");
+                label.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
+                label.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+                deliveredPanel.add(label);
+                buttonPanels.add(deliveredPanel, BorderLayout.EAST);
+                
+            } else if (fromWhere != FROM_MY_LISTING){
+                    buttonPanels.add(toggleJoinButton, BorderLayout.EAST);
 
             }
             
             setLayout(new BorderLayout(0, 20));
             add(descScrollPanel, BorderLayout.CENTER);
             add(buttonPanels, BorderLayout.SOUTH);
-
-            if(product.getProductStatus().equals("expired") && isUser){
-                JOptionPane.showMessageDialog(null, "Your listing has expired, You may reschedule or delete your listing throught the edit button");
-            }
-        }
-
-        private void updateCountLabel(JLabel label){
-            SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
-            label.setText("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));    
-
+            
         }
 
         public static String formatTimestamp(Timestamp timestamp) {

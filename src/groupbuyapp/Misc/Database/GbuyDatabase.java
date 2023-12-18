@@ -15,8 +15,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Client.LogIn.User;
-import groupbuyapp.Client.LogIn.UserLoginData;
+import groupbuyapp.NewClient.LogIn.User;
+import groupbuyapp.NewClient.LogIn.UserLoginData;
 
 /**
  * The {@code GbuyProductDatabase} class is responsible for managing the database operations related to products in the Gbuy application.
@@ -541,6 +541,40 @@ public class GbuyDatabase {
         }
 
         return spc;
+    }
+
+    public Product getOneProduct(int productID){
+        Product p = null;
+        try {
+            query = "SELECT * FROM products WHERE productId = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, productID);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        int retrievedId = resultSet.getInt("productID");
+                        String productName = resultSet.getString("productName");
+                        String productCategory = resultSet.getString("productCategory");
+                        double productPrice = resultSet.getDouble("productPrice");
+                        String productDescription = resultSet.getString("productDescription");
+                        String productLocation = resultSet.getString("productLocation");
+                        byte[] byteImage = resultSet.getBytes("productImage");
+                        ImageIcon imageIcon = new ImageIcon(new ImageIcon(byteImage).getImage());
+                        String productStatus = resultSet.getString("productStatus");
+                        int creatorId = resultSet.getInt("productCreatorID");
+                        int userLimit = resultSet.getInt("productUserLimit");                
+                        Timestamp deadlineStamp = resultSet.getTimestamp("productDeadline");
+                        
+                        p = new Product(imageIcon, productName, "$" + String.valueOf(productPrice), productLocation, productCategory, productDescription, creatorId, productStatus, userLimit, deadlineStamp);
+                        p.setId(retrievedId);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return p;
     }
 
 

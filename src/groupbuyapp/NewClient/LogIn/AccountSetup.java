@@ -1,4 +1,4 @@
-package groupbuyapp.Client.LogIn;
+package groupbuyapp.NewClient.LogIn;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -13,8 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import groupbuyapp.Client.MainFrame;
 import groupbuyapp.Misc.Database.GbuyDatabase;
+import groupbuyapp.NewClient.ClientFrame;
 
 public class AccountSetup extends JFrame{
     
@@ -140,7 +140,7 @@ public class AccountSetup extends JFrame{
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainFrame(user);
+                new ClientFrame(user);
             }
         });
     }

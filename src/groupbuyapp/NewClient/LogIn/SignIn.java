@@ -1,4 +1,4 @@
-package groupbuyapp.Client.LogIn;
+package groupbuyapp.NewClient.LogIn;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,7 +49,7 @@ public class SignIn extends JPanel{
     class ImageContainer extends JPanel{
         public ImageContainer(){
             JLabel iconLabel = new JLabel();
-            iconLabel.setIcon(new ImageIcon("src/groupbuyapp/Client/LogIn/img/Login Splash.png"));
+            iconLabel.setIcon(new ImageIcon("src/groupbuyapp/NewClient/LogIn/img/Login Splash.png"));
             iconLabel.setOpaque(false);
             setLayout(new BorderLayout());
             add(iconLabel, BorderLayout.CENTER);

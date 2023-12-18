@@ -39,6 +39,9 @@ public class ProductPanel extends RoundedPanel{
     private final static String ON_GOING = "ongoing";
     private final static String COMPELETED = "completed";
     private final static String EXPIRED = "expired";
+    private final static String FOR_PURCHASE = "for purchase";
+    private final static String FOR_DELIVERY = "for delivery";
+    private final static String DELIVERED = "delivered";
 
     public ImageContainer getImageContainer() {
         return imageContainer;
@@ -108,8 +111,14 @@ public class ProductPanel extends RoundedPanel{
             return Status.COMPLETED;
         } else if(status.equals(ProductPanel.EXPIRED)){
             return Status.EXPIRED;
+        } else if(status.equals(ProductPanel.FOR_PURCHASE)){
+            return Status.FOR_PURCHASE;
+        } else if(status.equals(ProductPanel.FOR_DELIVERY)){
+            return Status.FOR_DELIVERY;
+        } else if(status.equals(ProductPanel.DELIVERED)){
+            return Status.DELIVERED;
         }
-        
+
         return -1;
     }
 
@@ -125,6 +134,18 @@ public class ProductPanel extends RoundedPanel{
         
             case Status.EXPIRED:
                 setToExpired(); 
+                break;
+        
+            case Status.FOR_PURCHASE:
+                setToForPurcahase(); 
+                break;
+        
+            case Status.FOR_DELIVERY:
+                setToForDelivery(); 
+                break;
+        
+            case Status.DELIVERED:
+                setToDelivered(); 
                 break;
         
             default:
@@ -161,11 +182,41 @@ public class ProductPanel extends RoundedPanel{
         this.containerStatus = Status.EXPIRED;
     }
 
+    private void setToForPurcahase(){
+        setShadowColor(Color.decode("#3EF050"));
+        setShadowGap(5);
+        setShadowOffset(0);
+        setShadowAlpha(35);
+        detailsContainer.setStatus(DetailsContainer.FOR_PURCHASE_STATUS);
+        this.containerStatus = Status.FOR_PURCHASE;
+    }
+
+    private void setToForDelivery(){
+        setShadowColor(GbuyColor.DELIVER_COLOR);
+        setShadowGap(5);
+        setShadowOffset(0);
+        setShadowAlpha(35);
+        detailsContainer.setStatus(DetailsContainer.FOR_DELIVERY_STATUS);
+        this.containerStatus = Status.FOR_DELIVERY;
+    }
+
+    private void setToDelivered(){
+        setShadowColor(Color.black);
+        setShadowGap(5);
+        setShadowOffset(0);
+        setShadowAlpha(35);
+        detailsContainer.setStatus(DetailsContainer.DELIVERED_STATUS);
+        this.containerStatus = Status.DELIVERED;
+    }
+
     class Status{
         public static final int DEFAULT = 1;
         public static final int ONGOING = 1;
         public static final int COMPLETED = 2;
         public static final int EXPIRED = 3;
+        public static final int FOR_PURCHASE = 4;
+        public static final int FOR_DELIVERY = 5;
+        public static final int DELIVERED = 6;
     }
 
     class ImageContainer extends JPanel{   
@@ -218,6 +269,9 @@ public class ProductPanel extends RoundedPanel{
         public static final int ONGOING_STATUS = 1;
         public static final int COMPLETED_STATUS = 2;
         public static final int EXPIRED_STATUS = 3;
+        public static final int FOR_PURCHASE_STATUS = 4;
+        public static final int FOR_DELIVERY_STATUS = 5;
+        public static final int DELIVERED_STATUS = 6;
 
         private static Color ongoingColor = Color.decode("#79AEF2");
         private static Color completedColor = Color.decode("#3EF050");
@@ -236,6 +290,17 @@ public class ProductPanel extends RoundedPanel{
                 case EXPIRED_STATUS:
                     setToExpired();
                     break;
+                    
+                case FOR_PURCHASE_STATUS:
+                    setToForPurchase();
+                    break;
+                case FOR_DELIVERY_STATUS:
+                    setToForDelivery();
+                    break;
+                case DELIVERED_STATUS:
+                    setToDelivered();
+                    break;
+
                 default:
                     break;
             }
@@ -321,9 +386,9 @@ public class ProductPanel extends RoundedPanel{
 
         private void setToCompleted(){
             statusLabel.setText("complete");
-            statusLabel.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+            statusLabel.setForeground(completedColor);
             statusContainer.setBorderColor(completedColor);
-            statusContainer.setBackground(completedColor);
+            statusContainer.setBackground(GbuyColor.PANEL_COLOR);
         }
 
         private void setToExpired(){
@@ -331,6 +396,27 @@ public class ProductPanel extends RoundedPanel{
             statusLabel.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
             statusContainer.setBorderColor(expiredColor);
             statusContainer.setBackground(expiredColor);
+        }
+
+        private void setToForPurchase(){
+            statusLabel.setText("for purchase");
+            statusLabel.setForeground(completedColor);
+            statusContainer.setBackground(GbuyColor.PANEL_COLOR);
+            statusContainer.setBorderColor(completedColor);
+        }
+
+        private void setToForDelivery(){
+            statusLabel.setText("for delivery");
+            statusLabel.setForeground(GbuyColor.DELIVER_COLOR);
+            statusContainer.setBackground(GbuyColor.PANEL_COLOR);
+            statusContainer.setBorderColor(GbuyColor.DELIVER_COLOR);
+        }
+
+        private void setToDelivered(){
+            statusLabel.setText("delivered");
+            statusLabel.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
+            statusContainer.setBackground(Color.lightGray);
+            statusContainer.setBorderColor(Color.lightGray);
         }
     }
 

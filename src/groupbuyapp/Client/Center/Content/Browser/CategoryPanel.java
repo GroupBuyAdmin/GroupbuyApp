@@ -22,13 +22,13 @@ import groupbuyapp.Client.Center.Content.ProductContainers.ListingCreator;
 import groupbuyapp.Client.Center.Content.ProductContainers.ListingViewer;
 import groupbuyapp.Client.Center.Content.ProductContainers.Product;
 import groupbuyapp.Client.Center.Content.ProductContainers.ProductPanel;
-import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Client.SideBar.Buttons.Buttons;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import groupbuyapp.Misc.Interface.Refreshable;
+import groupbuyapp.NewClient.LogIn.User;
 
 public class CategoryPanel extends JPanel implements Refreshable{
     String category;

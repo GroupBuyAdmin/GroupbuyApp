@@ -1,4 +1,4 @@
-package groupbuyapp.Client.LogIn;
+package groupbuyapp.NewClient.LogIn;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

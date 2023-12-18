@@ -11,9 +11,9 @@ import groupbuyapp.Client.Center.Content.Browser.Browser;
 import groupbuyapp.Client.Center.Content.Home.Home;
 import groupbuyapp.Client.Center.Content.ListingDisplayer.ListingDisplayer;
 import groupbuyapp.Client.Center.TopNavBar.TopNavBar;
-import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
+import groupbuyapp.NewClient.LogIn.User;
 
 public class Content extends JPanel{
     private User currentUser;

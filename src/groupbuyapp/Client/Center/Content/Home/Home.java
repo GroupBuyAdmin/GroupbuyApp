@@ -11,13 +11,13 @@ import javax.swing.JScrollPane;
 import groupbuyapp.Client.Center.Content.Content;
 import groupbuyapp.Client.Center.Content.Browser.Browser;
 import groupbuyapp.Client.Center.Content.Browser.CategoryPanel;
-import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel.ScrollableSizeHint;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import groupbuyapp.Misc.Interface.Refreshable;
+import groupbuyapp.NewClient.LogIn.User;
 import net.miginfocom.swing.MigLayout;
 
 public class Home extends JPanel implements Refreshable{

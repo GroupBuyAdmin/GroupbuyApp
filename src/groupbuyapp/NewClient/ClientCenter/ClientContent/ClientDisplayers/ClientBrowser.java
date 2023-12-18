@@ -1,4 +1,4 @@
-package groupbuyapp.Client.Center.Content.Browser;
+package groupbuyapp.NewClient.ClientCenter.ClientContent.ClientDisplayers;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -11,28 +11,34 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import groupbuyapp.Client.Center.Content.Content;
-import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Misc.ColorPalette.GbuyColor;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
 import groupbuyapp.Misc.CustomComponents.ScrollablePanel.ScrollableSizeHint;
-import groupbuyapp.Misc.Database.GbuyDatabase;
 import groupbuyapp.Misc.Fonts.GbuyFont;
 import groupbuyapp.Misc.Interface.Refreshable;
-import groupbuyapp.NewClient.LogIn.User;
 
 
-public class Browser extends JPanel implements Refreshable{
-    User currentUser;
-    ScrollablePanel scrollablePanel;
+public class ClientBrowser extends JPanel implements Refreshable{
+    private ScrollablePanel scrollablePanel;
+    private JScrollPane scrollPane;
     
-    JScrollPane scrollPane;
-    JPanel cardContainer;
-    CardLayout cardLayout;
-    List<CategoryPanel> madeCategoryPanels;
-    Content content;
-    int fromWhere;
+    private JPanel cardContainer;
+    private CardLayout cardLayout;
+    private List<SideScrollDisplayer> madeSideScrollables;
     
+    public List<SideScrollDisplayer> getMadeSideScrollables() {
+        return madeSideScrollables;
+    }
+
+    public void setMadeSideScrollables(List<SideScrollDisplayer> madeSideScrollables) {
+        this.madeSideScrollables = madeSideScrollables;
+        refresh();
+    }
+    
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
     public JPanel getCardContainer() {
         return cardContainer;
     }
@@ -47,21 +53,12 @@ public class Browser extends JPanel implements Refreshable{
     public static final String BROWSE_LISTING = "browse listing";
     public static final String VIEW_BROWSED = "view browsed";
     public static final String SEE_ALL_LISTING = "see all listing";
-    private static final String[] categories = {"Electronics", "Clothing", "Books", "Home and Kitchen", "Sports"};
 
     public static final int DEFAULT = 1;
     public static final int HOME_BROWSER = 2;
 
-    public Browser(User currentUser, Content content, SideBar sideBar){
-        this(DEFAULT, currentUser, content, sideBar);
-    }
-
-
-    public Browser(int fromWhere, User currentUser, Content content, SideBar sideBar){
-        this.content = content;
-        this.madeCategoryPanels = new ArrayList<>();
-        this.currentUser = currentUser;
-        this.fromWhere = fromWhere;
+    public ClientBrowser(){
+        this.madeSideScrollables = new ArrayList<>();
 
         scrollablePanel = new ScrollablePanel(new GridLayout(0, 1));
         scrollablePanel.setScrollableHeight(ScrollableSizeHint.NONE);
@@ -79,7 +76,6 @@ public class Browser extends JPanel implements Refreshable{
         cardContainer = new JPanel(cardLayout);
         cardContainer.add(scrollPane, BROWSE_LISTING);
 
-        populateBrowse(sideBar);
         setLayout(new BorderLayout());
         setBackground(GbuyColor.PANEL_COLOR);
 
@@ -89,25 +85,12 @@ public class Browser extends JPanel implements Refreshable{
         add(cardContainer, BorderLayout.CENTER);
     }
 
-    public void populateBrowse(SideBar sideBar){
-        for(String category : categories){
-            if(GbuyDatabase.getInstance().checkForCategory(category, currentUser.getUserID())){   
-                CategoryPanel categoryPanel = null;          //check if category has products
-                if(fromWhere == DEFAULT){
-                    categoryPanel = new CategoryPanel(category, Browser.this, currentUser, content, sideBar);
-                } else {
-                    categoryPanel = new CategoryPanel(CategoryPanel.HOME_BROWSER, category, Browser.this, currentUser, content, sideBar);
-                }
-                scrollablePanel.add(categoryPanel);
-                madeCategoryPanels.add(categoryPanel);
-            }
-        }
-    }
-
     @Override
     public void refresh(){
-        for(CategoryPanel c : madeCategoryPanels){
-            c.refresh();
+        scrollablePanel.removeAll();
+
+        for(SideScrollDisplayer s : madeSideScrollables){
+            scrollablePanel.add(s);
         }
         
         revalidate();

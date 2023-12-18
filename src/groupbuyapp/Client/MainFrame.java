@@ -14,10 +14,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import groupbuyapp.Client.Center.Center;
-import groupbuyapp.Client.LogIn.AccountSetup;
-import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.Client.SideBar.SideBar;
 import groupbuyapp.Client.SideBar.Buttons.Buttons;
+import groupbuyapp.NewClient.LogIn.AccountSetup;
+import groupbuyapp.NewClient.LogIn.User;
 
 public class MainFrame extends JFrame{
     private User currentUser;
