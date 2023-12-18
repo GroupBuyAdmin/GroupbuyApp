@@ -15,8 +15,8 @@ import groupbuyapp.Admin.AdminContent.ContentDisplayers.ContentContainer;
 import groupbuyapp.Admin.AdminContent.ContentDisplayers.ContentDisplayer;
 import groupbuyapp.Admin.AdminSideBar.ASidebar;
 import groupbuyapp.Admin.AdminTopNav.AtopNavbar;
-import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Misc.Database.GbuyDatabase;
+import groupbuyapp.SystemFiles.Database.GbuyDatabase;
+import groupbuyapp.SystemFiles.Database.Product;
 
 
 public class AdminController {

@@ -11,9 +11,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import groupbuyapp.Misc.ColorPalette.GbuyColor;
-import groupbuyapp.Misc.CustomComponents.RoundedButton;
-import groupbuyapp.Misc.Fonts.GbuyFont;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.CustomComponents.RoundedButton;
+import groupbuyapp.SystemFiles.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
 public class ASidebar extends JPanel{

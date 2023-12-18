@@ -10,10 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import groupbuyapp.Admin.AdminController;
-import groupbuyapp.Misc.ColorPalette.GbuyColor;
-import groupbuyapp.Misc.CustomComponents.ScrollablePanel;
-import groupbuyapp.Misc.CustomComponents.ScrollablePanel.ScrollableSizeHint;
-import groupbuyapp.Misc.Fonts.GbuyFont;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel;
+import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel.ScrollableSizeHint;
+import groupbuyapp.SystemFiles.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
 public class ContentDisplayer extends JPanel{

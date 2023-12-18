@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import groupbuyapp.Misc.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 
 public class AtopNavbar extends JPanel{
     private JLabel logoContainer;

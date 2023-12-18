@@ -7,7 +7,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import groupbuyapp.Admin.AdminContent.ContentDisplayers.ContentDisplayer;
-import groupbuyapp.Misc.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 
 public class AContent extends JPanel{
     private ContentDisplayer currentDisplayer;

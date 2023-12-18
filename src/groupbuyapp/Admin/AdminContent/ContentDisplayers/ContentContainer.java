@@ -13,10 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import groupbuyapp.Admin.Misc.BottomLineBorder;
-import groupbuyapp.Client.Center.Content.ProductContainers.Product;
-import groupbuyapp.Misc.ColorPalette.GbuyColor;
-import groupbuyapp.Misc.CustomComponents.RoundedButton;
-import groupbuyapp.Misc.Fonts.GbuyFont;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.CustomComponents.RoundedButton;
+import groupbuyapp.SystemFiles.Database.Product;
+import groupbuyapp.SystemFiles.Fonts.GbuyFont;
 import net.miginfocom.swing.MigLayout;
 
 public class ContentContainer extends JPanel{
