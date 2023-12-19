@@ -4,6 +4,7 @@ package groupbuyapp.Client.ClientCenter.ClientContent.ClientDisplayers;
 import java.awt.BorderLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -12,12 +13,23 @@ import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel.ScrollableSizeHint;
 import groupbuyapp.SystemFiles.Fonts.GbuyFont;
-import net.miginfocom.swing.MigLayout;
 
 public class ClientHomeDisplayer extends JPanel{
     private MyListingsPanel myListingPanel;
     private MyGroupbuysPanel myGroupbuysPanel;
     private MiniBrowserPanel miniBrowserPanel;
+
+    public MyListingsPanel getMyListingPanel() {
+        return myListingPanel;
+    }
+
+    public MyGroupbuysPanel getMyGroupbuysPanel() {
+        return myGroupbuysPanel;
+    }
+
+    public MiniBrowserPanel getMiniBrowserPanel() {
+        return miniBrowserPanel;
+    }
 
     private ScrollablePanel scrollablePanel;
     private JScrollPane scrollPane;
@@ -48,15 +60,16 @@ public class ClientHomeDisplayer extends JPanel{
         headerJPanel.add(homeLabel);
 
         setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
-        scrollablePanel = new ScrollablePanel(new MigLayout());
+        scrollablePanel = new ScrollablePanel();
+        scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
         scrollablePanel.setScrollableHeight(ScrollableSizeHint.STRETCH);
         scrollablePanel.setScrollableWidth(ScrollableSizeHint.FIT);
         scrollablePanel.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
 
-        scrollablePanel.add(headerJPanel, "wrap, push, grow");
-        scrollablePanel.add(myListingPanel, "wrap, push, grow");
-        scrollablePanel.add(myGroupbuysPanel, "wrap, push, grow");
-        scrollablePanel.add(miniBrowserPanel, "wrap, push, grow");
+        scrollablePanel.add(headerJPanel);
+        scrollablePanel.add(myListingPanel);
+        scrollablePanel.add(myGroupbuysPanel);
+        scrollablePanel.add(miniBrowserPanel);
 
         scrollPane = new JScrollPane(scrollablePanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -161,9 +174,9 @@ public class ClientHomeDisplayer extends JPanel{
             innerMiniBrowserPanel = new InnerMiniBrowserPanel();
 
             add(innerMiniBrowserPanel);
-            JLabel browselabel = new JLabel("BROWSE");
-            browselabel.setFont(GbuyFont.MULI_BOLD.deriveFont(26f));
-            add(browselabel, BorderLayout.NORTH);
+            // JLabel browselabel = new JLabel("BROWSE");
+            // browselabel.setFont(GbuyFont.MULI_BOLD.deriveFont(26f));
+            // add(browselabel, BorderLayout.NORTH);
 
             setBorder(BorderFactory.createEmptyBorder(30, 40, 0, 0));
             setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);

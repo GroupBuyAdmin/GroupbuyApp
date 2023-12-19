@@ -26,6 +26,7 @@ import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.ClientListingCr
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.CreatorController;
 import groupbuyapp.Client.ClientSidebar.ClientSidebar;
 import groupbuyapp.Client.ClientSidebar.ClientSidebar.ClientButtons;
+import groupbuyapp.Client.LogIn.AccountSetup;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.RoundedToggleButton;
@@ -64,6 +65,127 @@ public class ClientController {
 
     public void init(){
         initSidebarControls();
+        initNavBarControls();
+    }
+
+    private void initNavBarControls(){
+        var searchButton = clientCenter.getClientNavBar().getSearchButton();
+        var profileIcon = clientCenter.getClientNavBar().getProfileIcon();
+        var signOutIcon = clientCenter.getClientNavBar().getSignOutIcon();
+
+        searchButton.addActionListener(new Search());
+        profileIcon.setToolTipText(currentUser.getUserName());
+        signOutIcon.addMouseListener(new SignOutAction());
+
+    }
+
+    private class SignOutAction extends MouseAdapter{
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int option = JOptionPane.showConfirmDialog(
+                null, // parent component (null for default)
+                "You are about to be sign out", // message
+                "Confirmation", // title
+                JOptionPane.YES_NO_OPTION); // option type
+
+            // Check the user's choice
+            if (option == JOptionPane.YES_OPTION) {
+                clientFrame.dispose();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AccountSetup();
+                    }
+                    
+                });
+            } 
+        }
+    }
+
+    private class Search implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String searchedItem = clientCenter.getClientNavBar().getSearchedItem();
+
+            CategoryDisplayer categoryDisplayer = new CategoryDisplayer();
+            categoryDisplayer.getHeaderName().setText("Search \"" + searchedItem + "\"");
+
+            categoryDisplayer.setProductPanels(createSearchedPanels(searchedItem));
+
+            categoryDisplayer.revalidate();
+            categoryDisplayer.repaint();
+
+            categoryDisplayer.getBackLabel().addMouseListener(new ReturnToHome());
+
+            var content = clientCenter.getClientContent();
+
+            content.getCardContainer().add(categoryDisplayer, "view");
+            content.getCardLayout().show(content.getCardContainer(), "view");
+        }
+    }
+
+    private class ReturnToHome extends MouseAdapter{
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            refreshHome();
+            var content = clientCenter.getClientContent();
+
+            content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
+        }
+    }
+
+    private List<ProductPanel> createSearchedPanels(String searchedItem){
+        List<Product> searchedProducts = GbuyDatabase.getInstance().getSearchedItem(searchedItem, currentUser.getUserID());
+        List<ProductPanel> madePanels = new ArrayList<>();
+
+        for(Product product : searchedProducts){
+            ProductPanel productPanel = new ProductPanel(product);
+            productPanel.addMouseListener(new CreateViewerForSearch(product));
+            // productPanel.addMouseListener(new InteractiveHover(productPanel));
+            madePanels.add(productPanel);
+        }
+        return madePanels;
+    }
+
+    private class CreateViewerForSearch extends MouseAdapter{
+        private Product product;
+        public CreateViewerForSearch(Product product){
+            this.product = product;
+        }
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            var content = clientCenter.getClientContent();
+
+            content.getCardContainer().add(createViewerForSearched(product), "view");
+            content.getCardLayout().show(content.getCardContainer(), "view");
+        }
+    }
+
+    private ClientListingViewer createViewerForSearched(Product product){
+        var content = clientCenter.getClientContent();
+        ClientListingViewer viewer = new ClientListingViewer(product, false, ClientListingViewer.FROM_MY_GROUPBUYS);
+        viewer.getCreatorLabel().setText("Creator: " + currentUser.getUserName());
+        SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
+        viewer.getCountLabel().setText("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
+        String formattedTime = formatTimestamp(product.getDeadlineStamp());
+        viewer.getDeadlineLabel().setText(formattedTime);
+        
+        viewer.getBackButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshHome();
+                content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
+            }
+        });
+
+        viewer.getToggleJoinButton().addActionListener(new ToggleJoin(product, viewer.getToggleJoinButton(), viewer.getCountLabel()));
+
+        viewer.revalidate();
+        viewer.repaint();
+
+        return viewer;
+
     }
 
     private void initSidebarControls(){
@@ -149,13 +271,25 @@ public class ClientController {
         var myGroupbuy = content.getClienthome().getMyGroupbuysScroller();
         var minibrowser = content.getClienthome().getMiniBrowser();
 
-        myListing.setAllProductsPanels(createProductPanelsForHomeListing());
-        myListing.getSeeAll().addMouseListener(new JumptoMyListing());
+        var retreivedHomeListingPanels = createProductPanelsForHomeListing();
+        if(retreivedHomeListingPanels.isEmpty()){
+            content.getClienthome().getMyListingPanel().setVisible(false);
+        } else{
+            content.getClienthome().getMyListingPanel().setVisible(true);
+            myListing.setAllProductsPanels(retreivedHomeListingPanels);
+            myListing.getSeeAll().addMouseListener(new JumptoMyListing());
+        }
         myListing.revalidate();
         myListing.repaint();
 
-        myGroupbuy.setAllProductsPanels(createProductPanelsForHomeGroupbuys());
-        myGroupbuy.getSeeAll().addMouseListener(new JumptoMyGroupbuys());
+        var retrievedMyGroupbuyPanels = createProductPanelsForHomeGroupbuys();
+        if(retrievedMyGroupbuyPanels.isEmpty()){
+            content.getClienthome().getMyGroupbuysPanel().setVisible(false);
+        } else {
+            content.getClienthome().getMyGroupbuysPanel().setVisible(true);
+            myGroupbuy.setAllProductsPanels(retrievedMyGroupbuyPanels);
+            myGroupbuy.getSeeAll().addMouseListener(new JumptoMyGroupbuys());
+        }
         myGroupbuy.revalidate();
         myGroupbuy.repaint();
 
@@ -175,6 +309,7 @@ public class ClientController {
         for(Product product : myListings){
             ProductPanel productPanel = new ProductPanel(product);
             productPanel.addMouseListener(new HomeMyListingViewer(product));
+            // productPanel.addMouseListener(new InteractiveHover(productPanel));
             madePanels.add(productPanel);
         }
         
@@ -210,7 +345,7 @@ public class ClientController {
         viewer.getBackButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshHome();
+                // refreshHome();
                 content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
             }
         });
@@ -277,7 +412,7 @@ public class ClientController {
         viewer.getBackButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshHome();
+                // refreshHome();
                 content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
             }
         });
@@ -493,6 +628,7 @@ public class ClientController {
         for(Product product : products){
             ProductPanel p = new ProductPanel(product);
             p.addMouseListener(new EnableListingViewerInMyListings(product));
+            // p.addMouseListener(new InteractiveHover(p));
             productPanels.add(p);
         }
 
@@ -710,6 +846,6 @@ public class ClientController {
         }
     }
 
-
+ 
 
 }

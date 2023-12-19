@@ -8,8 +8,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -257,12 +257,6 @@ public class ClientListingCreator {
             add(detailsPanel, gbc);
         }
 
-        /**
-         * Resizes an image to fit within a specified width and height while maintaining its aspect ratio.
-         * 
-         * @param selectedImage The original image to be resized.
-         * @return The resized image that fits within the specified width and height while maintaining its aspect ratio.
-         */
         private Image resizeImage(ImageIcon selectedImage) {
             int finalWidth;
             int finalHeight;
@@ -282,23 +276,6 @@ public class ClientListingCreator {
             return image;
         }
 
-        /**
-         * Populates the fields of the CenterPanel with data from a SingleProductContainer object.
-         * 
-         * <p>Flow:
-         * <p>1. Retrieve the productId from the product object
-         * <p>2. Use the productId to fetch the corresponding SingleProductContainer object from the database.
-         * <p>3. Set the text of the name, description, and location fields in the detailsPanel to the values from the SingleProductContainer object.
-         * <p>4. Set the selected item of the category combo box in the detailsPanel to the value from the SingleProductContainer object.
-         * <p>5. Set the text of the price field in the detailsPanel to the value from the SingleProductContainer object.
-         * <p>6. Set the original image of the imageContainer in the imagePanel to the byte image from the SingleProductContainer object.
-         * <p>7. Resize the original image and set it as the icon of the image label in the imageContainer in the imagePanel.
-         * <p>8. Clear the text of the image label in the imageContainer in the imagePanel.
-         * <p>9. Refresh the imageContainer in the imagePanel.
-         * <p>10. Set the text of the button in the iconButton in the imagePanel to "Change Photo".
-         * <p>11. Refresh the iconButton in the imagePanel.
-         * 
-         */
         private void initializeWithData() {
             int productId = product.getId();
             SingleProductContainer spc = GbuyDatabase.getInstance().getSingleProduct(productId);
@@ -467,6 +444,11 @@ public class ClientListingCreator {
                 public JTextField getNameTextField() {return nameTextField;}
                 public JTextArea getDescTextArea() {return descTextArea;}
 
+                private final String DEFAULT_PRODUCT_NAME = "Enter product Name";
+                private final String DEFAULT_DESCRIPTION = "Enter description";
+                private final String DEFAULT_LOCATION = "Enter Location";
+
+
                 public TextFields(){
                     
                     JLabel nameFieldLabel = new JLabel("Product Name");
@@ -474,21 +456,13 @@ public class ClientListingCreator {
                     nameFieldLabel.setHorizontalAlignment(JLabel.LEFT);
 
                     this.nameTextField = new RoundedCornerTextField();
-                    nameTextField.setText("Enter product name");
+                    nameTextField.setText(DEFAULT_PRODUCT_NAME);
                     nameTextField.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
                     nameTextField.setForeground(GbuyColor.MAIN_COLOR);
                     nameTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     nameTextField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
-                    nameTextField.addFocusListener(new FocusListener() {
-                        @Override
-                        public void focusGained(FocusEvent e) {
-                            if(!editProduct && nameTextField.getText().isEmpty())
-                                nameTextField.setText("");
-                        }
-                        @Override
-                        public void focusLost(FocusEvent e) {}
-                        
-                    });
+                    nameTextField.addFocusListener(new TextFocusListener(DEFAULT_PRODUCT_NAME, nameTextField));
+                    
 
 
                     //inside descFieldPanel
@@ -498,20 +472,12 @@ public class ClientListingCreator {
 
 
                     this.descTextArea = new RoundedCornerTextArea();
-                    descTextArea.setText("Enter description");
+                    descTextArea.setText(DEFAULT_DESCRIPTION);
                     descTextArea.setFont(GbuyFont.MULI_LIGHT.deriveFont(12f));
                     descTextArea.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
                     descTextArea.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
-                    descTextArea.addFocusListener(new FocusListener() {
-                        @Override
-                        public void focusGained(FocusEvent e) {
-                            if(!editProduct && nameTextField.getText().isEmpty())
-                                descTextArea.setText("");
-                        }
-                        @Override
-                        public void focusLost(FocusEvent e) {}
-                        
-                    });
+                    descTextArea.addFocusListener(new TextAreaFocusListener(DEFAULT_DESCRIPTION, descTextArea));
+
 
                     JScrollPane descScrollPanel = new JScrollPane(descTextArea);
                     descScrollPanel.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
@@ -520,22 +486,15 @@ public class ClientListingCreator {
                     JLabel locationFieldLabel = new JLabel("Location");
                     locationFieldLabel.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
                     locationFieldLabel.setHorizontalAlignment(JLabel.LEFT);
+
                     this.locationTextField = new RoundedCornerTextField();
-                    locationTextField.setText("Enter Location");
+                    locationTextField.setText(DEFAULT_LOCATION);
                     locationTextField.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(14f));
                     locationTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     locationTextField.setForeground(GbuyColor.MAIN_COLOR);
                     locationTextField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
-                    locationTextField.addFocusListener(new FocusListener() {
-                        @Override
-                        public void focusGained(FocusEvent e) {   
-                            if(!editProduct && nameTextField.getText().isEmpty())
-                                locationTextField.setText("");
-                        }
-                        @Override
-                        public void focusLost(FocusEvent e) {}
-                        
-                    });
+                    locationTextField.addFocusListener(new TextFocusListener(DEFAULT_LOCATION, locationTextField));
+
 
                     //layout
                     setLayout(new GridBagLayout());
@@ -588,6 +547,9 @@ public class ClientListingCreator {
                 public JComboBox<String> getComboBox() {return comboBox;}
                 public JTextField getPriceTextField() {return priceTextField;}
 
+                private final String DEFAULT_PRICE = "0.00";
+                private final String DEFAULT_LIMIT = "0";
+
                 public SubDescription(){
 
                     //for categories drop down
@@ -621,40 +583,19 @@ public class ClientListingCreator {
                     priceTextField.setForeground(GbuyColor.MAIN_COLOR);
                     priceTextField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     priceTextField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
-                    priceTextField.setText("0.00");
-                    priceTextField.addFocusListener(new FocusListener() {
-                        @Override
-                        public void focusGained(FocusEvent e) {
-                            if(!editProduct && priceTextField.getText().isEmpty())
-                                priceTextField.setText("");
-                        }
-                        @Override
-                        public void focusLost(FocusEvent e) {
-                        }
-                    });
+                    priceTextField.setText(DEFAULT_PRICE);
+                    priceTextField.addFocusListener(new TextFocusListener(DEFAULT_PRICE, priceTextField));
+      
 
                     JLabel userLimitLabel = new JLabel("Join Limit ");
                     this.userlimitField = new RoundedCornerTextField();
-                    userlimitField.setText("0");
+                    userlimitField.setText(DEFAULT_LIMIT);
                     userlimitField.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
                     userlimitField.setForeground(GbuyColor.MAIN_COLOR);
                     userlimitField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
                     userlimitField.setFont(GbuyFont.MULI_BOLD.deriveFont(14f));
-                    userlimitField.addFocusListener(new FocusListener() {
-
-                        @Override
-                        public void focusGained(FocusEvent e) {
-                            if(!editProduct && userlimitField.getText().isEmpty())
-                                userlimitField.setText("");
-                        }
-
-                        @Override
-                        public void focusLost(FocusEvent e) {
-
-                        }
-                        
-                    });
-
+                    userlimitField.addFocusListener(new TextFocusListener(DEFAULT_LIMIT, userlimitField));
+  
                     JLabel dateTimePickerLabel = new JLabel("Deadline");
                     dateTimePicker = new DateTimePicker();
 
@@ -804,5 +745,52 @@ public class ClientListingCreator {
         }
     }
 
+    private class TextFocusListener extends FocusAdapter{
+        private String text;
+        private JTextField textField;
 
+
+        public TextFocusListener(String text, JTextField textField){
+            this.text = text;
+            this.textField = textField;
+        }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            if(textField.getText().equals(text)){
+                textField.setText("");
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if(textField.getText().isEmpty()){
+                textField.setText(text);
+            }
+        }
+    }
+
+    private class TextAreaFocusListener extends FocusAdapter{
+        private String text;
+        private JTextArea textArea;
+
+        public TextAreaFocusListener(String text, JTextArea textArea){
+            this.text = text;
+            this.textArea = textArea;
+        }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            if(textArea.getText().equals(text)){
+                textArea.setText("");
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if(textArea.getText().isEmpty()){
+                textArea.setText(text);
+            }
+        }
+    }
 }

@@ -61,6 +61,7 @@ public class ClientContent extends JPanel{
         cardContainer.add(myListings, MY_LISTINGS);
         cardContainer.add(myGroupbuys, MY_GROUPBUYS);
         cardContainer.add(clientBrowser, BROWSE_GROUPBUYS);
+        cardContainer.setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
 
         setLayout(new BorderLayout());
 

@@ -1,18 +1,21 @@
 package groupbuyapp.Client.ClientCenter.ClientContent.ClientDisplayers;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientContainers.ProductPanel;
+import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.RoundedButton;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel;
 import groupbuyapp.SystemFiles.CustomComponents.ScrollablePanel.ScrollableSizeHint;
-import net.miginfocom.swing.MigLayout;
+import groupbuyapp.SystemFiles.Fonts.GbuyFont;
 
 //has a button
 public class BasicDisplayer extends JPanel{
@@ -40,7 +43,9 @@ public class BasicDisplayer extends JPanel{
         this.basicHeader = new BasicHeader(type);
         this.basicContent = new BasicContent(type);
 
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 20));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+        setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
         add(basicHeader, BorderLayout.NORTH);
         add(basicContent, BorderLayout.CENTER);
     }
@@ -63,7 +68,13 @@ public class BasicDisplayer extends JPanel{
 
         public BasicHeader(int type){
             this.headerName = new JLabel("");
+            headerName.setFont(GbuyFont.MULI_BOLD.deriveFont(32f));
+
             this.headerButton = new RoundedButton("");
+            headerButton.setButtonColor(GbuyColor.MAIN_COLOR);
+            headerButton.setFont(GbuyFont.MULI_SEMI_BOLD.deriveFont(16f));
+            headerButton.setDrawBorder(false);
+            headerButton.setForeground(GbuyColor.MAIN_TEXT_COLOR_ALT);
 
             switch (type) {
                 case MY_LISTINGS:
@@ -79,7 +90,7 @@ public class BasicDisplayer extends JPanel{
                 default:
                     break;
             }
-            
+            setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
             setLayout(new BorderLayout());
             add(headerName, BorderLayout.WEST);
             add(headerButton, BorderLayout.EAST);
@@ -99,24 +110,35 @@ public class BasicDisplayer extends JPanel{
             this.allProductPanels = allProductPanels;
         }
 
-        public ScrollablePanel getScrollablePanel() {
+        public JPanel getScrollablePanel() {
             return scrollablePanel;
         }
 
         public BasicContent(int type){
+            // setOpaque(false);
             this.scrollablePanel = new ScrollablePanel();
-            scrollablePanel.setLayout(new MigLayout("wrap 5"));
-            scrollablePanel.setScrollableHeight(ScrollableSizeHint.NONE);
+            scrollablePanel.setLayout(new FlowLayout(FlowLayout.LEADING, 25, 25));
+            scrollablePanel.setScrollableHeight(ScrollableSizeHint.STRETCH);
             scrollablePanel.setScrollableWidth(ScrollableSizeHint.FIT);
+            scrollablePanel.setBackground(GbuyColor.PANEL_COLOR);
+            scrollablePanel.setBorder(BorderFactory.createEmptyBorder());
+            
             JScrollPane scrollPane = new JScrollPane(scrollablePanel);
+            scrollPane.setBackground(GbuyColor.PANEL_COLOR);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
             setLayout(new BorderLayout());
+            setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+
             add(scrollPane);
         }
 
         public void refresh(){
             scrollablePanel.removeAll();
             for(ProductPanel productPanel : allProductPanels){
-                scrollablePanel.add(productPanel, "pushx, growx");
+                if(allProductPanels.isEmpty()){
+                } else {
+                    scrollablePanel.add(productPanel);
+                }
             }
         }
 

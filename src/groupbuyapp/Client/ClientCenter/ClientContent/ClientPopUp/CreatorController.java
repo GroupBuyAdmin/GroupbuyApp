@@ -16,6 +16,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import groupbuyapp.Client.ClientController;
+import groupbuyapp.Client.ClientCenter.ClientContent.ClientContent;
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientDisplayers.ClientListingViewer;
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.ClientListingCreator.DetailsPanel;
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.ClientListingCreator.ImagePanel;
@@ -48,6 +49,7 @@ public class CreatorController {
         var cancelButton = clientListingCreator.getCancelButton();
         var addPhotoButton = clientListingCreator.getAddPhotoButton();
         var uploadButton = clientListingCreator.getUploadButton();
+        var deleteButton = clientListingCreator.getDeleteButton();
 
         cancelButton.addActionListener(new ActionListener() {
             @Override
@@ -61,6 +63,25 @@ public class CreatorController {
 
         uploadButton.addActionListener(new Uploader());
 
+        deleteButton.addActionListener(new DeleteAction());
+
+    }
+
+    class DeleteAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            var product = clientListingCreator.getProduct();
+            GbuyDatabase.getInstance().deleteProduct(product.getId());
+            JOptionPane.showMessageDialog(null, "product " + product.getName() + " was deleted");             
+            var myListings = clientController.getClientCenter().getClientContent().getMyListings();
+            myListings.setProductPanels(clientController.createMyListingPanels());
+            myListings.revalidate();
+            myListings.repaint();
+            var content = clientController.getClientCenter().getClientContent();
+            content.getCardLayout().show(content.getCardContainer(), ClientContent.MY_LISTINGS);
+            clientListingCreator.close();
+        }
+        
     }
 
     class PhotoChooser implements ActionListener{
@@ -75,6 +96,7 @@ public class CreatorController {
                 Image resizedImage = resizeImage(selectedImageIcon);
                 ImageIcon resizedIcon = new ImageIcon(resizedImage);
                 clientListingCreator.getImage().setIcon(resizedIcon);
+                clientListingCreator.getImage().setText("");
                 clientListingCreator.getCenterPanel().getImagePanel().getImageContainer().refresh();
                 clientListingCreator.getAddPhotoButton().setText("Change Photo");
                 clientListingCreator.getCenterPanel().getImagePanel().getIconButton().refresh();
@@ -188,7 +210,7 @@ public class CreatorController {
         } else {
             spc.productStatus = clientListingCreator.getProduct().getProductStatus();
             GbuyDatabase.getInstance().editProduct(spc, clientListingCreator.getProduct().getId());
-            JOptionPane.showMessageDialog(null, "product " + clientListingCreator.getProduct().getId() + " was edited");
+            JOptionPane.showMessageDialog(null, "product " + clientListingCreator.getProduct().getName() + " was edited");
         }
         var myListings = clientController.getClientCenter().getClientContent().getMyListings();
         myListings.setProductPanels(clientController.createMyListingPanels());
