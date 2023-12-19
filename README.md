@@ -31,6 +31,7 @@
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@Carl Conrad Declaro]()
+- [@Edrian Nathaniel Sangco]()
 - [@Jirah Pangalay]()
 - [@Karl Owen Pelayo]()
 - [@Leander Lorenz Lubguban]()
