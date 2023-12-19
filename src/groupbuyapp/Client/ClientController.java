@@ -26,6 +26,7 @@ import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.ClientListingCr
 import groupbuyapp.Client.ClientCenter.ClientContent.ClientPopUp.CreatorController;
 import groupbuyapp.Client.ClientSidebar.ClientSidebar;
 import groupbuyapp.Client.ClientSidebar.ClientSidebar.ClientButtons;
+import groupbuyapp.Client.LogIn.AccountSetup;
 import groupbuyapp.Client.LogIn.User;
 import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.RoundedToggleButton;
@@ -90,6 +91,13 @@ public class ClientController {
             // Check the user's choice
             if (option == JOptionPane.YES_OPTION) {
                 clientFrame.dispose();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AccountSetup();
+                    }
+                    
+                });
             } 
         }
     }
@@ -134,6 +142,7 @@ public class ClientController {
         for(Product product : searchedProducts){
             ProductPanel productPanel = new ProductPanel(product);
             productPanel.addMouseListener(new CreateViewerForSearch(product));
+            // productPanel.addMouseListener(new InteractiveHover(productPanel));
             madePanels.add(productPanel);
         }
         return madePanels;
@@ -155,7 +164,7 @@ public class ClientController {
 
     private ClientListingViewer createViewerForSearched(Product product){
         var content = clientCenter.getClientContent();
-        ClientListingViewer viewer = new ClientListingViewer(product, false, ClientListingViewer.FROM_MY_LISTING);
+        ClientListingViewer viewer = new ClientListingViewer(product, false, ClientListingViewer.FROM_MY_GROUPBUYS);
         viewer.getCreatorLabel().setText("Creator: " + currentUser.getUserName());
         SingleProductContainer spc = GbuyDatabase.getInstance().getProductUserCountAndLimit(product.getId());
         viewer.getCountLabel().setText("Groupbuy count: " + String.valueOf(spc.userCount) + "/" + String.valueOf(spc.userLimit));
@@ -169,6 +178,8 @@ public class ClientController {
                 content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
             }
         });
+
+        viewer.getToggleJoinButton().addActionListener(new ToggleJoin(product, viewer.getToggleJoinButton(), viewer.getCountLabel()));
 
         viewer.revalidate();
         viewer.repaint();
@@ -298,6 +309,7 @@ public class ClientController {
         for(Product product : myListings){
             ProductPanel productPanel = new ProductPanel(product);
             productPanel.addMouseListener(new HomeMyListingViewer(product));
+            // productPanel.addMouseListener(new InteractiveHover(productPanel));
             madePanels.add(productPanel);
         }
         
@@ -333,7 +345,7 @@ public class ClientController {
         viewer.getBackButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshHome();
+                // refreshHome();
                 content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
             }
         });
@@ -400,7 +412,7 @@ public class ClientController {
         viewer.getBackButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshHome();
+                // refreshHome();
                 content.getCardLayout().show(content.getCardContainer(), ClientContent.HOME);
             }
         });
@@ -616,6 +628,7 @@ public class ClientController {
         for(Product product : products){
             ProductPanel p = new ProductPanel(product);
             p.addMouseListener(new EnableListingViewerInMyListings(product));
+            // p.addMouseListener(new InteractiveHover(p));
             productPanels.add(p);
         }
 
@@ -833,6 +846,6 @@ public class ClientController {
         }
     }
 
-
+ 
 
 }

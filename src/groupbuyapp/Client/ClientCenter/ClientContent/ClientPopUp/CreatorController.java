@@ -72,7 +72,7 @@ public class CreatorController {
         public void actionPerformed(ActionEvent e) {
             var product = clientListingCreator.getProduct();
             GbuyDatabase.getInstance().deleteProduct(product.getId());
-            JOptionPane.showMessageDialog(null, "product " + product.getId() + " " + product.getName() + " was deleted");             
+            JOptionPane.showMessageDialog(null, "product " + product.getName() + " was deleted");             
             var myListings = clientController.getClientCenter().getClientContent().getMyListings();
             myListings.setProductPanels(clientController.createMyListingPanels());
             myListings.revalidate();
@@ -210,7 +210,7 @@ public class CreatorController {
         } else {
             spc.productStatus = clientListingCreator.getProduct().getProductStatus();
             GbuyDatabase.getInstance().editProduct(spc, clientListingCreator.getProduct().getId());
-            JOptionPane.showMessageDialog(null, "product " + clientListingCreator.getProduct().getId() + " was edited");
+            JOptionPane.showMessageDialog(null, "product " + clientListingCreator.getProduct().getName() + " was edited");
         }
         var myListings = clientController.getClientCenter().getClientContent().getMyListings();
         myListings.setProductPanels(clientController.createMyListingPanels());

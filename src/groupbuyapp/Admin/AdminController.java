@@ -168,7 +168,7 @@ public class AdminController {
 
 
     private Image resizeImage(ImageIcon imageIcon){
-        int newWidth = 0;
+        int newWidth = 130;
         int preferredHeight = 130;
 
         int iconWidth = imageIcon.getIconWidth();

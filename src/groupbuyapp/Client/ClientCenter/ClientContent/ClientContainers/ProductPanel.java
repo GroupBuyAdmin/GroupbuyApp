@@ -6,13 +6,18 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+
 
 import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
+import groupbuyapp.SystemFiles.CustomComponents.RoundedImageIcon;
 import groupbuyapp.SystemFiles.CustomComponents.RoundedPanel;
 import groupbuyapp.SystemFiles.Database.Product;
 import groupbuyapp.SystemFiles.Fonts.GbuyFont;
@@ -37,6 +42,9 @@ public class ProductPanel extends RoundedPanel{
     private final Dimension browserPanelDimension = new Dimension(330, 340);
     private final Dimension normalPanelDimension = new Dimension(285, 265);
 
+    public static final Border normalBorder = BorderFactory.createEmptyBorder(10, 10, 20, 10);
+    public static final Border pressedBorder = BorderFactory.createEmptyBorder(20, 20, 40, 20);
+
     private final static String ON_GOING = "ongoing";
     private final static String COMPELETED = "completed";
     private final static String EXPIRED = "expired";
@@ -58,6 +66,28 @@ public class ProductPanel extends RoundedPanel{
 
     public Product getProduct() {
         return product;
+    }
+
+    public void highlighted(){
+        detailsContainer.getNameLabel().setForeground(GbuyColor.MAIN_COLOR);
+        setShady(true);
+        revalidate();
+        repaint();
+    }
+
+    public void notHighlighted(){
+        detailsContainer.getNameLabel().setForeground(Color.black);
+        setShady(false);
+        revalidate();
+        repaint();
+    }
+
+    public void pressed(){
+        setBackground(GbuyColor.PANEL_BACKGROUND_COLOR);
+    }
+
+    public void released(){
+        setBackground(GbuyColor.PANEL_COLOR);
     }
 
     //initialze with empty product
@@ -91,10 +121,12 @@ public class ProductPanel extends RoundedPanel{
         }
         setLayout(new BorderLayout(0, 0));
         setBackground(GbuyColor.PANEL_COLOR);
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
+        setBorder(normalBorder);
+        setShady(false);
+        setBorderColor(Color.decode("#E9E9E9"));
         setDrawBorder(true);
         setStrokeSize(1);
-
+        
         this.imageContainer = new ImageContainer(image);
         this.detailsContainer = new DetailsContainer(location, name, price);
 
@@ -103,6 +135,7 @@ public class ProductPanel extends RoundedPanel{
 
         //default
         setContainerStatus(determineStatus(product.getProductStatus()));
+        addMouseListener(new InteractiveHover(this));
     }
 
     private int determineStatus(String status){
@@ -160,7 +193,7 @@ public class ProductPanel extends RoundedPanel{
         setShadowColor(Color.BLACK);
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(10);
+        setShadowAlpha(30);
         detailsContainer.setStatus(DetailsContainer.ONGOING_STATUS);
         this.containerStatus = Status.ONGOING;
     }
@@ -169,7 +202,7 @@ public class ProductPanel extends RoundedPanel{
         setShadowColor(Color.decode("#3EF050"));
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(35);
+        setShadowAlpha(55);
         detailsContainer.setStatus(DetailsContainer.COMPLETED_STATUS);
         this.containerStatus = Status.COMPLETED;
     }
@@ -178,7 +211,7 @@ public class ProductPanel extends RoundedPanel{
         setShadowColor(Color.decode("#F20530"));
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(30);
+        setShadowAlpha(45);
         detailsContainer.setStatus(DetailsContainer.EXPIRED_STATUS);
         this.containerStatus = Status.EXPIRED;
     }
@@ -187,7 +220,7 @@ public class ProductPanel extends RoundedPanel{
         setShadowColor(Color.decode("#3EF050"));
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(35);
+        setShadowAlpha(65);
         detailsContainer.setStatus(DetailsContainer.FOR_PURCHASE_STATUS);
         this.containerStatus = Status.FOR_PURCHASE;
     }
@@ -196,16 +229,16 @@ public class ProductPanel extends RoundedPanel{
         setShadowColor(GbuyColor.DELIVER_COLOR);
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(35);
+        setShadowAlpha(65);
         detailsContainer.setStatus(DetailsContainer.FOR_DELIVERY_STATUS);
         this.containerStatus = Status.FOR_DELIVERY;
     }
 
     private void setToDelivered(){
-        setShadowColor(Color.black);
+        setShadowColor(Color.lightGray);
         setShadowGap(5);
         setShadowOffset(0);
-        setShadowAlpha(35);
+        setShadowAlpha(65);
         detailsContainer.setStatus(DetailsContainer.DELIVERED_STATUS);
         this.containerStatus = Status.DELIVERED;
     }
@@ -236,7 +269,7 @@ public class ProductPanel extends RoundedPanel{
                 imageLabel.setIcon(new ImageIcon("src/groupbuyapp/Client/Center/Content/ProductContainers/img/empty image(small).png"));
             } else {
                 Image resizedImage = resizeImage(imageIcon);
-                ImageIcon resizedImageIcon = new ImageIcon(resizedImage);
+                RoundedImageIcon resizedImageIcon = new RoundedImageIcon(resizedImage);
                 imageLabel.setIcon(resizedImageIcon);
             }
 
@@ -421,6 +454,32 @@ public class ProductPanel extends RoundedPanel{
         }
     }
 
+    private class InteractiveHover extends MouseAdapter{
+        private ProductPanel productPanel;
 
+        InteractiveHover(ProductPanel productPanel){
+            this.productPanel = productPanel;
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            productPanel.highlighted();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            productPanel.notHighlighted();
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            productPanel.pressed();
+        }
+        
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            productPanel.released();
+        }
+    }
 
 }

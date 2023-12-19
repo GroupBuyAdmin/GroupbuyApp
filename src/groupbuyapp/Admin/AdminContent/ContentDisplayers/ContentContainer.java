@@ -4,9 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,7 +17,6 @@ import groupbuyapp.SystemFiles.ColorPalette.GbuyColor;
 import groupbuyapp.SystemFiles.CustomComponents.RoundedButton;
 import groupbuyapp.SystemFiles.Database.Product;
 import groupbuyapp.SystemFiles.Fonts.GbuyFont;
-import net.miginfocom.swing.MigLayout;
 
 public class ContentContainer extends JPanel{
     public static final int FOR_PURCHASING = 1;
@@ -126,17 +125,19 @@ public class ContentContainer extends JPanel{
             productLocation.setForeground(GbuyColor.MAIN_COLOR);
 
             JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
             imagePanel.add(image);
             imagePanel.setOpaque(false);
 
-            JPanel details = new JPanel(new MigLayout("insets 5 5 5 5"));
+            JPanel details = new JPanel();
+            details.setLayout(new BoxLayout(details, BoxLayout.Y_AXIS));
             details.setBorder(BorderFactory.createEmptyBorder(25, 25, 0, 0));
             details.setOpaque(false);
-            details.add(productName, "wrap");
-            details.add(productPrice, "wrap");
-            details.add(productLocation, "wrap");
+            details.add(productName);
+            details.add(productPrice);
+            details.add(productLocation);
 
-            setLayout(new GridLayout(1,0));
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             add(imagePanel);
             add(details);
             
